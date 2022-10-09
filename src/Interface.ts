@@ -12,12 +12,37 @@ export interface IIncomeData {
     updated_at: string;
 }
 
-export interface IIncomeGraphInputs {
+export interface IIncomeProjection {
     age: number;
     income: number
 }
 
-export interface IIncomeTimeline {
+export interface ITotalIncomeProjection {
     age: number;
     totalIncome: number
+}
+
+
+export interface IExpenseData {
+    amount: number;
+    created_at: string;
+    duration_months: number;
+    expense_name: string;
+    expense_status: string;
+    expense_type: string;
+    frequency: string;
+    id: number;
+    inflation_rate: number;
+    start_date: string;
+    updated_at: string;
+}
+
+export interface IExpenseProjection {
+    age: number;
+    expense: number
+}
+
+export interface ITotalExpenseProjection {
+    age: number;
+    totalExpense: number
 }

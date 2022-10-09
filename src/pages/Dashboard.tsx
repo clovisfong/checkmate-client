@@ -1,11 +1,11 @@
 import React from 'react'
-import SavingsGraph from '../components/SavingsGraph'
+import IncomeGraph from '../components/IncomeGraph'
 
 const Dashboard = () => {
     return (
         <>
             <h1>Overview</h1>
-            <SavingsGraph />
+            <IncomeGraph />
         </>
     )
 }
