@@ -4,7 +4,7 @@ import { IIncomeData, IIncomeGraphInputs } from '../Interface'
 
 
 
-const IncomeGraph = (incomeData: IIncomeData) => {
+const IncomeCalculate = (incomeData: IIncomeData) => {
 
     const incomeGraphInputs: IIncomeGraphInputs[] = []
 
@@ -118,4 +118,4 @@ const IncomeGraph = (incomeData: IIncomeData) => {
     )
 }
 
-export default IncomeGraph
+export default IncomeCalculate

@@ -1,5 +1,6 @@
 import { differenceInCalendarYears } from "date-fns"
-import IncomeGraph from "./IncomeGraph"
+import { IIncomeGraphInputs, IIncomeTimeline } from "../Interface"
+import IncomeCalculate from "./IncomeGraph"
 
 
 
@@ -27,7 +28,7 @@ const SavingsGraph = () => {
     const yearsToRetirement = userDetails.retirement_age - currentAge //42
     const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
 
-    const incomeTimeline = []
+    const incomeTimeline: IIncomeTimeline[] = []
 
     for (let age = currentAge; age <= userDetails.life_expectancy; age++) {
         incomeTimeline.push({ "age": age, "totalIncome": 0 })
@@ -68,8 +69,17 @@ const SavingsGraph = () => {
 
 
 
-    const incomeProjections = incomeData.map(income => IncomeGraph(income))
+    const incomeProjections = incomeData.map(income => IncomeCalculate(income))
     console.log(incomeProjections)
+
+
+    // Add all income for each age
+    incomeProjections.forEach((income) => {
+        income.forEach((projection) => {
+            incomeTimeline.find((income) => income.age === projection.age ? income.totalIncome += projection.income : null)
+        })
+    })
+    console.log(incomeTimeline)
 
 
 

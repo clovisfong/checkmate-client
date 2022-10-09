@@ -16,3 +16,8 @@ export interface IIncomeGraphInputs {
     age: number;
     income: number
 }
+
+export interface IIncomeTimeline {
+    age: number;
+    totalIncome: number
+}
