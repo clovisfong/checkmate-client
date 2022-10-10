@@ -58,10 +58,7 @@ const CalculateIncome = (incomeData: IIncomeData) => {
     const storeInitialYearValue = (period: number) => {
         if (incomeData.frequency === 'Monthly') {
             incomeProjection.push({ "age": initialYearAge, "income": period * incomeData.amount })
-        } else if (incomeData.frequency === 'Quarterly') {
-            incomeProjection.push({ "age": initialYearAge, "income": Math.ceil(period / 3) * incomeData.amount })
-        } else if (incomeData.frequency === 'Semi-Annually') {
-            incomeProjection.push({ "age": initialYearAge, "income": Math.ceil(period / 6) * incomeData.amount })
+
         } else if (incomeData.frequency === 'Annually') {
             incomeProjection.push({ "age": initialYearAge, "income": incomeData.amount })
         }
@@ -70,10 +67,7 @@ const CalculateIncome = (incomeData: IIncomeData) => {
     const storeFutureYearsValue = (numOfYear: number, numOfMonths: number) => {
         if (incomeData.frequency === 'Monthly') {
             incomeProjection.push({ "age": initialYearAge + numOfYear, "income": Math.ceil(numOfMonths * incomeData.amount * Math.pow((1 + (incomeData.growth_rate / 100)), numOfYear)) })
-        } else if (incomeData.frequency === 'Quarterly') {
-            incomeProjection.push({ "age": initialYearAge + numOfYear, "income": Math.ceil(Math.ceil(numOfMonths / 3) * incomeData.amount * Math.pow((1 + (incomeData.growth_rate / 100)), numOfYear)) })
-        } else if (incomeData.frequency === 'Semi-Annually') {
-            incomeProjection.push({ "age": initialYearAge + numOfYear, "income": Math.ceil(Math.ceil(numOfMonths / 6) * incomeData.amount * Math.pow((1 + (incomeData.growth_rate / 100)), numOfYear)) })
+
         } else if (incomeData.frequency === 'Annually') {
             incomeProjection.push({ "age": initialYearAge + numOfYear, "income": Math.ceil(incomeData.amount * Math.pow((1 + (incomeData.growth_rate / 100)), numOfYear)) })
         }
@@ -96,15 +90,18 @@ const CalculateIncome = (incomeData: IIncomeData) => {
             }
 
             // Final Year Income Projections
-            const finalYearIncomeMonths = duration - initialYearRemainingMonths - fullYearIncomeMonths
-            storeFutureYearsValue(finalYear, finalYearIncomeMonths)
+            if (incomeData.frequency === 'Monthly') {
+                const finalYearIncomeMonths = duration - initialYearRemainingMonths - fullYearIncomeMonths
+                storeFutureYearsValue(finalYear, finalYearIncomeMonths)
+            }
         }
 
         else if (futureIncomeMonths < 12) {
             // Final Year Income Projections
-            const FinalYearIncomeMonths = duration - initialYearRemainingMonths
-            storeFutureYearsValue(finalYear, FinalYearIncomeMonths)
-
+            if (incomeData.frequency === 'Monthly') {
+                const FinalYearIncomeMonths = duration - initialYearRemainingMonths
+                storeFutureYearsValue(finalYear, FinalYearIncomeMonths)
+            }
         }
 
     } else if (futureIncomeMonths <= 0) {

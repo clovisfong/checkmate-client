@@ -40,30 +40,43 @@ const IncomeGraph = () => {
 
     const incomeData = [
         {
+            amount: 7000,
+            created_at: "Mon, 10 Oct 2022 01:57:50 GMT",
+            duration_months: 504,
+            frequency: "Monthly",
+            growth_rate: 2.0,
+            id: 2,
+            income_name: "Working Income",
+            income_status: "Current",
+            income_type: "Salary",
+            start_date: "Mon, 10 Oct 2022 00:00:00 GMT",
+            updated_at: "Mon, 10 Oct 2022 01:57:50 GMT"
+        },
+        {
             amount: 3000,
-            created_at: "Sun, 09 Oct 2022 08:45:57 GMT",
+            created_at: "Mon, 10 Oct 2022 01:53:31 GMT",
             duration_months: 120,
             frequency: "Monthly",
             growth_rate: 1.5,
-            id: 12,
+            id: 1,
             income_name: "Stocks",
             income_status: "Future",
             income_type: "Investment",
             start_date: "Thu, 10 Oct 2024 00:00:00 GMT",
-            updated_at: "Sun, 09 Oct 2022 08:45:57 GMT"
+            updated_at: "Mon, 10 Oct 2022 01:53:31 GMT"
         },
         {
-            amount: 7000,
-            created_at: "Sun, 09 Oct 2022 08:38:13 GMT",
-            duration_months: 504,
-            frequency: "Monthly",
+            amount: 3000,
+            created_at: "Mon, 10 Oct 2022 01:59:49 GMT",
+            duration_months: 120,
+            frequency: "Annually",
             growth_rate: 2.0,
-            id: 11,
-            income_name: "Working Income",
-            income_status: "Current",
-            income_type: "Salary",
-            start_date: "Sun, 09 Oct 2022 00:00:00 GMT",
-            updated_at: "Sun, 09 Oct 2022 08:38:13 GMT"
+            id: 4,
+            income_name: "Year End Bonus",
+            income_status: "Future",
+            income_type: "Bonus",
+            start_date: "Thu, 10 Oct 2024 00:00:00 GMT",
+            updated_at: "Mon, 10 Oct 2022 01:59:49 GMT"
         }
     ]
 

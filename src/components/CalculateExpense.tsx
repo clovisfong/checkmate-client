@@ -55,13 +55,10 @@ const CalculateExpense = (expenseData: IExpenseData) => {
     const finalYear = Math.ceil(futureExpenseMonths / 12) // 10
 
 
-    const pushInitialYearValue = (period: number) => {
+    const pushInitialYearValue = (period: number = 0) => {
         if (expenseData.frequency === 'Monthly') {
             expenseProjection.push({ "age": initialYearAge, "expense": period * expenseData.amount })
-        } else if (expenseData.frequency === 'Quarterly') {
-            expenseProjection.push({ "age": initialYearAge, "expense": Math.ceil(period / 3) * expenseData.amount })
-        } else if (expenseData.frequency === 'Semi-Annually') {
-            expenseProjection.push({ "age": initialYearAge, "expense": Math.ceil(period / 6) * expenseData.amount })
+
         } else if (expenseData.frequency === 'Annually') {
             expenseProjection.push({ "age": initialYearAge, "expense": expenseData.amount })
         }
@@ -70,14 +67,12 @@ const CalculateExpense = (expenseData: IExpenseData) => {
     const pushFutureYearsValue = (numOfYear: number, numOfMonths: number) => {
         if (expenseData.frequency === 'Monthly') {
             expenseProjection.push({ "age": initialYearAge + numOfYear, "expense": Math.ceil(numOfMonths * expenseData.amount * Math.pow((1 + (expenseData.inflation_rate / 100)), numOfYear)) })
-        } else if (expenseData.frequency === 'Quarterly') {
-            expenseProjection.push({ "age": initialYearAge + numOfYear, "expense": Math.ceil(Math.ceil(numOfMonths / 3) * expenseData.amount * Math.pow((1 + (expenseData.inflation_rate / 100)), numOfYear)) })
-        } else if (expenseData.frequency === 'Semi-Annually') {
-            expenseProjection.push({ "age": initialYearAge + numOfYear, "expense": Math.ceil(Math.ceil(numOfMonths / 6) * expenseData.amount * Math.pow((1 + (expenseData.inflation_rate / 100)), numOfYear)) })
+
         } else if (expenseData.frequency === 'Annually') {
             expenseProjection.push({ "age": initialYearAge + numOfYear, "expense": Math.ceil(expenseData.amount * Math.pow((1 + (expenseData.inflation_rate / 100)), numOfYear)) })
         }
     }
+
 
 
     if (futureExpenseMonths > 0) {
@@ -95,20 +90,24 @@ const CalculateExpense = (expenseData: IExpenseData) => {
             }
 
             // Final Year Expense Projections
-            const finalYearExpenseMonths = duration - initialYearRemainingMonths - fullYearExpenseMonths
-            pushFutureYearsValue(finalYear, finalYearExpenseMonths)
+            if (expenseData.frequency === 'Monthly') {
+                const finalYearExpenseMonths = duration - initialYearRemainingMonths - fullYearExpenseMonths
+                pushFutureYearsValue(finalYear, finalYearExpenseMonths)
+            }
         }
 
         else if (futureExpenseMonths < 12) {
             // Final Year Expense Projections
-            const FinalYearExpenseMonths = duration - initialYearRemainingMonths
-            pushFutureYearsValue(finalYear, FinalYearExpenseMonths)
-
+            if (expenseData.frequency === 'Monthly') {
+                const FinalYearExpenseMonths = duration - initialYearRemainingMonths
+                pushFutureYearsValue(finalYear, FinalYearExpenseMonths)
+            }
         }
 
     } else if (futureExpenseMonths <= 0) {
         pushInitialYearValue(duration)
     }
+
 
 
 
