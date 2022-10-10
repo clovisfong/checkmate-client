@@ -60,16 +60,15 @@ const DebtGraph = () => {
 
 
     const debtProjections = debtData.map(debt => CalculateDebt(debt))
-    // console.log(debtProjections)
 
 
-    // // Add all income for each age
-    // debtProjections.forEach((debt) => {
-    //     debt.forEach((projection) => {
-    //         expenseTimeline.find((entry) => entry.age === projection.age ? entry.totalDebt += projection.debt : null)
-    //     })
-    // })
-    // console.log(expenseTimeline)
+    // Add all income for each age
+    debtProjections.forEach((debt) => {
+        debt.forEach((projection) => {
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.totalDebt += projection.yearlyRepayment : null)
+        })
+    })
+    console.log(debtTimeline)
 
 
 

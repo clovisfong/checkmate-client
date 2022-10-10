@@ -162,7 +162,7 @@ const CalculateDebt = (debtData: IDebtData) => {
     console.log(debtProjection)
 
     return (
-        debtMonthlyProjection
+        debtProjection
     )
 }
 
