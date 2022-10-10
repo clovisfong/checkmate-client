@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import urlcat from 'urlcat';
 import { useFormik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { Container } from '@mui/system';
 
 const LoginForm = () => {
 
@@ -67,41 +69,89 @@ const LoginForm = () => {
 
 
     return (
-        <div>
-            <form onSubmit={formik.handleSubmit}>
+        <Container maxWidth='md'>
 
-                <h3>EMAIL*</h3>
-                <input
-                    id="email"
-                    autoComplete="off"
-                    name="email"
-                    type="email"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.email}
-                />
-                {formik.touched.email && formik.errors.email ? (
-                    <div>{formik.errors.email}</div>
-                ) : null}
+            <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
 
-                <h3>PASSWORD*</h3>
-                <input
-                    id="password"
-                    autoComplete="off"
-                    name="password"
-                    type="text"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.password}
-                />
-                {formik.touched.password && formik.errors.password ? (
-                    <div>{formik.errors.password}</div>
-                ) : null}
 
-                <button type='submit'>Log In</button>
+                <form onSubmit={formik.handleSubmit}>
+                    <Grid container spacing={4}>
+                        <Grid item xs={12}>
+                            <Typography variant="body2" sx={{ mb: "0.5rem", color: "#53565B" }}>
+                                Email</Typography>
 
-            </form>
-        </div>
+                            <TextField
+                                id="email"
+                                autoComplete="off"
+                                name="email"
+                                type="email"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.email}
+                                sx={{
+                                    width: "100%",
+                                }}
+
+
+                            />
+                            {formik.touched.email && formik.errors.email ? (
+                                <div>{formik.errors.email}</div>
+                            ) : null}
+
+                        </Grid>
+
+
+                        <Grid item xs={12}>
+                            <Typography variant="body2" sx={{ mb: "0.5rem", color: "#53565B" }}>
+                                Password</Typography>
+                            <TextField
+                                id="password"
+                                autoComplete="off"
+                                name="password"
+                                type="text"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
+                                sx={{
+                                    width: "100%",
+                                }}
+                            />
+                            {formik.touched.password && formik.errors.password ? (
+                                <div>{formik.errors.password}</div>
+                            ) : null}
+                        </Grid>
+                    </Grid>
+
+
+                    <Grid item sx={{ textAlign: 'center' }}>
+                        <Button type="submit" sx={{
+                            background: '#2852A0',
+                            color: '#FFFBF0',
+                            letterSpacing: '0.2rem',
+                            mt: '3rem',
+                            pl: '4rem',
+                            pr: '4rem',
+                            mb: '0.5rem',
+                            borderRadius: '0.7rem',
+                            '&:hover': {
+                                backgroundColor: '#254D71',
+                            }
+                        }}> Let's Go!
+                        </Button>
+                    </Grid>
+
+                </form>
+
+                <Grid item xs={12} sx={{ mt: '3rem', textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: "0.5rem" }}>
+                        <Typography variant='body2'>Don't have an account? </Typography>
+                        <Link to="/sign-up">
+                            <Typography variant='body2'>Sign up!</Typography>
+                        </Link>
+                    </Box>
+                </Grid>
+            </Grid>
+        </Container>
     )
 }
 
