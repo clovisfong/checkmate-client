@@ -14,7 +14,7 @@ const theme: Theme = createTheme({
         h2: {
             fontSize: "3rem",
             fontWeight: 500,
-            fontFamily: 'Monserrat',
+            fontFamily: 'Montserrat',
             '@media (max-width:600px)': {
                 fontSize: '2.5rem',
             }
@@ -22,31 +22,36 @@ const theme: Theme = createTheme({
         },
         h3: {
             fontSize: "1.5rem",
-            fontWeight: 500,
-            fontFamily: 'Monserrat'
+            fontWeight: 600,
+            fontFamily: 'Montserrat',
+            color: '#53565B'
 
         },
         h4: {
             fontSize: "1.3rem",
             fontWeight: 500,
-            fontFamily: 'Monserrat'
+            fontFamily: 'Montserrat',
+            color: '#53565B'
 
         },
         h5: {
             fontSize: "1.1rem",
             fontWeight: 500,
-            fontFamily: 'Monserrat'
+            fontFamily: 'Montserrat',
+            color: '#53565B'
 
         },
         body1: {
             fontSize: "0.9rem",
             letterSpacing: '0.025rem',
-            fontFamily: 'Roboto'
+            fontFamily: 'Roboto',
+            color: '#53565B'
         },
         body2: {
             fontSize: "0.7rem",
             // letterSpacing: '0.1rem',
-            fontFamily: 'Roboto'
+            fontFamily: 'Roboto',
+            color: '#53565B'
 
         }
     }

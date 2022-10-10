@@ -5,10 +5,9 @@ import SignUpForm from '../components/SignUpForm'
 const SignUp = () => {
     return (
         <Container maxWidth='sm' sx={{
-            mt: '10rem',
+            mt: '8rem',
             mb: '5rem',
-            pr: '2rem',
-            pl: '2rem'
+
 
         }}>
             <Grid container sx={{ mt: '5rem' }}>
