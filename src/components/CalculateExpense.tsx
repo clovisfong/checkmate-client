@@ -34,16 +34,16 @@ const CalculateExpense = (expenseData: IExpenseData) => {
 
 
     // Remaining months till year end
-    const ExpenseStartDate = new Date(expenseData.start_date)
-    const monthOfEntry = getMonth(ExpenseStartDate) // 10, october
+    const expenseStartDate = new Date(expenseData.start_date)
+    const monthOfEntry = getMonth(expenseStartDate) // 10, october
     const initialYearRemainingMonths = 12 - monthOfEntry // 3 months
 
     // Initial age
-    const initialYearAge = differenceInCalendarYears(ExpenseStartDate, birthDate) //  24
+    const initialYearAge = differenceInCalendarYears(expenseStartDate, birthDate) //  24
 
     // Duration upon Update
     const updatedDate = new Date(expenseData.updated_at)
-    const updatedDuration = differenceInCalendarMonths(updatedDate, ExpenseStartDate)
+    const updatedDuration = differenceInCalendarMonths(updatedDate, expenseStartDate)
 
     // Select Duration based on Expense Status
     const duration = expenseData.expense_status === 'End' ? updatedDuration : expenseData.duration_months
@@ -99,8 +99,10 @@ const CalculateExpense = (expenseData: IExpenseData) => {
         else if (futureExpenseMonths < 12) {
             // Final Year Expense Projections
             if (expenseData.frequency === 'Monthly') {
-                const FinalYearExpenseMonths = duration - initialYearRemainingMonths
-                pushFutureYearsValue(finalYear, FinalYearExpenseMonths)
+                const finalYearExpenseMonths = duration - initialYearRemainingMonths
+                if (finalYearExpenseMonths > 0) {
+                    pushFutureYearsValue(finalYear, finalYearExpenseMonths)
+                }
             }
         }
 

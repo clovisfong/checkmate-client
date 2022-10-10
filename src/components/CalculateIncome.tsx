@@ -34,16 +34,16 @@ const CalculateIncome = (incomeData: IIncomeData) => {
 
 
     // Remaining months till year end
-    const IncomeStartDate = new Date(incomeData.start_date)
-    const monthOfEntry = getMonth(IncomeStartDate) // 10, october
+    const incomeStartDate = new Date(incomeData.start_date)
+    const monthOfEntry = getMonth(incomeStartDate) // 10, october
     const initialYearRemainingMonths = 12 - monthOfEntry // 3 months
 
     // Initial age
-    const initialYearAge = differenceInCalendarYears(IncomeStartDate, birthDate) //  24
+    const initialYearAge = differenceInCalendarYears(incomeStartDate, birthDate) //  24
 
     // Duration upon Update
     const updatedDate = new Date(incomeData.updated_at)
-    const updatedDuration = differenceInCalendarMonths(updatedDate, IncomeStartDate)
+    const updatedDuration = differenceInCalendarMonths(updatedDate, incomeStartDate)
 
     // Select Duration based on Income Status
     const duration = incomeData.income_status === 'End' ? updatedDuration : incomeData.duration_months
@@ -92,7 +92,10 @@ const CalculateIncome = (incomeData: IIncomeData) => {
             // Final Year Income Projections
             if (incomeData.frequency === 'Monthly') {
                 const finalYearIncomeMonths = duration - initialYearRemainingMonths - fullYearIncomeMonths
-                storeFutureYearsValue(finalYear, finalYearIncomeMonths)
+                if (finalYearIncomeMonths > 0) {
+                    storeFutureYearsValue(finalYear, finalYearIncomeMonths)
+                }
+
             }
         }
 
