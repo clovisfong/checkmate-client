@@ -46,3 +46,41 @@ export interface ITotalExpenseProjection {
     age: number;
     totalExpense: number
 }
+
+
+
+
+export interface IDebtData {
+    commitment_period_months: number;
+    created_at: string;
+    debt_name: string;
+    debt_status: string;
+    debt_type: string;
+    id: number;
+    interest_rate: number;
+    loan_amount: number;
+    monthly_commitment: number;
+    start_date: string;
+    updated_at: string;
+}
+
+export interface ITotalDebtProjection {
+    age: number;
+    totalDebt: number
+}
+
+export interface IDebtProjection {
+    age: number;
+    yearlyRepayment: number
+    interestRepayment: number;
+    principalRepayment: number;
+}
+
+export interface IDebtMonthlyProjection {
+    period: number;
+    monthlyRepayment: number;
+    interestRepayment: number;
+    principalRepayment: number;
+    outstandingPrincipal: number;
+
+}

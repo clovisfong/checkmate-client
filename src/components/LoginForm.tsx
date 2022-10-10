@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import urlcat from 'urlcat';
 import { useFormik, Form, Field } from 'formik';
@@ -10,8 +10,15 @@ const LoginForm = () => {
     const [error, setError] = useState<String>("");
 
     const SERVER = import.meta.env.VITE_SERVER;
-    const url = urlcat(SERVER, "/");
+    const url = urlcat(SERVER, "/asset/2/");
     const navigate = useNavigate();
+
+    useEffect(() => {
+
+        axios.get(url)
+            .then(res => console.log(res.data))
+            .catch(err => console.log(err))
+    }, [])
 
 
 
