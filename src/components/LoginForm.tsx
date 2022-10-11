@@ -12,7 +12,7 @@ const LoginForm = () => {
     const [error, setError] = useState<String>("");
 
     const SERVER = import.meta.env.VITE_SERVER;
-    const url = urlcat(SERVER, "/asset/2/");
+    const url = urlcat(SERVER, "/income/4");
     const navigate = useNavigate();
 
     useEffect(() => {

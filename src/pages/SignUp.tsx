@@ -5,7 +5,7 @@ import SignUpForm from '../components/SignUpForm'
 const SignUp = () => {
     return (
         <Container maxWidth='sm' sx={{
-            mt: '8rem',
+            mt: '3rem',
             mb: '5rem',
 
 

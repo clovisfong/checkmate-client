@@ -14,7 +14,7 @@ const SignUpForm: FC = () => {
     const [disable, setDisable] = useState(false)
 
     const token: any = sessionStorage.getItem("token");
-    const navigateToOverview = useNavigate();
+    const navigateToSurvey = useNavigate();
     const SERVER = import.meta.env.VITE_SERVER;
 
     const parseJwt = (token: string) => {
@@ -88,6 +88,7 @@ const SignUpForm: FC = () => {
 
     const handleClick = () => {
         setDisable(true)
+        navigateToSurvey('/survey')
         setTimeout(() => {
             setDisable(false)
         }, 3000)
