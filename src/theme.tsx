@@ -13,7 +13,7 @@ const theme: Theme = createTheme({
     typography: {
         h2: {
             fontSize: "3rem",
-            fontWeight: 500,
+            fontWeight: 600,
             fontFamily: 'Montserrat',
             '@media (max-width:600px)': {
                 fontSize: '2.5rem',
@@ -29,14 +29,14 @@ const theme: Theme = createTheme({
         },
         h4: {
             fontSize: "1.3rem",
-            fontWeight: 500,
+            fontWeight: 600,
             fontFamily: 'Montserrat',
             color: '#53565B'
 
         },
         h5: {
             fontSize: "1.1rem",
-            fontWeight: 500,
+            fontWeight: 600,
             fontFamily: 'Montserrat',
             color: '#53565B'
 

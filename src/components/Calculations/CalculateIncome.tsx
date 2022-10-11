@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
-import { IIncomeData, IIncomeProjection } from '../Interface'
+import { IIncomeData, IIncomeProjection } from '../../Interface'
 
 
 

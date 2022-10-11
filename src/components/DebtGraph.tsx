@@ -1,7 +1,7 @@
 import { differenceInCalendarYears } from "date-fns"
 import { ITotalDebtProjection, ITotalExpenseProjection } from "../Interface"
-import CalculateDebt from "./CalculateDebt"
-import CalculateExpense from "./CalculateExpense"
+import CalculateDebt from "./Calculations/CalculateDebt"
+import CalculateExpense from "./Calculations/CalculateExpense"
 
 
 

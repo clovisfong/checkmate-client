@@ -6,12 +6,13 @@ import ExpenseGraph from './components/ExpenseGraph';
 import FinanceStepper from './components/FinanceStepper';
 import IncomeForm from './components/FinancialForms/IncomeForm';
 import IncomeGraph from './components/IncomeGraph';
+import MenuDrawer from './components/MenuDrawer';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
-import Dashboard from './pages/Dashboard';
+import DashboardOverview from './pages/OverviewDashboard';
 import FormSet from './pages/FormSet';
 import Login from './pages/Login';
-import Overview from './pages/Overview';
+import IncomeDashboard from './pages/IncomeDashboard';
 import SignUp from './pages/SignUp';
 import Survey from './pages/Survey';
 
@@ -26,9 +27,12 @@ function App() {
           <Route path='/survey' element={<Survey />} />
           <Route path='/survey/new' element={<FormSet />} />
         </Route>
-        <Route path='/overview' element={<Overview />} />
+        <Route path='/' element={<MenuDrawer />}>
+          <Route path='/dashboard/overview' element={<DashboardOverview />} />
+          <Route path='/dashboard/income' element={<IncomeDashboard />} />
+
+        </Route>
         <Route path='/login' element={<Login />} />
-        <Route path='/overview' element={<Dashboard />} />
         <Route path='/income' element={<IncomeGraph />} />
         <Route path='/login' element={<Login />} />
         <Route path='/expense' element={<ExpenseGraph />} />

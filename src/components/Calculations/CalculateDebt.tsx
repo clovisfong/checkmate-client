@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths, add } from 'date-fns'
-import { IDebtMonthlyProjection, IDebtData, IIncomeProjection, IDebtProjection } from '../Interface'
+import { IDebtMonthlyProjection, IDebtData, IIncomeProjection, IDebtProjection } from '../../Interface'
 import { FormControlUnstyledContext } from '@mui/base'
 
 

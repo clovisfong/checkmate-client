@@ -1,6 +1,6 @@
 import { differenceInCalendarYears } from "date-fns"
 import { ITotalExpenseProjection } from "../Interface"
-import CalculateExpense from "./CalculateExpense"
+import CalculateExpense from "./Calculations/CalculateExpense"
 
 
 

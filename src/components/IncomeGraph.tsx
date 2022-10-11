@@ -1,6 +1,6 @@
 import { differenceInCalendarYears } from "date-fns"
 import { IIncomeProjection, ITotalIncomeProjection } from "../Interface"
-import CalculateIncome from "./CalculateIncome"
+import CalculateIncome from "./Calculations/CalculateIncome"
 
 
 
