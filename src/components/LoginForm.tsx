@@ -15,12 +15,12 @@ const LoginForm = () => {
     const url = urlcat(SERVER, "/income/4");
     const navigate = useNavigate();
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        axios.get(url)
-            .then(res => console.log(res.data))
-            .catch(err => console.log(err))
-    }, [])
+    //     axios.get(url)
+    //         .then(res => console.log(res.data))
+    //         .catch(err => console.log(err))
+    // }, [])
 
 
 
@@ -53,16 +53,18 @@ const LoginForm = () => {
         }),
         onSubmit: (values) => {
             console.log(values);
-            axios
-                .get(url)
-                .then((res) => {
-                    console.log(res);
-                    // sessionStorage.setItem("token", res.data.token);
-                    // const payload = parseJwt(res.data.token);
-                    // console.log(payload.userId);
-                    // navigate(`/client/${payload.userId}/dashboard`);
-                })
-                .catch((error) => console.log(error.response.data.error));
+
+            // axios
+            //     .get(url)
+            //     .then((res) => {
+            //         console.log(res);
+            const resTest = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M'
+            sessionStorage.setItem("token", resTest);
+            //         // const payload = parseJwt(res.data.token);
+            //         // console.log(payload.userId);
+            navigate(`/private`);
+            //     })
+            //     .catch((error) => console.log(error.response.data.error));
         },
     });
 

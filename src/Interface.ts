@@ -1,3 +1,16 @@
+export interface IUserDetails {
+    date_of_birth: string;
+    email: string;
+    gender: string;
+    id: number;
+    legacy_allocation: number;
+    life_expectancy: number;
+    name: string;
+    retirement_age: number;
+    retirement_lifestyle: string
+}
+
+
 export interface IIncomeData {
     amount: number;
     created_at: string;
@@ -10,6 +23,17 @@ export interface IIncomeData {
     income_type: string;
     start_date: string;
     updated_at: string;
+}
+
+export interface IIncomeFill {
+    amount: number;
+    duration_months: number;
+    frequency: string;
+    growth_rate: number;
+    income_name: string;
+    income_status: string;
+    income_type: string;
+    start_date?: string;
 }
 
 export interface IIncomeProjection {

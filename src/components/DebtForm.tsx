@@ -2,9 +2,9 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
-import { IIncomeData, IIncomeFill, IUserDetails } from '../Interface';
+import { IUserDetails } from '../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { Box } from '@mui/system';
 
 
 
@@ -30,80 +30,69 @@ const currentDate = new Date // use current date
 const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
 const yearsToExpectancy = userDetails.life_expectancy - currentAge
 
-const freqOptions = ['Monthly', 'Annually']
-const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
 
-for (let year = 1; year <= yearsToExpectancy; year++) {
-    durationOptions.push(year)
+const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
+const statusOptions = ['Current', 'Future']
+const commitmentPeriodOptions: number[] = [0]
+
+for (let year = 1; year <= 35; year++) {
+    commitmentPeriodOptions.push(year)
 }
 
 
 
 
 
-const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
+const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
 
     const [disable, setDisable] = useState(false)
-    const [incomeDetails, setIncomeDetails] = useState(
-        {
-            income_type: "",
-            amount: "",
-            income_name: "",
-            frequency: "",
-            income_status: "",
-            duration_months: "",
-            start_date: "",
-            growth_rate: ""
-        }
-    )
-
-    const navigateToSurvey = useNavigate()
-
-
 
     const formik = useFormik({
         initialValues: {
-            income_type: incomeDetails.income_type,
-            amount: incomeDetails.amount,
-            income_name: incomeDetails.income_name,
-            frequency: incomeDetails.frequency,
-            income_status: incomeDetails.income_status,
-            duration_months: incomeDetails.duration_months,
-            start_date: incomeDetails.start_date,
-            growth_rate: incomeDetails.growth_rate,
+            debt_type: "",
+            loan_amount: "",
+            debt_name: "",
+            interest_rate: "",
+            debt_status: "",
+            commitment_period_months: "",
+            start_date: "",
+            monthly_commitment: "",
 
         },
         validationSchema: Yup.object({
-            income_type: Yup.string().required("Required"),
-            amount: Yup.number()
+            debt_type: Yup.string().required("Required"),
+            loan_amount: Yup.number()
                 .typeError("You must specify a number")
                 .required("Required")
                 .min(0),
-            income_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
-            frequency: Yup.string().required("Required"),
-            income_status: Yup.string().required("Required"),
-            duration_months: Yup.number().required("Required"),
+            debt_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
+            interest_rate: Yup.number()
+                .typeError("You must specify a number")
+                .required("Required"),
+            debt_status: Yup.string().required("Required"),
+            commitment_period_months: Yup.number().required("Required"),
             start_date: Yup.date()
                 .min(new Date(), "Please put future date"),
-            growth_rate: Yup.number()
+            monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
+                .min(0),
+
         }),
         onSubmit: (values: any) => {
 
-            if (values.income_status === 'Current') {
+            if (values.debt_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
+            if (values.monthly_commitment === '') {
+                values.monthly_commitment = 0
+            }
             console.log(values);
-            setSearchParams({ section: 'expenses' })
-            setFinancialInfo([values])
+            // setSearchParams({ section: 'assets' })
+            setFinancialInfo([...financialInfo, values])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
             }, 3000)
-            // setIncomeDetails(values)
-
             // const createUser = urlcat(SERVER, "/users");
 
             // axios
@@ -118,11 +107,11 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
         },
     });
 
+    console.log('debt section', financialInfo)
+
     const handleClick = () => {
-        navigateToSurvey('/survey')
+        setSearchParams({ section: 'expenses' })
     }
-
-
 
 
     return (
@@ -140,98 +129,94 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                     >
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
-                                    value={formik.values.income_type}
-                                    id="income_type"
-                                    name="income_type"
+                                    value={formik.values.debt_type}
+                                    id="debt_type"
+                                    name="debt_type"
                                     onChange={(e) => formik.handleChange(e)}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
                                 >
-                                    {incomeOptions.map((option, i) => (
+                                    {debtOptions.map((option, i) => (
                                         <MenuItem key={i} value={option}>
                                             {option}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            {formik.touched.income_type && formik.errors.income_type ? (
-                                <div>{formik.errors.income_type}</div>
+                            {formik.touched.debt_type && formik.errors.debt_type ? (
+                                <div>{formik.errors.debt_type}</div>
                             ) : null}
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Loan Amount*</Typography>
 
                             <TextField
                                 required
-                                id="amount"
+                                id="loan_amount"
                                 autoComplete="off"
-                                name="amount"
+                                name="loan_amount"
                                 type='number'
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.amount}
+                                value={formik.values.loan_amount}
                             />
-                            {formik.touched.amount &&
-                                formik.errors.amount ? (
-                                <div>{formik.errors.amount}</div>
+                            {formik.touched.loan_amount &&
+                                formik.errors.loan_amount ? (
+                                <div>{formik.errors.loan_amount}</div>
                             ) : null}
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                             <TextField
                                 required
-                                id="income_name"
+                                id="debt_name"
                                 autoComplete="off"
-                                name="income_name"
+                                name="debt_name"
                                 type='text'
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.income_name}
+                                value={formik.values.debt_name}
                             />
-                            {formik.touched.income_name &&
-                                formik.errors.income_name ? (
-                                <div>{formik.errors.income_name}</div>
+                            {formik.touched.debt_name &&
+                                formik.errors.debt_name ? (
+                                <div>{formik.errors.debt_name}</div>
                             ) : null}
                         </Grid>
 
+
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
-                            <FormControl sx={{ width: "100%" }}>
-                                <Select
-                                    value={formik.values.frequency}
-                                    id="frequency"
-                                    name="frequency"
-                                    onChange={(e) => formik.handleChange(e)}
-                                    onBlur={formik.handleBlur}
-                                    sx={{ width: "100%" }}
-                                >
-                                    {freqOptions.map((option, i) => (
-                                        <MenuItem key={i} value={option}>
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            {formik.touched.frequency && formik.errors.frequency ? (
-                                <div>{formik.errors.frequency}</div>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Interest Rate (in %)*</Typography>
+                            <TextField
+                                id="interest_rate"
+                                autoComplete="off"
+                                name="interest_rate"
+                                type='number'
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                sx={{ width: "100%" }}
+                                value={formik.values.interest_rate}
+                            />
+                            {formik.touched.interest_rate && formik.errors.interest_rate ? (
+                                <div>{formik.errors.interest_rate}</div>
                             ) : null}
                         </Grid>
 
+
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
-                                    value={formik.values.income_status}
-                                    id="income_status"
-                                    name="income_status"
+                                    value={formik.values.debt_status}
+                                    id="debt_status"
+                                    name="debt_status"
                                     onChange={(e) => formik.handleChange(e)}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
@@ -243,41 +228,41 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                     ))}
                                 </Select>
                             </FormControl>
-                            {formik.touched.income_status && formik.errors.income_status ? (
-                                <div>{formik.errors.income_status}</div>
+                            {formik.touched.debt_status && formik.errors.debt_status ? (
+                                <div>{formik.errors.debt_status}</div>
                             ) : null}
                         </Grid>
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
-                                    value={formik.values.duration_months}
-                                    id="duration_months"
-                                    name="duration_months"
+                                    value={formik.values.commitment_period_months}
+                                    id="commitment_period_months"
+                                    name="commitment_period_months"
                                     onChange={(e) => formik.handleChange(e)}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
                                 >
-                                    {durationOptions.map((option, i) => (
+                                    {commitmentPeriodOptions.map((option, i) => (
                                         <MenuItem key={i} value={option}>
                                             {option}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            {formik.touched.duration_months && formik.errors.duration_months ? (
-                                <div>{formik.errors.duration_months}</div>
+                            {formik.touched.commitment_period_months && formik.errors.commitment_period_months ? (
+                                <div>{formik.errors.commitment_period_months}</div>
                             ) : null}
                         </Grid>
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                             <TextField
                                 required
-                                disabled={formik.values.income_status === 'Future' ? false : true}
+                                disabled={formik.values.debt_status === 'Future' ? false : true}
                                 id="start_date"
                                 autoComplete="off"
                                 name="start_date"
@@ -285,31 +270,31 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.income_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                value={formik.values.debt_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
                             />
                             {formik.touched.start_date && formik.errors.start_date ? (
                                 <div>{formik.errors.start_date}</div>
                             ) : null}
                         </Grid>
 
-
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Growth Rate (in %)</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Monthly Commitment</Typography>
+
                             <TextField
-                                id="growth_rate"
+                                id="monthly_commitment"
                                 autoComplete="off"
-                                name="growth_rate"
+                                name="monthly_commitment"
                                 type='number'
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.growth_rate}
+                                value={formik.values.monthly_commitment}
                             />
-                            {formik.touched.growth_rate && formik.errors.growth_rate ? (
-                                <div>{formik.errors.growth_rate}</div>
+                            {formik.touched.monthly_commitment &&
+                                formik.errors.monthly_commitment ? (
+                                <div>{formik.errors.monthly_commitment}</div>
                             ) : null}
                         </Grid>
-
 
 
 
@@ -317,6 +302,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
 
                     <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
                         <Button disabled={disable} onClick={handleClick} sx={{
                             background: '#2852A0',
                             color: '#FFFBF0',
@@ -345,8 +331,9 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                 backgroundColor: '#254D71',
                             },
 
-                        }}> Next: Expenses
+                        }}> Next: Assets
                         </Button>
+
                     </Grid>
 
                 </form>
@@ -357,4 +344,4 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
     )
 }
 
-export default IncomeForm
+export default DebtForm

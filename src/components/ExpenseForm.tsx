@@ -2,9 +2,9 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
-import { IIncomeData, IIncomeFill, IUserDetails } from '../Interface';
+import { IUserDetails } from '../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
-import { useNavigate } from 'react-router-dom';
+import { Box } from '@mui/system';
 
 
 
@@ -31,7 +31,7 @@ const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
 const yearsToExpectancy = userDetails.life_expectancy - currentAge
 
 const freqOptions = ['Monthly', 'Annually']
-const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
+const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
 const statusOptions = ['Current', 'Future']
 const durationOptions: number[] = [0]
 
@@ -43,67 +43,50 @@ for (let year = 1; year <= yearsToExpectancy; year++) {
 
 
 
-const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
+const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
 
     const [disable, setDisable] = useState(false)
-    const [incomeDetails, setIncomeDetails] = useState(
-        {
-            income_type: "",
-            amount: "",
-            income_name: "",
-            frequency: "",
-            income_status: "",
-            duration_months: "",
-            start_date: "",
-            growth_rate: ""
-        }
-    )
-
-    const navigateToSurvey = useNavigate()
-
 
 
     const formik = useFormik({
         initialValues: {
-            income_type: incomeDetails.income_type,
-            amount: incomeDetails.amount,
-            income_name: incomeDetails.income_name,
-            frequency: incomeDetails.frequency,
-            income_status: incomeDetails.income_status,
-            duration_months: incomeDetails.duration_months,
-            start_date: incomeDetails.start_date,
-            growth_rate: incomeDetails.growth_rate,
+            expense_type: "",
+            amount: "",
+            expense_name: "",
+            frequency: "",
+            expense_status: "",
+            duration_months: "",
+            start_date: "",
+            inflation_rate: "",
 
         },
         validationSchema: Yup.object({
-            income_type: Yup.string().required("Required"),
+            expense_type: Yup.string().required("Required"),
             amount: Yup.number()
                 .typeError("You must specify a number")
                 .required("Required")
                 .min(0),
-            income_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
+            expense_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
             frequency: Yup.string().required("Required"),
-            income_status: Yup.string().required("Required"),
+            expense_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
             start_date: Yup.date()
                 .min(new Date(), "Please put future date"),
-            growth_rate: Yup.number()
+            inflation_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
         onSubmit: (values: any) => {
 
-            if (values.income_status === 'Current') {
+            if (values.expense_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
             console.log(values);
-            setSearchParams({ section: 'expenses' })
-            setFinancialInfo([values])
+            setSearchParams({ section: 'debts' })
+            setFinancialInfo([...financialInfo, values])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
             }, 3000)
-            // setIncomeDetails(values)
-
             // const createUser = urlcat(SERVER, "/users");
 
             // axios
@@ -118,11 +101,11 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
         },
     });
 
+    console.log(financialInfo)
+
     const handleClick = () => {
-        navigateToSurvey('/survey')
+        setSearchParams({ section: 'income' })
     }
-
-
 
 
     return (
@@ -143,22 +126,22 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                             <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
-                                    value={formik.values.income_type}
-                                    id="income_type"
-                                    name="income_type"
+                                    value={formik.values.expense_type}
+                                    id="expense_type"
+                                    name="expense_type"
                                     onChange={(e) => formik.handleChange(e)}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
                                 >
-                                    {incomeOptions.map((option, i) => (
+                                    {expenseOptions.map((option, i) => (
                                         <MenuItem key={i} value={option}>
                                             {option}
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                            {formik.touched.income_type && formik.errors.income_type ? (
-                                <div>{formik.errors.income_type}</div>
+                            {formik.touched.expense_type && formik.errors.expense_type ? (
+                                <div>{formik.errors.expense_type}</div>
                             ) : null}
                         </Grid>
 
@@ -187,18 +170,18 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
                             <TextField
                                 required
-                                id="income_name"
+                                id="expense_name"
                                 autoComplete="off"
-                                name="income_name"
+                                name="expense_name"
                                 type='text'
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.income_name}
+                                value={formik.values.expense_name}
                             />
-                            {formik.touched.income_name &&
-                                formik.errors.income_name ? (
-                                <div>{formik.errors.income_name}</div>
+                            {formik.touched.expense_name &&
+                                formik.errors.expense_name ? (
+                                <div>{formik.errors.expense_name}</div>
                             ) : null}
                         </Grid>
 
@@ -229,9 +212,9 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                             <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
-                                    value={formik.values.income_status}
-                                    id="income_status"
-                                    name="income_status"
+                                    value={formik.values.expense_status}
+                                    id="expense_status"
+                                    name="expense_status"
                                     onChange={(e) => formik.handleChange(e)}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
@@ -243,8 +226,8 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                     ))}
                                 </Select>
                             </FormControl>
-                            {formik.touched.income_status && formik.errors.income_status ? (
-                                <div>{formik.errors.income_status}</div>
+                            {formik.touched.expense_status && formik.errors.expense_status ? (
+                                <div>{formik.errors.expense_status}</div>
                             ) : null}
                         </Grid>
 
@@ -277,7 +260,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                             <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
                             <TextField
                                 required
-                                disabled={formik.values.income_status === 'Future' ? false : true}
+                                disabled={formik.values.expense_status === 'Future' ? false : true}
                                 id="start_date"
                                 autoComplete="off"
                                 name="start_date"
@@ -285,7 +268,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.income_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                value={formik.values.expense_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
                             />
                             {formik.touched.start_date && formik.errors.start_date ? (
                                 <div>{formik.errors.start_date}</div>
@@ -294,19 +277,19 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Growth Rate (in %)</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Inflation Rate (in %)</Typography>
                             <TextField
-                                id="growth_rate"
+                                id="inflation_rate"
                                 autoComplete="off"
-                                name="growth_rate"
+                                name="inflation_rate"
                                 type='number'
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.growth_rate}
+                                value={formik.values.inflation_rate}
                             />
-                            {formik.touched.growth_rate && formik.errors.growth_rate ? (
-                                <div>{formik.errors.growth_rate}</div>
+                            {formik.touched.inflation_rate && formik.errors.inflation_rate ? (
+                                <div>{formik.errors.inflation_rate}</div>
                             ) : null}
                         </Grid>
 
@@ -317,6 +300,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
 
                     <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }}>
+
                         <Button disabled={disable} onClick={handleClick} sx={{
                             background: '#2852A0',
                             color: '#FFFBF0',
@@ -345,8 +329,9 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                 backgroundColor: '#254D71',
                             },
 
-                        }}> Next: Expenses
+                        }}> Next: Debts
                         </Button>
+
                     </Grid>
 
                 </form>
@@ -357,4 +342,4 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
     )
 }
 
-export default IncomeForm
+export default ExpenseForm

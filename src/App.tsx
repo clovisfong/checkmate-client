@@ -7,6 +7,7 @@ import FinanceStepper from './components/FinanceStepper';
 import IncomeForm from './components/IncomeForm';
 import IncomeGraph from './components/IncomeGraph';
 import Navbar from './components/Navbar';
+import PrivateRoute from './components/PrivateRoute';
 import Dashboard from './pages/Dashboard';
 import FormSet from './pages/FormSet';
 import Login from './pages/Login';
