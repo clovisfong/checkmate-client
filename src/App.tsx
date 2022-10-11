@@ -4,7 +4,7 @@ import './App.css'
 import DebtGraph from './components/DebtGraph';
 import ExpenseGraph from './components/ExpenseGraph';
 import FinanceStepper from './components/FinanceStepper';
-import IncomeForm from './components/IncomeForm';
+import IncomeForm from './components/FinancialForms/IncomeForm';
 import IncomeGraph from './components/IncomeGraph';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';

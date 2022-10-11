@@ -2,9 +2,10 @@ import { Container, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import DebtForm from '../components/DebtForm'
-import ExpenseForm from '../components/ExpenseForm'
-import IncomeForm from '../components/IncomeForm'
+import AssetForm from '../components/FinancialForms/AssetForm'
+import DebtForm from '../components/FinancialForms/DebtForm'
+import ExpenseForm from '../components/FinancialForms/ExpenseForm'
+import IncomeForm from '../components/FinancialForms/IncomeForm'
 
 const FormSet = () => {
 
@@ -21,7 +22,7 @@ const FormSet = () => {
         financeSection === 'income' ? <IncomeForm setSearchParams={setSearchParams} setFinancialInfo={setFinancialInfo} financialInfo={financialInfo} /> :
             financeSection === 'expenses' ? <ExpenseForm setSearchParams={setSearchParams} setFinancialInfo={setFinancialInfo} financialInfo={financialInfo} /> :
                 financeSection === 'debts' ? <DebtForm setSearchParams={setSearchParams} setFinancialInfo={setFinancialInfo} financialInfo={financialInfo} /> :
-                    financeSection === 'assets' ? <IncomeForm setSearchParams={setSearchParams} setFinancialInfo={setFinancialInfo} financialInfo={financialInfo} /> : null
+                    financeSection === 'assets' ? <AssetForm setSearchParams={setSearchParams} setFinancialInfo={setFinancialInfo} financialInfo={financialInfo} /> : null
 
 
     return (

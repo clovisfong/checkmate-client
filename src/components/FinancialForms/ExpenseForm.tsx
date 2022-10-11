@@ -2,7 +2,7 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
-import { IUserDetails } from '../Interface';
+import { IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { Box } from '@mui/system';
 
@@ -87,17 +87,6 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
             setTimeout(() => {
                 setDisable(false)
             }, 3000)
-            // const createUser = urlcat(SERVER, "/users");
-
-            // axios
-            //     .post(createUser, values)
-            //     .then((res) => {
-            //         sessionStorage.setItem("token", res.data.token);
-            //         const payload = parseJwt(res.data.token);
-            //         console.log(payload.userId);
-            //         navigateToOverview(`/client/${payload.userId}/dashboard`);
-            //     })
-            //     .catch((error) => console.log(error.response.data.error));
         },
     });
 
