@@ -11,6 +11,7 @@ import { Container } from '@mui/system';
 const SignUpForm: FC = () => {
 
     const [userEmail, setUserEmail] = useState(0);
+    const [disable, setDisable] = useState(false)
 
     const token: any = sessionStorage.getItem("token");
     const navigateToOverview = useNavigate();
@@ -84,6 +85,14 @@ const SignUpForm: FC = () => {
             //     .catch((error) => console.log(error.response.data.error));
         },
     });
+
+    const handleClick = () => {
+        setDisable(true)
+        setTimeout(() => {
+            setDisable(false)
+        }, 3000)
+    }
+
     return (
         <Container maxWidth='md' sx={{ width: '80%' }}>
             <Grid item xs={12}>
@@ -205,7 +214,7 @@ const SignUpForm: FC = () => {
 
 
                     <Grid item sx={{ textAlign: 'center' }}>
-                        <Button type="submit" sx={{
+                        <Button disabled={disable} onClick={handleClick} type="submit" sx={{
                             background: '#2852A0',
                             color: '#FFFBF0',
                             letterSpacing: '0.2rem',
@@ -216,7 +225,8 @@ const SignUpForm: FC = () => {
                             borderRadius: '0.7rem',
                             '&:hover': {
                                 backgroundColor: '#254D71',
-                            }
+                            },
+
                         }}> Create Account
                         </Button>
                     </Grid>
