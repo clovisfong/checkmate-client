@@ -223,6 +223,7 @@ const SignUpForm: FC = () => {
                             pl: '3rem',
                             pr: '3rem',
                             mb: '0.5rem',
+                            border: '0.1rem solid #2852A0',
                             borderRadius: '0.7rem',
                             '&:hover': {
                                 backgroundColor: '#254D71',

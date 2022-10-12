@@ -6,11 +6,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import urlcat from 'urlcat';
 import axios from 'axios';
 
-export default function DeleteAlert({ incomeName, incomeId }: any) {
+const DeleteDialog = ({ financialEntry, financialId }: any) => {
     const [open, setOpen] = React.useState(false);
 
 
@@ -26,7 +26,7 @@ export default function DeleteAlert({ incomeName, incomeId }: any) {
     const handleDelete = () => {
         const token: any = sessionStorage.getItem("token");
         const SERVER = import.meta.env.VITE_SERVER;
-        const deleteUrl = urlcat(SERVER, `/income/${incomeId}`);
+        const deleteUrl = urlcat(SERVER, `/income/${financialId}`);
         const config = {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ export default function DeleteAlert({ incomeName, incomeId }: any) {
 
 
     return (
-        <div>
+        <Box>
             <RemoveCircleOutlineOutlinedIcon onClick={handleClickOpen} sx={{ color: '#2852A0', cursor: 'pointer' }} />
 
 
@@ -55,12 +55,12 @@ export default function DeleteAlert({ incomeName, incomeId }: any) {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    You're about to delete {incomeName}
+                    You're about to delete {financialEntry}
                 </DialogTitle>
 
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Do you really want to delete {incomeName} entry?
+                        Do you really want to delete {financialEntry} entry?
                         This process cannot be undone.
                     </DialogContentText>
                 </DialogContent>
@@ -102,6 +102,9 @@ export default function DeleteAlert({ incomeName, incomeId }: any) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Box>
     );
 }
+
+
+export default DeleteDialog

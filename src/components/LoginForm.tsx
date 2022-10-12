@@ -129,6 +129,7 @@ const LoginForm = () => {
                             pl: '4rem',
                             pr: '4rem',
                             mb: '0.5rem',
+                            border: '0.1rem solid #2852A0',
                             borderRadius: '0.7rem',
                             '&:hover': {
                                 backgroundColor: '#254D71',

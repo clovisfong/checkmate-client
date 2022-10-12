@@ -1,13 +1,15 @@
 import { Box, Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { Container } from '@mui/system'
-import React from 'react'
+import React, { FC, useEffect, useState } from "react";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import DeleteAlert from '../DeleteEntry';
+import DeleteDialog from '../DeleteDialog';
+import EditDialog from '../EditDialog';
+import { IIncomeData } from '../../Interface';
 
-const IncomeEntries = () => {
+const IncomeEntries: FC = () => {
 
-    const incomeData = [
+    const incomeData: IIncomeData[] = [
         {
             amount: 3000,
             created_at: "Mon, 10 Oct 2022 01:53:31 GMT",
@@ -71,7 +73,7 @@ const IncomeEntries = () => {
                     </TableHead>
                     <TableBody>
 
-                        {incomeData.map((income) =>
+                        {incomeData.map((income: IIncomeData) =>
                             <React.Fragment key={income.id}>
 
                                 {/* <Box sx={{ mt: '1rem' }}></Box> */}
@@ -86,9 +88,10 @@ const IncomeEntries = () => {
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_status}</TableCell>
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>
-                                            <CreateOutlinedIcon onClick={handleEdit} sx={{ color: '#2852A0', cursor: 'pointer' }} />
-                                            {/* <RemoveCircleOutlineOutlinedIcon onClick={handleDelete} sx={{ color: '#2852A0', cursor: 'pointer' }} /> */}
-                                            <DeleteAlert incomeName={income.income_name} />
+                                            <EditDialog incomeDetails={income} />
+                                            {/* <CreateOutlinedIcon onClick={handleEdit} sx={{ color: '#2852A0', cursor: 'pointer' }} /> */}
+
+                                            <DeleteDialog financialEntry={income.income_name} financialId={income.id} />
                                         </Box>
                                     </TableCell>
                                 </TableRow>
