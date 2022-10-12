@@ -5,57 +5,18 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import DeleteDialog from '../DeleteDialog';
 import EditDialog from '../EditDialog';
-import { IIncomeData } from '../../Interface';
+import { IIncomeData, IIncomeData2 } from '../../Interface';
 
-const IncomeEntries: FC = () => {
+interface Props {
+    incomeData: IIncomeData[];
+    update: () => void
+}
 
-    const incomeData: IIncomeData[] = [
-        {
-            amount: 3000,
-            created_at: "Mon, 10 Oct 2022 01:53:31 GMT",
-            duration_months: 120,
-            frequency: "Monthly",
-            growth_rate: 1.5,
-            id: 1,
-            income_name: "Stocks",
-            income_status: "Future",
-            income_type: "Investment",
-            start_date: "Thu, 10 Oct 2024 00:00:00 GMT",
-            updated_at: "Mon, 10 Oct 2022 01:53:31 GMT"
-        },
-        {
-            amount: 7000,
-            created_at: "Mon, 10 Oct 2022 01:57:50 GMT",
-            duration_months: 504,
-            frequency: "Monthly",
-            growth_rate: 2.0,
-            id: 2,
-            income_name: "Working Income",
-            income_status: "Current",
-            income_type: "Salary",
-            start_date: "Mon, 10 Oct 2022 00:00:00 GMT",
-            updated_at: "Mon, 10 Oct 2022 01:57:50 GMT"
-        },
-        {
-            amount: 3000,
-            created_at: "Mon, 10 Oct 2022 01:59:49 GMT",
-            duration_months: 120,
-            frequency: "Annually",
-            growth_rate: 2.0,
-            id: 4,
-            income_name: "Year End Bonus",
-            income_status: "Future",
-            income_type: "Bonus",
-            start_date: "Thu, 10 Oct 2024 00:00:00 GMT",
-            updated_at: "Mon, 10 Oct 2022 01:59:49 GMT"
-        }
-    ]
+const IncomeEntries = ({ incomeData, update }: Props) => {
 
-    const handleEdit = () => {
-        console.log('hi')
-    }
 
-    console.log()
+
+
     return (
         <Box>
             <TableContainer component={Box} sx={{}}>
@@ -88,10 +49,10 @@ const IncomeEntries: FC = () => {
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_status}</TableCell>
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>
-                                            <EditDialog incomeDetails={income} />
+                                            <EditDialog incomeDetails={income} update={update} />
                                             {/* <CreateOutlinedIcon onClick={handleEdit} sx={{ color: '#2852A0', cursor: 'pointer' }} /> */}
 
-                                            <DeleteDialog financialEntry={income.income_name} financialId={income.id} />
+                                            <DeleteDialog financialEntry={income.income_name} financialId={income.id} update={update} />
                                         </Box>
                                     </TableCell>
                                 </TableRow>

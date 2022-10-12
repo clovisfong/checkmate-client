@@ -17,23 +17,6 @@ const LoginForm = () => {
 
 
 
-    const parseJwt = (token: string) => {
-        var base64Url = token.split(".")[1];
-        var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        var jsonPayload = decodeURIComponent(
-            window
-                .atob(base64)
-                .split("")
-                .map(function (c) {
-                    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-                })
-                .join("")
-        );
-        return JSON.parse(jsonPayload);
-    };
-
-
-
     const formik = useFormik({
         initialValues: {
             email: "",
@@ -44,7 +27,7 @@ const LoginForm = () => {
             password: Yup.string().required("Required"),
         }),
         onSubmit: (values) => {
-            console.log(values);
+
             const header = {
                 headers: {
                     "Content-Type": "application/json"
@@ -55,11 +38,10 @@ const LoginForm = () => {
                     url
                     , values, header)
                 .then((res) => {
-                    console.log(res.data);
-                    sessionStorage.setItem("token", res.data);
-                    // navigate('/dashboard/overview');
+                    sessionStorage.setItem("token", res.data.token);
+                    navigate('/dashboard/overview');
                 })
-                .catch((error) => console.log(error));
+                .catch((error) => setError(error.response.data.msg));
         },
     });
 
@@ -136,6 +118,8 @@ const LoginForm = () => {
                             }
                         }}> Let's Go!
                         </Button>
+                        <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>
+
                     </Grid>
 
                 </form>

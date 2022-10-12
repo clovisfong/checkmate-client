@@ -10,8 +10,25 @@ export interface IUserDetails {
     retirement_lifestyle: string
 }
 
-
 export interface IIncomeData {
+    amount: number;
+    created_at: string;
+    duration_months: number;
+    frequency: string;
+    growth_rate: number;
+    id: number;
+    income_name: string;
+    income_status: string;
+    income_type: string;
+    start_date: string;
+    updated_at: string;
+    user_details_id: number;
+}
+
+
+
+
+export interface IIncomeData2 {
     amount: number;
     created_at: string;
     duration_months: number;

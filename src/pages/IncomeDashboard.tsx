@@ -1,12 +1,62 @@
 import { Container, Grid, Typography } from '@mui/material'
 import { getYear } from 'date-fns'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import IncomeEntries from '../components/FinancialEntries/IncomeEntries'
+import axios from 'axios';
+import urlcat from 'urlcat';
+import { IIncomeData } from '../Interface';
+
+
 
 const IncomeDashboard = () => {
 
+    const [refresh, setRefresh] = useState(false)
+    const [incomeData, setIncomeData] = useState<IIncomeData[]>([{
+        amount: 0,
+        created_at: '',
+        duration_months: 0,
+        frequency: '',
+        growth_rate: 0,
+        id: 0,
+        income_name: '',
+        income_status: '',
+        income_type: '',
+        start_date: '',
+        updated_at: '',
+        user_details_id: 0,
+    }])
+
     const today = new Date
     const year = getYear(today)
+
+    const token: any = sessionStorage.getItem("token");
+    // const userDetails = parseJwt(token)
+    // console.log(userDetails)
+
+
+    const SERVER = import.meta.env.VITE_SERVER;
+    const url = urlcat(SERVER, "/income/");
+    const header = {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    }
+
+    const update = () => {
+        setRefresh(!refresh)
+    }
+
+
+    useEffect(() => {
+
+        axios
+            .get(url, header)
+            .then((res) => {
+                setIncomeData(res.data)
+            })
+            .catch((error) => console.log(error.response.data.error));
+
+    }, [refresh])
 
     return (
         <Container maxWidth='lg'>
@@ -67,7 +117,7 @@ const IncomeDashboard = () => {
             </Grid>
             <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
 
-            <IncomeEntries />
+            <IncomeEntries incomeData={incomeData} update={update} />
         </Container>
     )
 }

@@ -2,40 +2,40 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
-import { IIncomeData, IIncomeFill, IUserDetails } from '../../Interface';
+import { IIncomeData2, IIncomeFill, IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 
 
 
-const parseJwt = (token: string) => {
-    var base64Url = token.split(".")[1];
-    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    var jsonPayload = decodeURIComponent(
-        window
-            .atob(base64)
-            .split("")
-            .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
-};
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = parseJwt(token)
+// const parseJwt = (token: string) => {
+//     var base64Url = token.split(".")[1];
+//     var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+//     var jsonPayload = decodeURIComponent(
+//         window
+//             .atob(base64)
+//             .split("")
+//             .map(function (c) {
+//                 return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+//             })
+//             .join("")
+//     );
+//     return JSON.parse(jsonPayload);
+// };
+// const token: any = sessionStorage.getItem('token')
+// const userDetails: IUserDetails = parseJwt(token)
 
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
+// const birthDate = new Date(userDetails.date_of_birth)
+// const currentDate = new Date // use current date
+// const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
+// const yearsToExpectancy = userDetails.life_expectancy - currentAge
 
 const freqOptions = ['Monthly', 'Annually']
 const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
 const statusOptions = ['Current', 'Future']
 const durationOptions: number[] = [0]
 
-for (let year = 1; year <= yearsToExpectancy; year++) {
+for (let year = 1; year <= 100; year++) {
     durationOptions.push(year)
 }
 

@@ -6,8 +6,7 @@ const SignUp = () => {
     return (
         <Container maxWidth='sm' sx={{
             mt: '3rem',
-            mb: '5rem',
-
+            mb: '5rem'
 
         }}>
             <Grid container sx={{ mt: '5rem' }}>

@@ -8,7 +8,8 @@ const DashboardOverview = () => {
     const today = new Date
     const year = getYear(today)
 
-
+    const token: any = sessionStorage.getItem("token");
+    console.log(token)
 
     return (
         <Container maxWidth='lg'>

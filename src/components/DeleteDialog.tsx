@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { FC, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,9 +10,17 @@ import { Box, Typography } from '@mui/material';
 import urlcat from 'urlcat';
 import axios from 'axios';
 
-const DeleteDialog = ({ financialEntry, financialId }: any) => {
-    const [open, setOpen] = React.useState(false);
+interface Props {
+    financialEntry: string;
+    financialId: number;
+    update: () => void
+}
 
+const DeleteDialog = ({ financialEntry, financialId, update }: Props) => {
+    const [open, setOpen] = useState(false);
+    const [nextOpen, setNextOpen] = useState(false);
+    const [disable, setDisable] = useState(false)
+    const [response, setResponse] = useState('')
 
 
     const handleClickOpen = () => {
@@ -23,23 +31,37 @@ const DeleteDialog = ({ financialEntry, financialId }: any) => {
         setOpen(false);
     };
 
+    const handleNextClose = () => {
+        setNextOpen(false);
+    };
+
     const handleDelete = () => {
         const token: any = sessionStorage.getItem("token");
         const SERVER = import.meta.env.VITE_SERVER;
         const deleteUrl = urlcat(SERVER, `/income/${financialId}`);
-        const config = {
+        const header = {
             headers: {
-                Authorization: `Bearer ${token}`,
+                "Authorization": `Bearer ${token}`,
             },
         };
-        // axios
-        //     .delete(deleteUrl, config)
-        //     .then((res) => {
-        //         console.log(res.data);
-        //         setOpen(false);
-        //     })
-        //     .catch((err) => console.log(err));
 
+        console.log(financialId)
+        console.log(deleteUrl)
+        axios
+            .delete(deleteUrl, header)
+            .then((res) => {
+
+                setResponse(res.data.msg);
+                setOpen(!open);
+                setNextOpen(!nextOpen)
+                update()
+            })
+            .catch((error) => console.log(error.response.data));
+
+        setDisable(true)
+        setTimeout(() => {
+            setDisable(false)
+        }, 3000)
     }
 
 
@@ -53,54 +75,63 @@ const DeleteDialog = ({ financialEntry, financialId }: any) => {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+
             >
-                <DialogTitle id="alert-dialog-title">
-                    You're about to delete {financialEntry}
-                </DialogTitle>
+                <Box sx={{ p: '1rem' }}>
+                    <DialogTitle id="alert-dialog-title">
+                        You're about to delete {financialEntry}
+                    </DialogTitle>
 
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Do you really want to delete {financialEntry} entry?
-                        This process cannot be undone.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Do you really want to delete {financialEntry} entry?
+                            This process cannot be undone.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
 
-                    <Button onClick={handleClose} sx={{
-                        display: 'block',
-                        background: '#white',
-                        color: '#2852A0',
-                        letterSpacing: '0.2rem',
-                        pl: '1rem',
-                        pr: '1rem',
-                        mb: '0.5rem',
-                        border: '0.1rem solid #2852A0',
-                        borderRadius: '0.7rem',
-                        '&:hover': {
-                            backgroundColor: '#254D71',
-                            color: "white"
-                        },
+                        <Button onClick={handleClose} sx={{
+                            display: 'block',
+                            background: '#white',
+                            color: '#2852A0',
+                            letterSpacing: '0.2rem',
+                            pl: '1rem',
+                            pr: '1rem',
+                            mb: '0.5rem',
+                            border: '0.1rem solid #2852A0',
+                            borderRadius: '0.7rem',
+                            '&:hover': {
+                                backgroundColor: '#254D71',
+                                color: "white"
+                            },
 
-                    }}> Cancel
-                    </Button>
-                    <Button onClick={handleDelete} sx={{
-                        display: 'block',
-                        background: '#2852A0',
-                        color: '#FFFBF0',
-                        letterSpacing: '0.2rem',
-                        mr: '1.5rem',
-                        pl: '1rem',
-                        pr: '1rem',
-                        mb: '0.5rem',
-                        border: '0.1rem solid #2852A0',
-                        borderRadius: '0.7rem',
-                        '&:hover': {
-                            backgroundColor: '#254D71',
-                        },
+                        }}> Cancel
+                        </Button>
+                        <Button onClick={handleDelete} sx={{
+                            display: 'block',
+                            background: '#2852A0',
+                            color: '#FFFBF0',
+                            letterSpacing: '0.2rem',
+                            mr: '1.5rem',
+                            pl: '1rem',
+                            pr: '1rem',
+                            mb: '0.5rem',
+                            border: '0.1rem solid #2852A0',
+                            borderRadius: '0.7rem',
+                            '&:hover': {
+                                backgroundColor: '#254D71',
+                            },
 
-                    }}> Delete
-                    </Button>
-                </DialogActions>
+                        }}> Delete
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+
+            <Dialog onClose={handleNextClose} open={nextOpen} maxWidth='md' sx={{ width: '100%' }}>
+                <Box sx={{ p: '3rem' }}>
+                    <Typography variant="h5" sx={{ textAlign: 'center' }}>{response}</Typography>
+                </Box>
             </Dialog>
         </Box>
     );

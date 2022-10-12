@@ -9,23 +9,53 @@ import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import { format } from 'date-fns';
-import { IIncomeData } from '../Interface';
+import { differenceInCalendarYears, format } from 'date-fns';
+import { IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
+import axios from 'axios';
+import urlcat from 'urlcat';
+
+const parseJwt = (token: string) => {
+    var base64Url = token.split(".")[1];
+    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    var jsonPayload = decodeURIComponent(
+        window
+            .atob(base64)
+            .split("")
+            .map(function (c) {
+                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+    );
+    return JSON.parse(jsonPayload);
+};
+
+const token: any = sessionStorage.getItem('token')
+const userDetails: IUserDetails = parseJwt(token)
+
+const birthDate = new Date(userDetails.date_of_birth)
+const currentDate = new Date // use current date
+const currentAge = differenceInCalendarYears(currentDate, birthDate)
+const yearsToExpectancy = userDetails.life_expectancy - currentAge
 
 const freqOptions = ['Monthly', 'Annually']
 const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
 const statusOptions = ['Current', 'Future']
 const durationOptions: number[] = [0]
 
-for (let year = 1; year <= 60; year++) {
+for (let year = 1; year <= yearsToExpectancy; year++) {
     durationOptions.push(year)
 }
 
+interface Props {
+    incomeDetails: IIncomeData;
+    update: () => void
+}
 
-const EditDialog: FC<IIncomeData> = ({ incomeDetails }) => {
+const EditDialog = ({ incomeDetails, update }: Props) => {
     const [open, setOpen] = useState(false);
+    const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
-
+    const [response, setResponse] = useState('')
 
 
 
@@ -33,24 +63,26 @@ const EditDialog: FC<IIncomeData> = ({ incomeDetails }) => {
         setOpen(true);
     };
 
+
     const handleClose = () => {
         setOpen(false);
     };
 
+    const handleNextClose = () => {
+        setNextOpen(false);
+    };
 
-    const navigateToSurvey = useNavigate()
 
-    console.log(format(new Date(), "yyyy-MM-dd"))
-    console.log(typeof incomeDetails.duration_months)
+
 
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
-            income_type: incomeDetails.income_type,
-            amount: incomeDetails.amount,
             income_name: incomeDetails.income_name,
-            frequency: incomeDetails.frequency,
+            income_type: incomeDetails.income_type,
             income_status: incomeDetails.income_status,
+            amount: incomeDetails.amount,
+            frequency: incomeDetails.frequency,
             duration_months: incomeDetails.duration_months,
             start_date: incomeDetails.start_date,
             growth_rate: incomeDetails.growth_rate,
@@ -76,7 +108,47 @@ const EditDialog: FC<IIncomeData> = ({ incomeDetails }) => {
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-            console.log(values);
+            console.log(token)
+            values['duration_months'] = values['duration_months'] * 12
+
+            console.log(values)
+            const keys = {
+                income_name: "",
+                income_type: "",
+                income_status: "",
+                amount: 0,
+                frequency: "",
+                duration_months: 0,
+                start_date: "",
+                growth_rate: 0
+            }
+
+            const incomeRequest = Object.assign(keys, values)
+
+            console.log(incomeRequest)
+
+
+
+            const SERVER = import.meta.env.VITE_SERVER;
+            const url = urlcat(SERVER, `/income/${incomeDetails.id}`);
+            console.log(url)
+            const header = {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+            axios
+                .put(url, incomeRequest, header)
+                .then((res) => {
+                    setResponse(res.data.msg)
+                    setOpen(!open)
+                    setNextOpen(!nextOpen)
+                    update()
+
+                })
+                .catch((error) => console.log(error.response.data.error));
+
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -85,7 +157,7 @@ const EditDialog: FC<IIncomeData> = ({ incomeDetails }) => {
         },
     });
 
-
+    console.log(response)
 
 
     return (
@@ -325,10 +397,16 @@ const EditDialog: FC<IIncomeData> = ({ incomeDetails }) => {
                     </form>
                 </Grid >
 
-
-
-
             </Dialog>
+
+            <Dialog onClose={handleNextClose} open={nextOpen} maxWidth='md' sx={{ width: '100%' }}>
+                <Box sx={{ p: '3rem' }}>
+                    <Typography variant="h5" sx={{ textAlign: 'center' }}>{response}</Typography>
+                </Box>
+            </Dialog>
+
+
+
         </Box>
     );
 }

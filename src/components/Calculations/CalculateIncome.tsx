@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
-import { IIncomeData, IIncomeProjection } from '../../Interface'
+import { IIncomeData2, IIncomeProjection } from '../../Interface'
 
 
 
-const CalculateIncome = (incomeData: IIncomeData) => {
+const CalculateIncome = (incomeData: IIncomeData2) => {
 
     const incomeProjection: IIncomeProjection[] = []
 
