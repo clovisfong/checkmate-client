@@ -6,6 +6,7 @@ import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOut
 import DeleteDialog from '../DeleteDialog';
 import EditDialog from '../EditDialog';
 import { IIncomeData, IIncomeData2 } from '../../Interface';
+import AddDialog from '../AddDialog';
 
 interface Props {
     incomeData: IIncomeData[];
@@ -28,7 +29,21 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
                             <TableCell sx={{ fontWeight: 'bold' }}>Amount</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>
-                                <Button>+ Add</Button>
+                                <AddDialog update={update} />
+                                {/* <Button sx={{
+                                    background: '#white',
+                                    color: '#2852A0',
+                                    letterSpacing: '0.2rem',
+                                    pl: '1rem',
+                                    pr: '1rem',
+                                    border: '0.1rem solid #2852A0',
+                                    borderRadius: '0.7rem',
+                                    '&:hover': {
+                                        backgroundColor: '#254D71',
+                                        color: "white"
+                                    },
+
+                                }}>+ Add</Button> */}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -50,8 +65,6 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>
                                             <EditDialog incomeDetails={income} update={update} />
-                                            {/* <CreateOutlinedIcon onClick={handleEdit} sx={{ color: '#2852A0', cursor: 'pointer' }} /> */}
-
                                             <DeleteDialog financialEntry={income.income_name} financialId={income.id} update={update} />
                                         </Box>
                                     </TableCell>

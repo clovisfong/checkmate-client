@@ -45,8 +45,6 @@ const DeleteDialog = ({ financialEntry, financialId, update }: Props) => {
             },
         };
 
-        console.log(financialId)
-        console.log(deleteUrl)
         axios
             .delete(deleteUrl, header)
             .then((res) => {

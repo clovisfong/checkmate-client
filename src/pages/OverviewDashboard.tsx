@@ -1,7 +1,7 @@
 import { Container, Grid, Typography } from '@mui/material'
 import { getYear } from 'date-fns'
 import React from 'react'
-import IncomeGraph from '../components/IncomeGraph'
+import IncomeProjections from '../components/IncomeProjections'
 
 const DashboardOverview = () => {
 

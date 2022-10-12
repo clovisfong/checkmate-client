@@ -46,12 +46,17 @@ for (let year = 1; year <= yearsToExpectancy; year++) {
     durationOptions.push(year)
 }
 
+
+
 interface Props {
-    incomeDetails: IIncomeData;
     update: () => void
 }
 
-const EditDialog = ({ incomeDetails, update }: Props) => {
+interface FormProps {
+    resetForm: () => IIncomeData2
+}
+
+const AddDialog = ({ update }: Props) => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
@@ -76,16 +81,15 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
 
 
     const formik = useFormik({
-        enableReinitialize: true,
         initialValues: {
-            income_name: incomeDetails.income_name,
-            income_type: incomeDetails.income_type,
-            income_status: incomeDetails.income_status,
-            amount: incomeDetails.amount,
-            frequency: incomeDetails.frequency,
-            duration_months: incomeDetails.duration_months,
-            start_date: incomeDetails.start_date,
-            growth_rate: incomeDetails.growth_rate,
+            income_name: '',
+            income_type: '',
+            income_status: '',
+            amount: '',
+            frequency: '',
+            duration_months: '',
+            start_date: '',
+            growth_rate: ""
 
         },
         validationSchema: Yup.object({
@@ -103,7 +107,7 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
             growth_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
-        onSubmit: (values: any) => {
+        onSubmit: (values: any, { resetForm }: any) => {
 
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
@@ -127,8 +131,8 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
 
 
             const SERVER = import.meta.env.VITE_SERVER;
-            const url = urlcat(SERVER, `/income/${incomeDetails.id}`);
-            console.log(url)
+            const url = urlcat(SERVER, `/income/`);
+
             const header = {
                 headers: {
                     "Content-Type": "application/json",
@@ -136,12 +140,13 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
                 }
             }
             axios
-                .put(url, incomeRequest, header)
+                .post(url, incomeRequest, header)
                 .then((res) => {
                     setResponse(res.data.msg)
                     setOpen(!open)
                     setNextOpen(!nextOpen)
                     update()
+                    resetForm()
 
                 })
                 .catch((error) => console.log(error.response.data.error));
@@ -159,13 +164,25 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
 
     return (
         <Box >
-            <CreateOutlinedIcon onClick={handleClickOpen} sx={{ color: '#2852A0', cursor: 'pointer' }} />
+            <Button onClick={handleClickOpen} sx={{
+                background: '#white',
+                color: '#2852A0',
+                letterSpacing: '0.2rem',
+                pl: '1rem',
+                pr: '1rem',
+                border: '0.1rem solid #2852A0',
+                borderRadius: '0.7rem',
+                '&:hover': {
+                    backgroundColor: '#254D71',
+                    color: "white"
+                },
 
+            }}>+ Add</Button>
             <Dialog onClose={handleClose} open={open} maxWidth='md' sx={{ width: '100%' }}>
 
 
                 <Grid item xs={12} sx={{ p: '4rem' }} >
-                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Edit {incomeDetails.income_name}</Typography>
+                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Add Income</Typography>
 
                     <form onSubmit={formik.handleSubmit}>
                         <Grid
@@ -408,4 +425,4 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
     );
 }
 
-export default EditDialog
+export default AddDialog

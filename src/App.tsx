@@ -5,7 +5,7 @@ import DebtGraph from './components/DebtGraph';
 import ExpenseGraph from './components/ExpenseGraph';
 import FinanceStepper from './components/FinanceStepper';
 import IncomeForm from './components/FinancialForms/IncomeForm';
-import IncomeGraph from './components/IncomeGraph';
+import IncomeProjections from './components/IncomeProjections';
 import MenuDrawer from './components/MenuDrawer';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
@@ -33,7 +33,6 @@ function App() {
 
         </Route>
         <Route path='/login' element={<Login />} />
-        <Route path='/income' element={<IncomeGraph />} />
         <Route path='/login' element={<Login />} />
         <Route path='/expense' element={<ExpenseGraph />} />
         <Route path='/debt' element={<DebtGraph />} />
