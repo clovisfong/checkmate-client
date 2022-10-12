@@ -27,7 +27,6 @@ export interface IIncomeData {
 
 
 
-
 export interface IIncomeData2 {
     amount: number;
     created_at: string;
@@ -68,6 +67,21 @@ export interface IExpenseData {
     amount: number;
     created_at: string;
     duration_months: number;
+    frequency: string;
+    inflation_rate: number;
+    id: number;
+    expense_name: string;
+    expense_status: string;
+    expense_type: string;
+    start_date: string;
+    updated_at: string;
+    user_details_id: number;
+}
+
+export interface IExpenseData2 {
+    amount: number;
+    created_at: string;
+    duration_months: number;
     expense_name: string;
     expense_status: string;
     expense_type: string;
@@ -85,7 +99,7 @@ export interface IExpenseProjection {
 
 export interface ITotalExpenseProjection {
     age: number;
-    totalExpense: number
+    totalExpenses: number
 }
 
 

@@ -2,7 +2,7 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
-import { IIncomeData2, IIncomeFill, IUserDetails } from '../../Interface';
+import { IIncomeFill, IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 

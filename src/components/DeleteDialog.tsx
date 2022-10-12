@@ -13,10 +13,11 @@ import axios from 'axios';
 interface Props {
     financialEntry: string;
     financialId: number;
-    update: () => void
+    update: () => void;
+    type: string
 }
 
-const DeleteDialog = ({ financialEntry, financialId, update }: Props) => {
+const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
@@ -38,7 +39,7 @@ const DeleteDialog = ({ financialEntry, financialId, update }: Props) => {
     const handleDelete = () => {
         const token: any = sessionStorage.getItem("token");
         const SERVER = import.meta.env.VITE_SERVER;
-        const deleteUrl = urlcat(SERVER, `/income/${financialId}`);
+        const deleteUrl = urlcat(SERVER, `/${type}/${financialId}`);
         const header = {
             headers: {
                 "Authorization": `Bearer ${token}`,

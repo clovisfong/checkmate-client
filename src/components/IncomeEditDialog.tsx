@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
+import { IIncomeData, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
 
@@ -51,7 +51,7 @@ interface Props {
     update: () => void
 }
 
-const EditDialog = ({ incomeDetails, update }: Props) => {
+const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
@@ -408,4 +408,4 @@ const EditDialog = ({ incomeDetails, update }: Props) => {
     );
 }
 
-export default EditDialog
+export default IncomeEditDialog

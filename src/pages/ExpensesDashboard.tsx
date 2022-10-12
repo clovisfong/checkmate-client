@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react'
 import IncomeEntries from '../components/FinancialEntries/IncomeEntries'
 import axios from 'axios';
 import urlcat from 'urlcat';
-import { IIncomeData } from '../Interface';
+import { IExpenseData, IIncomeData, IUserDetails } from '../Interface';
 import CalculateIncome from '../components/Calculations/CalculateIncome';
 import IncomeProjections from '../components/IncomeProjections';
+import ExpenseProjections from '../components/ExpenseProjections';
+import ExpenseEntries from '../components/FinancialEntries/ExpenseEntries';
 
 const parseJwt = (token: string) => {
     var base64Url = token.split(".")[1];
@@ -23,19 +25,19 @@ const parseJwt = (token: string) => {
     return JSON.parse(jsonPayload);
 };
 
-const IncomeDashboard = () => {
+const ExpensesDashboard = () => {
 
     const [refresh, setRefresh] = useState(false)
-    const [incomeData, setIncomeData] = useState<IIncomeData[]>([{
+    const [expensesData, setExpensesData] = useState<IExpenseData[]>([{
         amount: 0,
         created_at: '',
         duration_months: 0,
         frequency: '',
-        growth_rate: 0,
+        inflation_rate: 0,
         id: 0,
-        income_name: '',
-        income_status: '',
-        income_type: '',
+        expense_name: '',
+        expense_status: '',
+        expense_type: '',
         start_date: '',
         updated_at: '',
         user_details_id: 0,
@@ -47,8 +49,8 @@ const IncomeDashboard = () => {
 
     // Get User Details
     const token: any = sessionStorage.getItem("token");
-    const userDetails = parseJwt(token)
-    console.log(userDetails)
+    const userDetails: IUserDetails = parseJwt(token)
+    console.log('thissssss', userDetails)
 
     // General details: Current age, retirement age, life-expectancy age
     const birthDate = new Date(userDetails.date_of_birth)
@@ -57,10 +59,9 @@ const IncomeDashboard = () => {
     const yearsToRetirement = userDetails.retirement_age - currentAge //42
     const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
 
-
-    // Fetch Income Details
+    // Fetch Expense Details
     const SERVER = import.meta.env.VITE_SERVER;
-    const url = urlcat(SERVER, "/income/");
+    const url = urlcat(SERVER, "/expense/");
     const header = {
         headers: {
             "Authorization": `Bearer ${token}`
@@ -70,41 +71,42 @@ const IncomeDashboard = () => {
         axios
             .get(url, header)
             .then((res) => {
-                setIncomeData(res.data)
+                setExpensesData(res.data)
+                console.log(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
 
     }, [refresh])
 
 
+
+
     // Yearly Annual Income Details
-    const IncomeProjectionByAge = IncomeProjections(userDetails, incomeData)
+    const ExpensesProjectionByAge = ExpenseProjections(userDetails, expensesData)
 
     // Current Year Annual Income Details
-    const currentYearRemainingIncome = IncomeProjectionByAge.find((year) => year.age === currentAge)
+    const currentYearRemainingExpenses = ExpensesProjectionByAge.find((year) => year.age === currentAge)
 
     // Next Year Annual Income Details
-    const nextYearIncomeDetails = IncomeProjectionByAge.find((year) => year.age === currentAge + 1)
+    const nextYearExpensesDetails = ExpensesProjectionByAge.find((year) => year.age === currentAge + 1)
 
     // Retirement Year Annual Income Details
-    const retirementYearIncomeDetails = IncomeProjectionByAge.find((year) => year.age === currentAge + yearsToRetirement)
+    const retirementYearExpensesDetails = ExpensesProjectionByAge.find((year) => year.age === currentAge + yearsToRetirement)
 
     // Total Income Earned By Retirement Year
-    const totalIncomeByRetirement = IncomeProjectionByAge
+    const totalExpensesByRetirement = ExpensesProjectionByAge
         .filter((year) => year.age <= userDetails.retirement_age)
-        .reduce((prev, curr) => prev + curr.totalIncome, 0)
-    console.log('heyyyy', totalIncomeByRetirement)
-
+        .reduce((prev, curr) => prev + curr.totalExpenses, 0)
+    console.log('heyyyy', totalExpensesByRetirement)
 
 
     const update = () => {
         setRefresh(!refresh)
     }
 
-
     return (
         <Container maxWidth='lg'>
-            <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Income</Typography>
+            <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Expenses</Typography>
             <Grid container spacing={0}
                 sx={{
                     display: 'grid',
@@ -123,9 +125,9 @@ const IncomeDashboard = () => {
                         pr: '2rem',
                         borderRadius: '0.75rem'
                     }}>
-                    <Typography variant="h5" sx={{}}>Remaining Income For This Year</Typography>
+                    <Typography variant="h5" sx={{}}>Remaining Expenses For This Year</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{currentYearRemainingIncome?.totalIncome.toLocaleString('en-US', {
+                    <Typography variant="h3" sx={{ mb: 3 }}>{currentYearRemainingExpenses?.totalExpenses.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
@@ -140,9 +142,9 @@ const IncomeDashboard = () => {
                         pr: '2rem',
                         borderRadius: '0.75rem'
                     }}>
-                    <Typography variant="h5" sx={{}}>Expected Annual Income Next Year</Typography>
+                    <Typography variant="h5" sx={{}}>Expected Annual Expenses Next Year</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year + 1}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{nextYearIncomeDetails?.totalIncome.toLocaleString('en-US', {
+                    <Typography variant="h3" sx={{ mb: 3 }}>{nextYearExpensesDetails?.totalExpenses.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
@@ -157,9 +159,9 @@ const IncomeDashboard = () => {
                         pr: '2rem',
                         borderRadius: '0.75rem'
                     }}>
-                    <Typography variant="h5" sx={{}}>Expected Anuual Income at Retirement Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearIncomeDetails?.age})</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{retirementYearIncomeDetails?.totalIncome.toLocaleString('en-US', {
+                    <Typography variant="h5" sx={{}}>Expected Anuual Expenses at Retirement Year</Typography>
+                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearExpensesDetails?.age})</Typography>
+                    <Typography variant="h3" sx={{ mb: 3 }}>{retirementYearExpensesDetails?.totalExpenses.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
@@ -174,9 +176,9 @@ const IncomeDashboard = () => {
                         pr: '2rem',
                         borderRadius: '0.75rem'
                     }}>
-                    <Typography variant="h5" sx={{}}>Expected Total Future Income By Retirement Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearIncomeDetails?.age})</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{totalIncomeByRetirement.toLocaleString('en-US', {
+                    <Typography variant="h5" sx={{}}>Expected Total Future Expenses By Retirement Year</Typography>
+                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearExpensesDetails?.age})</Typography>
+                    <Typography variant="h3" sx={{ mb: 3 }}>{totalExpensesByRetirement.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
@@ -185,9 +187,9 @@ const IncomeDashboard = () => {
             </Grid>
             <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
 
-            <IncomeEntries incomeData={incomeData} update={update} />
+            <ExpenseEntries expensesData={expensesData} update={update} />
         </Container>
     )
 }
 
-export default IncomeDashboard
+export default ExpensesDashboard

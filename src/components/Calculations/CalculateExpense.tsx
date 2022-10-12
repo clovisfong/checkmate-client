@@ -1,27 +1,27 @@
 import React, { useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
-import { IExpenseData, IExpenseProjection } from '../../Interface'
+import { IExpenseData, IExpenseData2, IExpenseProjection, IUserDetails } from '../../Interface'
 
 
 
-const CalculateExpense = (expenseData: IExpenseData) => {
+const CalculateExpense = (expenseData: IExpenseData, userDetails: IUserDetails) => {
 
     const expenseProjection: IExpenseProjection[] = []
 
-    const userDetails = {
-        created_at: "Sat, 08 Oct 2022 15:14:00 GMT",
-        date_of_birth: "Mon, 20 Jul 1998 00:00:00 GMT",
-        email: "eee@hotmail.com",
-        gender: "Female",
-        id: 2,
-        legacy_allocation: 5000,
-        life_expectancy: 90,
-        name: "eee",
-        new_birthdate: "20-07-1998",
-        retirement_age: 66,
-        retirement_lifestyle: "Enhanced",
-        updated_at: "Sat, 08 Oct 2022 15:14:42 GMT"
-    }
+    // const userDetails = {
+    //     created_at: "Sat, 08 Oct 2022 15:14:00 GMT",
+    //     date_of_birth: "Mon, 20 Jul 1998 00:00:00 GMT",
+    //     email: "eee@hotmail.com",
+    //     gender: "Female",
+    //     id: 2,
+    //     legacy_allocation: 5000,
+    //     life_expectancy: 90,
+    //     name: "eee",
+    //     new_birthdate: "20-07-1998",
+    //     retirement_age: 66,
+    //     retirement_lifestyle: "Enhanced",
+    //     updated_at: "Sat, 08 Oct 2022 15:14:42 GMT"
+    // }
 
 
     // General details: Current age, retirement age, life-expectancy age

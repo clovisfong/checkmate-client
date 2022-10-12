@@ -20,6 +20,7 @@ const IncomeProjections = (userDetails: IUserDetails, incomeData: IIncomeData[])
     const totalIncomeProjections = incomeData.map(income => CalculateIncome(income, userDetails))
 
 
+
     // Sum all income for each age
     const incomeTimeline: ITotalIncomeProjection[] = []
 
