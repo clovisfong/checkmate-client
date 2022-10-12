@@ -3,6 +3,7 @@ import { Container } from '@mui/system'
 import React from 'react'
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import DeleteAlert from '../DeleteEntry';
 
 const IncomeEntries = () => {
 
@@ -71,27 +72,27 @@ const IncomeEntries = () => {
                     <TableBody>
 
                         {incomeData.map((income) =>
-                            <>
-                                <Box sx={{ mt: '1rem' }}></Box>
+                            <React.Fragment key={income.id}>
+
+                                {/* <Box sx={{ mt: '1rem' }}></Box> */}
                                 <TableRow
-                                    key={income.id}
                                     sx={{
                                         backgroundColor: '#F2F2F2',
                                         '&:last-child td, &:last-child th': { border: 0, borderRadius: '5' }
                                     }}>
-                                    <TableCell component="th" scope="row" sx={{ fontSize: '0.9rem' }}>{income.income_name}</TableCell>
+                                    <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_name}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_type}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.amount}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_status}</TableCell>
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>
-                                            <CreateOutlinedIcon sx={{ color: '#2852A0', cursor: 'pointer' }} onClick={handleEdit} />
-                                            <RemoveCircleOutlineOutlinedIcon sx={{ color: '#2852A0', cursor: 'pointer' }} />
-
+                                            <CreateOutlinedIcon onClick={handleEdit} sx={{ color: '#2852A0', cursor: 'pointer' }} />
+                                            {/* <RemoveCircleOutlineOutlinedIcon onClick={handleDelete} sx={{ color: '#2852A0', cursor: 'pointer' }} /> */}
+                                            <DeleteAlert incomeName={income.income_name} />
                                         </Box>
                                     </TableCell>
                                 </TableRow>
-                            </>
+                            </React.Fragment>
                         )}
 
 

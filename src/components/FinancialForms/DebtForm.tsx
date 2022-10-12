@@ -294,16 +294,18 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                     <Grid item sx={{ display: 'flex', justifyContent: 'space-between' }}>
 
                         <Button disabled={disable} onClick={handleClick} sx={{
-                            background: '#2852A0',
-                            color: '#FFFBF0',
+                            background: '#white',
+                            color: '#2852A0',
                             letterSpacing: '0.2rem',
                             mt: '3rem',
                             pl: '3rem',
                             pr: '3rem',
                             mb: '0.5rem',
+                            border: '0.1rem solid #2852A0',
                             borderRadius: '0.7rem',
                             '&:hover': {
                                 backgroundColor: '#254D71',
+                                color: "white"
                             },
 
                         }}> Back
@@ -317,6 +319,7 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                             pr: '3rem',
                             mb: '0.5rem',
                             borderRadius: '0.7rem',
+                            border: '0.1rem solid #2852A0',
                             '&:hover': {
                                 backgroundColor: '#254D71',
                             },
