@@ -13,39 +13,10 @@ import { differenceInCalendarYears, format } from 'date-fns';
 import { IExpenseData2, IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
-
-const parseJwt = (token: string) => {
-    var base64Url = token.split(".")[1];
-    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    var jsonPayload = decodeURIComponent(
-        window
-            .atob(base64)
-            .split("")
-            .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
-};
-
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = parseJwt(token)
-
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate)
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const freqOptions = ['Monthly', 'Annually']
-const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
+import jwt_decode from 'jwt-decode';
 
 
-for (let year = 1; year <= yearsToExpectancy; year++) {
-    durationOptions.push(year)
-}
+
 
 interface Props {
     update: () => void
@@ -63,6 +34,23 @@ const ExpenseAddDialog = ({ update }: Props) => {
     const [response, setResponse] = useState('')
 
 
+    const token: any = sessionStorage.getItem('token')
+    const userDetails: IUserDetails = jwt_decode(token)
+
+    const birthDate = new Date(userDetails.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userDetails.life_expectancy - currentAge
+
+    const freqOptions = ['Monthly', 'Annually']
+    const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
+    const statusOptions = ['Current', 'Future']
+    const durationOptions: number[] = [0]
+
+
+    for (let year = 1; year <= yearsToExpectancy; year++) {
+        durationOptions.push(year)
+    }
 
     const handleClickOpen = () => {
         setOpen(true);

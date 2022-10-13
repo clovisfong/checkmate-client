@@ -103,9 +103,21 @@ export interface ITotalExpenseProjection {
 }
 
 
-
-
 export interface IDebtData {
+    commitment_period_months: number;
+    created_at: string;
+    debt_name: string;
+    debt_status: string;
+    debt_type: string;
+    id: number;
+    interest_rate: number;
+    loan_amount: number;
+    monthly_commitment: number;
+    start_date: string;
+    updated_at: string;
+}
+
+export interface IDebtData2 {
     commitment_period_months: number;
     created_at: string;
     debt_name: string;

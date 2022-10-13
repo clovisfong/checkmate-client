@@ -4,24 +4,11 @@ import React, { useEffect, useState } from 'react'
 import IncomeEntries from '../components/FinancialEntries/IncomeEntries'
 import axios from 'axios';
 import urlcat from 'urlcat';
-import { IIncomeData } from '../Interface';
+import { IIncomeData, IUserDetails } from '../Interface';
 import CalculateIncome from '../components/Calculations/CalculateIncome';
 import IncomeProjections from '../components/IncomeProjections';
+import jwt_decode from 'jwt-decode';
 
-const parseJwt = (token: string) => {
-    var base64Url = token.split(".")[1];
-    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    var jsonPayload = decodeURIComponent(
-        window
-            .atob(base64)
-            .split("")
-            .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
-};
 
 const IncomeDashboard = () => {
 
@@ -47,7 +34,7 @@ const IncomeDashboard = () => {
 
     // Get User Details
     const token: any = sessionStorage.getItem("token");
-    const userDetails = parseJwt(token)
+    const userDetails: IUserDetails = jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M")
     console.log(userDetails)
 
     // General details: Current age, retirement age, life-expectancy age

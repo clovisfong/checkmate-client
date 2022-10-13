@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css'
-import DebtGraph from './components/DebtGraph';
+import DebtProjections from './components/DebtProjections';
 import ExpenseProjections from './components/ExpenseProjections';
 import FinanceStepper from './components/FinanceStepper';
 import IncomeForm from './components/FinancialForms/IncomeForm';
@@ -16,6 +16,7 @@ import IncomeDashboard from './pages/IncomeDashboard';
 import SignUp from './pages/SignUp';
 import Survey from './pages/Survey';
 import ExpensesDashboard from './pages/ExpensesDashboard';
+import DebtsDashboard from './pages/DebtDashboard';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -24,7 +25,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Navbar />}>
-          <Route path='/sign-up' element={<SignUp />} />
+          {/* <Route path='/sign-up' element={<SignUp />} /> */}
           <Route path='/survey' element={<Survey />} />
           <Route path='/survey/new' element={<FormSet />} />
         </Route>
@@ -32,12 +33,10 @@ function App() {
           <Route path='/dashboard/overview' element={<DashboardOverview />} />
           <Route path='/dashboard/income' element={<IncomeDashboard />} />
           <Route path='/dashboard/expenses' element={<ExpensesDashboard />} />
+          <Route path='/dashboard/debts' element={<DebtsDashboard />} />
         </Route>
         <Route path='/login' element={<Login />} />
 
-        <Route path='/login' element={<Login />} />
-        <Route path='/expense' element={<ExpenseProjections />} />
-        <Route path='/debt' element={<DebtGraph />} />
       </Routes>
     </BrowserRouter>
   )

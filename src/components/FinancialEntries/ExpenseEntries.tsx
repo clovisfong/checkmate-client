@@ -4,9 +4,7 @@ import React, { FC, useEffect, useState } from "react";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import DeleteDialog from '../DeleteDialog';
-import IncomeEditDialog from '../IncomeEditDialog';
 import { IExpenseData, IIncomeData } from '../../Interface';
-import IncomeAddDialog from '../IncomeAddDialog';
 import ExpenseEditDialog from '../ExpenseEditDialog';
 import ExpenseAddDialog from '../ExpenseAddDialog';
 

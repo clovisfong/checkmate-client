@@ -13,24 +13,10 @@ const SignUpForm: FC = () => {
     const [userEmail, setUserEmail] = useState(0);
     const [disable, setDisable] = useState(false)
 
-    const token: any = sessionStorage.getItem("token");
+
     const navigateToSurvey = useNavigate();
     const SERVER = import.meta.env.VITE_SERVER;
 
-    const parseJwt = (token: string) => {
-        var base64Url = token.split(".")[1];
-        var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        var jsonPayload = decodeURIComponent(
-            window
-                .atob(base64)
-                .split("")
-                .map(function (c) {
-                    return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-                })
-                .join("")
-        );
-        return JSON.parse(jsonPayload);
-    };
 
     const genderOptions = ["Male", "Female", "Prefer not to say"]
 
@@ -77,7 +63,6 @@ const SignUpForm: FC = () => {
             // axios
             //     .post(createUser, values)
             //     .then((res) => {
-            //         sessionStorage.setItem("token", res.data.token);
             //         const payload = parseJwt(res.data.token);
             //         console.log(payload.userId);
             //         navigateToOverview(`/client/${payload.userId}/dashboard`);

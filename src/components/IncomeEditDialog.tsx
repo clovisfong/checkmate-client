@@ -13,38 +13,11 @@ import { differenceInCalendarYears, format } from 'date-fns';
 import { IIncomeData, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
+import jwt_decode from 'jwt-decode';
 
-const parseJwt = (token: string) => {
-    var base64Url = token.split(".")[1];
-    var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    var jsonPayload = decodeURIComponent(
-        window
-            .atob(base64)
-            .split("")
-            .map(function (c) {
-                return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-    );
-    return JSON.parse(jsonPayload);
-};
 
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = parseJwt(token)
 
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate)
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
 
-const freqOptions = ['Monthly', 'Annually']
-const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
-
-for (let year = 1; year <= yearsToExpectancy; year++) {
-    durationOptions.push(year)
-}
 
 interface Props {
     incomeDetails: IIncomeData;
@@ -58,6 +31,22 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
     const [response, setResponse] = useState('')
 
 
+    const token: any = sessionStorage.getItem('token')
+    const userDetails: IUserDetails = jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M")
+
+    const birthDate = new Date(userDetails.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userDetails.life_expectancy - currentAge
+
+    const freqOptions = ['Monthly', 'Annually']
+    const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
+    const statusOptions = ['Current', 'Future']
+    const durationOptions: number[] = [0]
+
+    for (let year = 1; year <= yearsToExpectancy; year++) {
+        durationOptions.push(year)
+    }
 
     const handleClickOpen = () => {
         setOpen(true);
