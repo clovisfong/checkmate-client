@@ -115,6 +115,7 @@ export interface IDebtData {
     monthly_commitment: number;
     start_date: string;
     updated_at: string;
+    user_details_id: number;
 }
 
 export interface IDebtData2 {
@@ -150,4 +151,13 @@ export interface IDebtMonthlyProjection {
     principalRepayment: number;
     outstandingPrincipal: number;
 
+}
+
+
+export interface IAssetData {
+    asset_name: string;
+    asset_type: string;
+    current_value: number;
+    id: number;
+    user_details_id: number;
 }

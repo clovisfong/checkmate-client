@@ -10,40 +10,42 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IExpenseData, IUserDetails } from '../Interface';
+import { IDebtData2, IExpenseData2, IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
 import jwt_decode from 'jwt-decode';
 
-
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = jwt_decode(token)
-
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate)
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const freqOptions = ['Monthly', 'Annually']
-const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
-
-
-for (let year = 1; year <= yearsToExpectancy; year++) {
-    durationOptions.push(year)
-}
-
 interface Props {
-    expenseDetails: IExpenseData;
     update: () => void
 }
 
-const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
+interface FormProps {
+    resetForm: () => IDebtData2
+}
+
+
+const DebtAddDialog = ({ update }: Props) => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
+
+
+    const token: any = sessionStorage.getItem('token')
+    const userDetails: IUserDetails = jwt_decode(token)
+
+    const birthDate = new Date(userDetails.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userDetails.life_expectancy - currentAge
+
+    const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
+    const statusOptions = ['Current', 'Future']
+    const commitmentPeriodOptions: number[] = [0]
+
+    for (let year = 1; year <= 35; year++) {
+        commitmentPeriodOptions.push(year)
+    }
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -61,55 +63,80 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
 
     const formik = useFormik({
         initialValues: {
-            expense_type: expenseDetails.expense_type,
-            amount: expenseDetails.amount,
-            expense_name: expenseDetails.expense_name,
-            frequency: expenseDetails.frequency,
-            expense_status: expenseDetails.expense_status,
-            duration_months: expenseDetails.duration_months,
-            start_date: expenseDetails.start_date,
-            inflation_rate: expenseDetails.inflation_rate,
+            debt_type: '',
+            loan_amount: '',
+            debt_name: '',
+            interest_rate: '',
+            debt_status: '',
+            commitment_period_months: '',
+            start_date: '',
+            monthly_commitment: '',
 
         },
         validationSchema: Yup.object({
-            expense_type: Yup.string().required("Required"),
-            amount: Yup.number()
+            debt_type: Yup.string().required("Required"),
+            loan_amount: Yup.number()
                 .typeError("You must specify a number")
                 .required("Required")
                 .min(0),
-            expense_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
-            frequency: Yup.string().required("Required"),
-            expense_status: Yup.string().required("Required"),
-            duration_months: Yup.number().required("Required"),
+            debt_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
+            interest_rate: Yup.number()
+                .typeError("You must specify a number")
+                .required("Required"),
+            debt_status: Yup.string().required("Required"),
+            commitment_period_months: Yup.number().required("Required"),
             start_date: Yup.date()
                 .min(new Date(), "Please put future date"),
-            inflation_rate: Yup.number()
+            monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
-        }),
-        onSubmit: (values: any) => {
+                .min(0),
 
-            if (values.expense_status === 'Current') {
+        }),
+        onSubmit: (values: any, { resetForm }: any) => {
+
+            if (values.debt_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
 
-            values['duration_months'] = values['duration_months'] * 12
+
+            if (values.monthly_commitment === '') {
+                values.monthly_commitment = 0
+            }
+            values['monthly_commitment'] = values['monthly_commitment'] * 12
 
             const keys = {
-                expense_name: "",
-                expense_type: "",
-                expense_status: "",
-                amount: 0,
-                frequency: "",
-                duration_months: 0,
+                debt_name: "",
+                debt_type: "",
+                debt_status: "",
+                loan_amount: 0,
+                interest_rate: 0,
+                commitment_period_months: 0,
                 start_date: "",
-                inflation_rate: 0
+                monthly_commitment: 0
             }
 
-            const expenseRequest = Object.assign(keys, values)
+            const test =
+            {
+                debt_name: "Personal",
+                debt_type: "Personal",
+                debt_status: "Current",
+                loan_amount: 4.351745503853194e-23,
+                interest_rate: 6,
+                commitment_period_months: 36,
+                start_date: "2022/10/10",
+                monthly_commitment: 0
+            }
+
+
+            const debtRequest = Object.assign(keys, values)
 
             const SERVER = import.meta.env.VITE_SERVER;
-            const url = urlcat(SERVER, `/expense/${expenseDetails.id}`);
+            const url = urlcat(SERVER, `/debt/`);
+            console.log('----------------------')
             console.log(url)
+            console.log(debtRequest)
+            console.log(token)
+
             const header = {
                 headers: {
                     "Content-Type": "application/json",
@@ -117,35 +144,51 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
                 }
             }
             axios
-                .put(url, expenseRequest, header)
+                .put(url, debtRequest, header)
                 .then((res) => {
                     setResponse(res.data.msg)
                     setOpen(!open)
                     setNextOpen(!nextOpen)
                     update()
+                    resetForm()
 
                 })
                 .catch((error) => console.log(error.response.data.error));
+
+
 
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
             }, 3000)
+
         },
     });
 
 
-    console.log(response)
-
 
     return (
         <Box>
-            <CreateOutlinedIcon onClick={handleClickOpen} sx={{ color: '#2852A0', cursor: 'pointer' }} />
+            <Button onClick={handleClickOpen} sx={{
+                background: '#white',
+                color: '#2852A0',
+                letterSpacing: '0.2rem',
+                pl: '1rem',
+                pr: '1rem',
+                border: '0.1rem solid #2852A0',
+                borderRadius: '0.7rem',
+                '&:hover': {
+                    backgroundColor: '#254D71',
+                    color: "white"
+                },
+
+            }}>+ Add</Button>
+
 
             <Dialog onClose={handleClose} open={open} maxWidth='md' sx={{ width: '100%' }}>
 
                 <Grid item xs={12} sx={{ p: '4rem' }} >
-                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Edit {expenseDetails.expense_name}</Typography>
+                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Add Debt</Typography>
 
                     <form onSubmit={formik.handleSubmit}>
                         <Grid
@@ -159,98 +202,94 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
                         >
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
-                                        value={formik.values.expense_type}
-                                        id="expense_type"
-                                        name="expense_type"
+                                        value={formik.values.debt_type}
+                                        id="debt_type"
+                                        name="debt_type"
                                         onChange={(e) => formik.handleChange(e)}
                                         onBlur={formik.handleBlur}
                                         sx={{ width: "100%" }}
                                     >
-                                        {expenseOptions.map((option, i) => (
+                                        {debtOptions.map((option, i) => (
                                             <MenuItem key={i} value={option}>
                                                 {option}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-                                {formik.touched.expense_type && formik.errors.expense_type ? (
-                                    <div>{formik.errors.expense_type}</div>
+                                {formik.touched.debt_type && formik.errors.debt_type ? (
+                                    <div>{formik.errors.debt_type}</div>
                                 ) : null}
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Loan Amount*</Typography>
 
                                 <TextField
                                     required
-                                    id="amount"
+                                    id="loan_amount"
                                     autoComplete="off"
-                                    name="amount"
+                                    name="loan_amount"
                                     type='number'
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.amount}
+                                    value={formik.values.loan_amount}
                                 />
-                                {formik.touched.amount &&
-                                    formik.errors.amount ? (
-                                    <div>{formik.errors.amount}</div>
+                                {formik.touched.loan_amount &&
+                                    formik.errors.loan_amount ? (
+                                    <div>{formik.errors.loan_amount}</div>
                                 ) : null}
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                                 <TextField
                                     required
-                                    id="expense_name"
+                                    id="debt_name"
                                     autoComplete="off"
-                                    name="expense_name"
+                                    name="debt_name"
                                     type='text'
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.expense_name}
+                                    value={formik.values.debt_name}
                                 />
-                                {formik.touched.expense_name &&
-                                    formik.errors.expense_name ? (
-                                    <div>{formik.errors.expense_name}</div>
+                                {formik.touched.debt_name &&
+                                    formik.errors.debt_name ? (
+                                    <div>{formik.errors.debt_name}</div>
                                 ) : null}
                             </Grid>
 
+
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
-                                <FormControl sx={{ width: "100%" }}>
-                                    <Select
-                                        value={formik.values.frequency}
-                                        id="frequency"
-                                        name="frequency"
-                                        onChange={(e) => formik.handleChange(e)}
-                                        onBlur={formik.handleBlur}
-                                        sx={{ width: "100%" }}
-                                    >
-                                        {freqOptions.map((option, i) => (
-                                            <MenuItem key={i} value={option}>
-                                                {option}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                                {formik.touched.frequency && formik.errors.frequency ? (
-                                    <div>{formik.errors.frequency}</div>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Interest Rate (in %)*</Typography>
+                                <TextField
+                                    id="interest_rate"
+                                    autoComplete="off"
+                                    name="interest_rate"
+                                    type='number'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    sx={{ width: "100%" }}
+                                    value={formik.values.interest_rate}
+                                />
+                                {formik.touched.interest_rate && formik.errors.interest_rate ? (
+                                    <div>{formik.errors.interest_rate}</div>
                                 ) : null}
                             </Grid>
 
+
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
-                                        value={formik.values.expense_status}
-                                        id="expense_status"
-                                        name="expense_status"
+                                        value={formik.values.debt_status}
+                                        id="debt_status"
+                                        name="debt_status"
                                         onChange={(e) => formik.handleChange(e)}
                                         onBlur={formik.handleBlur}
                                         sx={{ width: "100%" }}
@@ -262,41 +301,41 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
                                         ))}
                                     </Select>
                                 </FormControl>
-                                {formik.touched.expense_status && formik.errors.expense_status ? (
-                                    <div>{formik.errors.expense_status}</div>
+                                {formik.touched.debt_status && formik.errors.debt_status ? (
+                                    <div>{formik.errors.debt_status}</div>
                                 ) : null}
                             </Grid>
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
-                                        value={formik.values.duration_months}
-                                        id="duration_months"
-                                        name="duration_months"
+                                        value={formik.values.commitment_period_months}
+                                        id="commitment_period_months"
+                                        name="commitment_period_months"
                                         onChange={(e) => formik.handleChange(e)}
                                         onBlur={formik.handleBlur}
                                         sx={{ width: "100%" }}
                                     >
-                                        {durationOptions.map((option, i) => (
+                                        {commitmentPeriodOptions.map((option, i) => (
                                             <MenuItem key={i} value={option}>
                                                 {option}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
-                                {formik.touched.duration_months && formik.errors.duration_months ? (
-                                    <div>{formik.errors.duration_months}</div>
+                                {formik.touched.commitment_period_months && formik.errors.commitment_period_months ? (
+                                    <div>{formik.errors.commitment_period_months}</div>
                                 ) : null}
                             </Grid>
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.expense_status === 'Future' ? false : true}
+                                    disabled={formik.values.debt_status === 'Future' ? false : true}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -304,31 +343,31 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.expense_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={formik.values.debt_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>
                                 ) : null}
                             </Grid>
 
-
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Inflation Rate (in %)</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Monthly Commitment</Typography>
+
                                 <TextField
-                                    id="inflation_rate"
+                                    id="monthly_commitment"
                                     autoComplete="off"
-                                    name="inflation_rate"
+                                    name="monthly_commitment"
                                     type='number'
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.inflation_rate}
+                                    value={formik.values.monthly_commitment}
                                 />
-                                {formik.touched.inflation_rate && formik.errors.inflation_rate ? (
-                                    <div>{formik.errors.inflation_rate}</div>
+                                {formik.touched.monthly_commitment &&
+                                    formik.errors.monthly_commitment ? (
+                                    <div>{formik.errors.monthly_commitment}</div>
                                 ) : null}
                             </Grid>
-
 
 
 
@@ -385,9 +424,8 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
             </Dialog>
 
 
-
         </Box>
     )
 }
 
-export default ExpenseEditDialog
+export default DebtAddDialog

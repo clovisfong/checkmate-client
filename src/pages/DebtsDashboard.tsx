@@ -8,6 +8,7 @@ import ExpenseProjections from '../components/ExpenseProjections';
 import ExpenseEntries from '../components/FinancialEntries/ExpenseEntries';
 import DebtProjections from '../components/DebtProjections';
 import jwt_decode from 'jwt-decode';
+import DebtEntries from '../components/FinancialEntries/DebtEntries';
 
 
 const DebtsDashboard = () => {
@@ -25,6 +26,7 @@ const DebtsDashboard = () => {
         monthly_commitment: 0,
         start_date: '',
         updated_at: '',
+        user_details_id: 0
     }])
 
     // Get Year
@@ -33,7 +35,7 @@ const DebtsDashboard = () => {
 
     // Get User Details
     const token: any = sessionStorage.getItem("token");
-    const userDetails: IUserDetails = jwt_decode(token)
+    const userDetails: IUserDetails = jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M")
     console.log(userDetails)
 
     // General details: Current age, retirement age, life-expectancy age
@@ -80,6 +82,10 @@ const DebtsDashboard = () => {
         .reduce((prev, curr) => prev + curr.totalDebt, 0)
 
     console.log(totalDebtByRetirement)
+
+    const update = () => {
+        setRefresh(!refresh)
+    }
 
 
     return (
@@ -165,7 +171,7 @@ const DebtsDashboard = () => {
             </Grid>
             <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
 
-            {/* <ExpenseEntries expensesData={expensesData} update={update} /> */}
+            <DebtEntries debtData={debtData} update={update} />
         </Container>
     )
 }

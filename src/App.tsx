@@ -16,7 +16,8 @@ import IncomeDashboard from './pages/IncomeDashboard';
 import SignUp from './pages/SignUp';
 import Survey from './pages/Survey';
 import ExpensesDashboard from './pages/ExpensesDashboard';
-import DebtsDashboard from './pages/DebtDashboard';
+import DebtsDashboard from './pages/DebtsDashboard';
+import AssetsDashboard from './pages/AssetsDashboard';
 
 function App() {
   const [count, setCount] = useState(0)
@@ -34,6 +35,7 @@ function App() {
           <Route path='/dashboard/income' element={<IncomeDashboard />} />
           <Route path='/dashboard/expenses' element={<ExpensesDashboard />} />
           <Route path='/dashboard/debts' element={<DebtsDashboard />} />
+          <Route path='/dashboard/assets' element={<AssetsDashboard />} />
         </Route>
         <Route path='/login' element={<Login />} />
 
