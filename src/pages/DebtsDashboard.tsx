@@ -1,6 +1,6 @@
 import { Container, Grid, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios';
 import urlcat from 'urlcat';
 import { IDebtData, IExpenseData, IUserDetails } from '../Interface';
@@ -9,6 +9,8 @@ import ExpenseEntries from '../components/FinancialEntries/ExpenseEntries';
 import DebtProjections from '../components/DebtProjections';
 import jwt_decode from 'jwt-decode';
 import DebtEntries from '../components/FinancialEntries/DebtEntries';
+import UserDetailsContext from '../components/contextStore/userdetails-context';
+import { string } from 'yup';
 
 
 const DebtsDashboard = () => {
@@ -33,21 +35,11 @@ const DebtsDashboard = () => {
     const today = new Date
     const year = getYear(today)
 
-    // Get User Details
-    const token: any = sessionStorage.getItem("token");
-    const userDetails: IUserDetails = jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M")
-    console.log(userDetails)
-
-    // General details: Current age, retirement age, life-expectancy age
-    const birthDate = new Date(userDetails.date_of_birth)
-    const currentDate = new Date // use current date
-    const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userDetails.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
 
     // Fetch Debt Details
     const SERVER = import.meta.env.VITE_SERVER;
     const url = urlcat(SERVER, "/debt/");
+    const token = sessionStorage.getItem('token')
     const header = {
         headers: {
             "Authorization": `Bearer ${token}`
@@ -57,6 +49,7 @@ const DebtsDashboard = () => {
         axios
             .get(url, header)
             .then((res) => {
+                console.log('debt check', res.data)
                 setDebtData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
@@ -64,24 +57,8 @@ const DebtsDashboard = () => {
     }, [refresh])
 
 
-    // Yearly Annual Debt Details
-    const repaymentProjectionByAge = DebtProjections(userDetails, debtData)
 
-    // Current Year Annual Debt Details
-    const currentYearRemainingRepayment = repaymentProjectionByAge.find((year) => year.age === currentAge)
 
-    // Next Year Annual Debt Details
-    const nextYearRepaymentDetails = repaymentProjectionByAge.find((year) => year.age === currentAge + 1)
-
-    // Retirement Year Annual Debt Details
-    const retirementYearRepaymentDetails = repaymentProjectionByAge.find((year) => year.age === currentAge + yearsToRetirement)
-
-    // Total Debt Earned By Retirement Year
-    const totalDebtByRetirement = repaymentProjectionByAge
-        .filter((year) => year.age <= userDetails.retirement_age)
-        .reduce((prev, curr) => prev + curr.totalDebt, 0)
-
-    console.log(totalDebtByRetirement)
 
     const update = () => {
         setRefresh(!refresh)
@@ -91,84 +68,8 @@ const DebtsDashboard = () => {
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Debts</Typography>
-            <Grid container spacing={0}
-                sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', md: '3fr 3fr' },
-                    columnGap: '2rem',
-                    rowGap: '2rem',
-                    mb: 7
-                }}
-            >
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Remaining Repayment For This Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{currentYearRemainingRepayment?.totalDebt.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'SGD',
-                        maximumFractionDigits: 0,
-                    })}</Typography>
-                </Grid>
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Expected Annual Repayment Next Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + 1}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{nextYearRepaymentDetails?.totalDebt.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'SGD',
-                        maximumFractionDigits: 0,
-                    })}</Typography>
-                </Grid>
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Expected Anuual Repayment at Retirement Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearRepaymentDetails?.age})</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{retirementYearRepaymentDetails?.totalDebt.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'SGD',
-                        maximumFractionDigits: 0,
-                    })}</Typography>
-                </Grid>
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Expected Total Future Repayment By Retirement Year</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {retirementYearRepaymentDetails?.age})</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{totalDebtByRetirement.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'SGD',
-                        maximumFractionDigits: 0,
-                    })}</Typography>
-                </Grid>
-            </Grid>
+            <DebtProjections />
+
             <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
 
             <DebtEntries debtData={debtData} update={update} />

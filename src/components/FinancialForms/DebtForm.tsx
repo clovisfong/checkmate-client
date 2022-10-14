@@ -8,30 +8,21 @@ import { Box } from '@mui/system';
 
 
 
-// const token: any = sessionStorage.getItem('token')
-// const userDetails: IUserDetails = parseJwt(token)
-
-// const birthDate = new Date(userDetails.date_of_birth)
-// const currentDate = new Date // use current date
-// const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-// const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-
-const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
-const statusOptions = ['Current', 'Future']
-const commitmentPeriodOptions: number[] = [0]
-
-for (let year = 1; year <= 35; year++) {
-    commitmentPeriodOptions.push(year)
-}
-
-
-
-
 
 const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
 
     const [disable, setDisable] = useState(false)
+
+    const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
+    const statusOptions = ['Current', 'Future', 'End']
+    const commitmentPeriodOptions: number[] = [0]
+
+    for (let year = 1; year <= 35; year++) {
+        commitmentPeriodOptions.push(year)
+    }
+
+
+
 
     const formik = useFormik({
         initialValues: {
@@ -69,12 +60,32 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
             if (values.debt_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-            if (values.monthly_commitment === '') {
+
+            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
                 values.monthly_commitment = 0
+                const monthlyInterestRate = values.interest_rate / 12 / 100
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
+                values.monthly_commitment = calculatedMonthlyRepayment
             }
 
+            const keys = {
+                debt_name: "",
+                debt_type: "",
+                debt_status: "",
+                loan_amount: 0,
+                interest_rate: 0,
+                commitment_period_months: 0,
+                start_date: "",
+                monthly_commitment: 0
+            }
+
+            const debtRequest = Object.assign(keys, values)
+            console.log('debt', debtRequest)
+
             setSearchParams({ section: 'assets' })
-            setFinancialInfo([...financialInfo, values])
+            setFinancialInfo([financialInfo[0], financialInfo[1], debtRequest])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -211,7 +222,7 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period*</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period (in years)*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.commitment_period_months}

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -10,10 +10,11 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IDebtData2, IExpenseData2, IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
+import { IDebtData2 } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
-import jwt_decode from 'jwt-decode';
+
+import UserDetailsContext from "./contextStore/userdetails-context";
 
 interface Props {
     update: () => void
@@ -31,19 +32,21 @@ const DebtAddDialog = ({ update }: Props) => {
     const [response, setResponse] = useState('')
 
 
+    const userContext = useContext(UserDetailsContext)
     const token: any = sessionStorage.getItem('token')
-    const userDetails: IUserDetails = jwt_decode(token)
 
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate)
-    const yearsToExpectancy = userDetails.life_expectancy - currentAge
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
 
     const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
-    const statusOptions = ['Current', 'Future']
+    const statusOptions = ['Current', 'Future', 'End']
     const commitmentPeriodOptions: number[] = [0]
 
-    for (let year = 1; year <= 35; year++) {
+    const yearLength = yearsToExpectancy <= 35 ? yearsToExpectancy : 35
+
+    for (let year = 1; year <= yearLength; year++) {
         commitmentPeriodOptions.push(year)
     }
 
@@ -99,10 +102,14 @@ const DebtAddDialog = ({ update }: Props) => {
             }
 
 
-            if (values.monthly_commitment === '') {
+            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
                 values.monthly_commitment = 0
+                const monthlyInterestRate = values.interest_rate / 12 / 100
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
+                values.monthly_commitment = calculatedMonthlyRepayment
             }
-            values['monthly_commitment'] = values['monthly_commitment'] * 12
 
             const keys = {
                 debt_name: "",
@@ -115,27 +122,12 @@ const DebtAddDialog = ({ update }: Props) => {
                 monthly_commitment: 0
             }
 
-            const test =
-            {
-                debt_name: "Personal",
-                debt_type: "Personal",
-                debt_status: "Current",
-                loan_amount: 4.351745503853194e-23,
-                interest_rate: 6,
-                commitment_period_months: 36,
-                start_date: "2022/10/10",
-                monthly_commitment: 0
-            }
-
 
             const debtRequest = Object.assign(keys, values)
 
             const SERVER = import.meta.env.VITE_SERVER;
             const url = urlcat(SERVER, `/debt/`);
-            console.log('----------------------')
-            console.log(url)
-            console.log(debtRequest)
-            console.log(token)
+
 
             const header = {
                 headers: {
@@ -144,7 +136,7 @@ const DebtAddDialog = ({ update }: Props) => {
                 }
             }
             axios
-                .put(url, debtRequest, header)
+                .post(url, debtRequest, header)
                 .then((res) => {
                     setResponse(res.data.msg)
                     setOpen(!open)
@@ -308,7 +300,7 @@ const DebtAddDialog = ({ update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period*</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period (in years)*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.commitment_period_months}

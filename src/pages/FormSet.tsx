@@ -1,7 +1,8 @@
 import { Container, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import UserDetailsContext from '../components/contextStore/userdetails-context'
 import AssetForm from '../components/FinancialForms/AssetForm'
 import DebtForm from '../components/FinancialForms/DebtForm'
 import ExpenseForm from '../components/FinancialForms/ExpenseForm'
@@ -11,6 +12,8 @@ const FormSet = () => {
 
     const [searchParams, setSearchParams] = useSearchParams()
     const [financialInfo, setFinancialInfo] = useState([])
+
+    const userContext = useContext(UserDetailsContext)
 
 
     const financeSection = searchParams.get("section")

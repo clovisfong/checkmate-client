@@ -17,7 +17,6 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
 
 
 
-
     return (
         <Box>
             <TableContainer component={Box} sx={{}}>
@@ -30,20 +29,6 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
                             <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>
                                 <IncomeAddDialog update={update} />
-                                {/* <Button sx={{
-                                    background: '#white',
-                                    color: '#2852A0',
-                                    letterSpacing: '0.2rem',
-                                    pl: '1rem',
-                                    pr: '1rem',
-                                    border: '0.1rem solid #2852A0',
-                                    borderRadius: '0.7rem',
-                                    '&:hover': {
-                                        backgroundColor: '#254D71',
-                                        color: "white"
-                                    },
-
-                                }}>+ Add</Button> */}
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -60,7 +45,11 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
                                     }}>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_name}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_type}</TableCell>
-                                    <TableCell sx={{ fontSize: '0.9rem' }}>{income.amount}</TableCell>
+                                    <TableCell sx={{ fontSize: '0.9rem' }}>{income.amount.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'SGD',
+                                        maximumFractionDigits: 0,
+                                    })}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{income.income_status}</TableCell>
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>

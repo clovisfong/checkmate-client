@@ -8,6 +8,7 @@ import IncomeEditDialog from '../IncomeEditDialog';
 import { IAssetData } from '../../Interface';
 import IncomeAddDialog from '../IncomeAddDialog';
 import AssetEditDialog from '../AssetEditDialog';
+import AssetAddDialog from '../AssetAddDialog';
 
 interface Props {
     assetData: IAssetData[];
@@ -27,7 +28,7 @@ const AssetEntries = ({ assetData, update }: Props) => {
                             <TableCell sx={{ fontWeight: 'bold' }}>Asset Type</TableCell>
                             <TableCell sx={{ fontWeight: 'bold' }}>Current Value</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'right' }}>
-                                {/* <IncomeAddDialog update={update} /> */}
+                                <AssetAddDialog update={update} />
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -44,7 +45,11 @@ const AssetEntries = ({ assetData, update }: Props) => {
                                     }}>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{asset.asset_name}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{asset.asset_type}</TableCell>
-                                    <TableCell sx={{ fontSize: '0.9rem' }}>{asset.current_value}</TableCell>
+                                    <TableCell sx={{ fontSize: '0.9rem' }}>{asset.current_value.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'SGD',
+                                        maximumFractionDigits: 0,
+                                    })}</TableCell>
 
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>

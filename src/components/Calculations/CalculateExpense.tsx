@@ -1,20 +1,23 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
 import { IExpenseData, IExpenseData2, IExpenseProjection, IUserDetails } from '../../Interface'
+import UserDetailsContext from '../contextStore/userdetails-context'
 
 
 
-const CalculateExpense = (expenseData: IExpenseData, userDetails: IUserDetails) => {
+const CalculateExpense = (expenseData: IExpenseData) => {
 
     const expenseProjection: IExpenseProjection[] = []
 
+    const userContext = useContext(UserDetailsContext)
+
 
     // General details: Current age, retirement age, life-expectancy age
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userDetails.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
+    const yearsToRetirement = userContext.retirement_age - currentAge //42
+    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
 
 

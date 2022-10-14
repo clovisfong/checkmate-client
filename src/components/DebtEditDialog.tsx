@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -13,24 +13,9 @@ import { differenceInCalendarYears, format } from 'date-fns';
 import { IDebtData, IExpenseData, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
-import jwt_decode from 'jwt-decode';
+import UserDetailsContext from "./contextStore/userdetails-context";
 
 
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = jwt_decode(token)
-
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate)
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
-const statusOptions = ['Current', 'Future']
-const commitmentPeriodOptions: number[] = [0]
-
-for (let year = 1; year <= 35; year++) {
-    commitmentPeriodOptions.push(year)
-}
 
 interface Props {
     debtDetails: IDebtData;
@@ -42,6 +27,28 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
+
+
+    const userContext = useContext(UserDetailsContext)
+    const token: any = sessionStorage.getItem('token')
+
+    const birthDate = new Date(userContext.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
+
+    const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
+    const statusOptions = ['Current', 'Future', 'End']
+    const commitmentPeriodOptions: number[] = [0]
+
+    const yearLength = yearsToExpectancy <= 35 ? yearsToExpectancy : 35
+
+    for (let year = 1; year <= yearLength; year++) {
+        commitmentPeriodOptions.push(year)
+    }
+
+
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -93,11 +100,14 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
 
-
-            if (values.monthly_commitment === '') {
+            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
                 values.monthly_commitment = 0
+                const monthlyInterestRate = values.interest_rate / 12 / 100
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
+                values.monthly_commitment = calculatedMonthlyRepayment
             }
-            values['monthly_commitment'] = values['monthly_commitment'] * 12
 
             const keys = {
                 debt_name: "",
@@ -114,9 +124,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
 
             const SERVER = import.meta.env.VITE_SERVER;
             const url = urlcat(SERVER, `/debt/${debtDetails.id}`);
-            console.log(url)
-            console.log(token)
-            console.log(keys)
+
             const header = {
                 headers: {
                     "Content-Type": "application/json",
@@ -272,7 +280,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period*</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Commitment Period (in years)*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.commitment_period_months}

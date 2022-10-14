@@ -1,36 +1,26 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
 import { IIncomeData, IIncomeProjection, IUserDetails } from '../../Interface'
+import UserDetailsContext from '../contextStore/userdetails-context'
 
 
 
-const CalculateIncome = (incomeData: IIncomeData, userDetails: IUserDetails) => {
+const CalculateIncome = (incomeData: IIncomeData) => {
 
     const incomeProjection: IIncomeProjection[] = []
 
-    // const userDetails = {
-    //     created_at: "Sat, 08 Oct 2022 15:14:00 GMT",
-    //     date_of_birth: "Mon, 20 Jul 1998 00:00:00 GMT",
-    //     email: "eee@hotmail.com",
-    //     gender: "Female",
-    //     id: 2,
-    //     legacy_allocation: 5000,
-    //     life_expectancy: 90,
-    //     name: "eee",
-    //     new_birthdate: "20-07-1998",
-    //     retirement_age: 66,
-    //     retirement_lifestyle: "Enhanced",
-    //     updated_at: "Sat, 08 Oct 2022 15:14:42 GMT"
-    // }
+    const userContext = useContext(UserDetailsContext)
+
 
 
     // General details: Current age, retirement age, life-expectancy age
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userDetails.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
+    const yearsToRetirement = userContext.retirement_age - currentAge //42
+    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
+    console.log('check', userContext.retirement_age)
 
 
     // Remaining months till year end

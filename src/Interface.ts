@@ -10,6 +10,13 @@ export interface IUserDetails {
     retirement_lifestyle: string
 }
 
+export interface IUserContext extends IUserDetails {
+    setUserState: (data: IUserDetails) => void;
+}
+
+
+
+
 export interface IIncomeData {
     amount: number;
     created_at: string;
@@ -62,6 +69,11 @@ export interface ITotalIncomeProjection {
     totalIncome: number
 }
 
+export interface ITotalSavingsProjection {
+    age: number;
+    totalSavings: number
+}
+
 
 export interface IExpenseData {
     amount: number;
@@ -103,6 +115,11 @@ export interface ITotalExpenseProjection {
 }
 
 
+export interface IFinancialContext {
+    setIncomeState: (data: ITotalIncomeProjection[]) => void;
+    setExpenseState: (data: ITotalExpenseProjection[]) => void;
+}
+
 export interface IDebtData {
     commitment_period_months: number;
     created_at: string;
@@ -131,6 +148,7 @@ export interface IDebtData2 {
     start_date: string;
     updated_at: string;
 }
+
 
 export interface ITotalDebtProjection {
     age: number;
@@ -161,3 +179,12 @@ export interface IAssetData {
     id: number;
     user_details_id: number;
 }
+
+export interface IAssetData2 {
+    asset_name: string;
+    asset_type: string;
+    current_value: number;
+    id: number;
+}
+
+

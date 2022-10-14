@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -12,8 +12,8 @@ import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
 import { IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
 import axios from 'axios';
-import jwt_decode from 'jwt-decode';
 import urlcat from 'urlcat';
+import UserDetailsContext from "./contextStore/userdetails-context";
 
 
 
@@ -32,18 +32,17 @@ const IncomeAddDialog = ({ update }: Props) => {
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
 
-
+    const userContext = useContext(UserDetailsContext)
     const token: any = sessionStorage.getItem('token')
-    const userDetails: IUserDetails = jwt_decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAsIm5hbWUiOiJnZ2ciLCJkYXRlX29mX2JpcnRoIjoiMTk5My0wMS0xMyIsImdlbmRlciI6IlByZWZlciBub3QgdG8gc2F5IiwiZW1haWwiOiJnZ2dAaG90bWFpbC5jb20iLCJyZXRpcmVtZW50X2FnZSI6NjMsInJldGlyZW1lbnRfbGlmZXN0eWxlIjoiTWFpbnRhaW4iLCJsZWdhY3lfYWxsb2NhdGlvbiI6MCwibGlmZV9leHBlY3RhbmN5Ijo4NH0.tVhbiKT3-NUsG5o_AnLxa4vhVu4HJMpeMReqft3DA4M")
 
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate)
-    const yearsToExpectancy = userDetails.life_expectancy - currentAge
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
 
     const freqOptions = ['Monthly', 'Annually']
     const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-    const statusOptions = ['Current', 'Future']
+    const statusOptions = ['Current', 'Future', 'End']
     const durationOptions: number[] = [0]
 
     for (let year = 1; year <= yearsToExpectancy; year++) {
@@ -99,8 +98,6 @@ const IncomeAddDialog = ({ update }: Props) => {
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-
-            values['duration_months'] = values['duration_months'] * 12
 
 
             const keys = {

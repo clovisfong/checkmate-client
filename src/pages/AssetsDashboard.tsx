@@ -1,6 +1,6 @@
 import { Container, Grid, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import IncomeEntries from '../components/FinancialEntries/IncomeEntries'
 import axios from 'axios';
 import urlcat from 'urlcat';
@@ -9,6 +9,7 @@ import CalculateIncome from '../components/Calculations/CalculateIncome';
 import IncomeProjections from '../components/IncomeProjections';
 import jwt_decode from 'jwt-decode';
 import AssetEntries from '../components/FinancialEntries/AssetEntries';
+import UserDetailsContext from '../components/contextStore/userdetails-context';
 
 const AssetsDashboard = () => {
 
@@ -26,20 +27,19 @@ const AssetsDashboard = () => {
     const year = getYear(today)
 
     // Get User Details
-    const token: any = sessionStorage.getItem("token");
-    const userDetails: IUserDetails = jwt_decode(token)
-    console.log(userDetails)
+    const userContext = useContext(UserDetailsContext)
 
     // General details: Current age, retirement age, life-expectancy age
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userDetails.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
+    const yearsToRetirement = userContext.retirement_age - currentAge //42
+    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
     // Fetch Asset Details
     const SERVER = import.meta.env.VITE_SERVER;
     const url = urlcat(SERVER, "/asset/");
+    const token = sessionStorage.getItem('token')
     const header = {
         headers: {
             "Authorization": `Bearer ${token}`
@@ -107,13 +107,17 @@ const AssetsDashboard = () => {
                     <Typography variant="h5" sx={{}}>Top 3 Assets</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
                     {sortAssetbyValue.slice(0, 3).map((asset) =>
-                        <Typography key={asset.id} variant="h4" sx={{ mb: 2 }}> {asset.asset_name}:  ${asset.current_value}</Typography>)}
+                        <Typography key={asset.id} variant="h4" sx={{ mb: 2 }}> {asset.asset_name}:  {asset.current_value.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'SGD',
+                            maximumFractionDigits: 0,
+                        })}</Typography>)}
 
                 </Grid>
 
 
             </Grid>
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Assset Entries</Typography>
+            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Asset Entries</Typography>
 
             <AssetEntries assetData={assetData} update={update} />
         </Container>

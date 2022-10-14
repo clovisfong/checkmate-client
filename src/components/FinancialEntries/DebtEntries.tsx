@@ -43,7 +43,11 @@ const DebtEntries = ({ debtData, update }: Props) => {
                   }}>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.debt_name}</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.debt_type}</TableCell>
-                  <TableCell sx={{ fontSize: '0.9rem' }}>${debt.loan_amount}</TableCell>
+                  <TableCell sx={{ fontSize: '0.9rem' }}>{Number(debt.loan_amount).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'SGD',
+                    maximumFractionDigits: 0,
+                  })}</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.interest_rate}%</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>${debt.monthly_commitment}</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.commitment_period_months / 12} years</TableCell>

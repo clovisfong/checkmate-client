@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -14,25 +14,10 @@ import { IExpenseData, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
 import jwt_decode from 'jwt-decode';
+import UserDetailsContext from "./contextStore/userdetails-context";
 
 
-const token: any = sessionStorage.getItem('token')
-const userDetails: IUserDetails = jwt_decode(token)
 
-const birthDate = new Date(userDetails.date_of_birth)
-const currentDate = new Date // use current date
-const currentAge = differenceInCalendarYears(currentDate, birthDate)
-const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const freqOptions = ['Monthly', 'Annually']
-const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
-
-
-for (let year = 1; year <= yearsToExpectancy; year++) {
-    durationOptions.push(year)
-}
 
 interface Props {
     expenseDetails: IExpenseData;
@@ -44,6 +29,27 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
+
+
+    const userContext = useContext(UserDetailsContext)
+    const token: any = sessionStorage.getItem('token')
+
+    const birthDate = new Date(userContext.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
+
+    const freqOptions = ['Monthly', 'Annually']
+    const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
+    const statusOptions = ['Current', 'Future', 'End']
+    const durationOptions: number[] = [0]
+
+
+    for (let year = 1; year <= yearsToExpectancy; year++) {
+        durationOptions.push(year)
+    }
+
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -91,8 +97,6 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
             if (values.expense_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-
-            values['duration_months'] = values['duration_months'] * 12
 
             const keys = {
                 expense_name: "",

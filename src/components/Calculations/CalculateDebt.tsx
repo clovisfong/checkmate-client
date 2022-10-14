@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths, add } from 'date-fns'
 import { IDebtMonthlyProjection, IDebtData2, IDebtProjection, IDebtData, IUserDetails } from '../../Interface'
 import { FormControlUnstyledContext } from '@mui/base'
+import UserDetailsContext from '../contextStore/userdetails-context'
 
 
 
-const CalculateDebt = (debtData: IDebtData, userDetails: IUserDetails) => {
+const CalculateDebt = (debtData: IDebtData) => {
 
 
 
@@ -25,12 +26,15 @@ const CalculateDebt = (debtData: IDebtData, userDetails: IUserDetails) => {
     // }
 
 
+    const userContext = useContext(UserDetailsContext)
+
+
     // General details: Current age, retirement age, life-expectancy age
-    const birthDate = new Date(userDetails.date_of_birth)
+    const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userDetails.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userDetails.life_expectancy - currentAge //66
+    const yearsToRetirement = userContext.retirement_age - currentAge //42
+    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
     // Debt data
     const monthlyInterestRate = debtData.interest_rate / 12 / 100 // 0.005

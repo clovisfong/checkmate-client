@@ -1,32 +1,11 @@
 import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { IIncomeFill, IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-
-
-
-
-// const token: any = sessionStorage.getItem('token')
-// const userDetails: IUserDetails = parseJwt(token)
-
-// const birthDate = new Date(userDetails.date_of_birth)
-// const currentDate = new Date // use current date
-// const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-// const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const freqOptions = ['Monthly', 'Annually']
-const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
-
-for (let year = 1; year <= 100; year++) {
-    durationOptions.push(year)
-}
-
-
+import UserDetailsContext from '../contextStore/userdetails-context';
 
 
 
@@ -46,7 +25,25 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
         }
     )
 
-    const navigateToSurvey = useNavigate()
+    const userContext = useContext(UserDetailsContext)
+    const birthDate = new Date(userContext.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
+
+
+    const freqOptions = ['Monthly', 'Annually']
+    const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
+    const statusOptions = ['Current', 'Future', 'End']
+    const durationOptions: number[] = [0]
+
+
+    for (let year = 1; year <= 100; year++) {
+        durationOptions.push(year)
+    }
+
+
+    const navigateToWelcomeForm = useNavigate()
 
 
 
@@ -82,9 +79,24 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-            console.log(values);
+
+            const keys = {
+                income_name: "",
+                income_type: "",
+                income_status: "",
+                amount: 0,
+                frequency: "",
+                duration_months: 0,
+                start_date: "",
+                growth_rate: 0
+            }
+
+            const incomeRequest = Object.assign(keys, values)
+            console.log("income:", incomeRequest);
+
             setSearchParams({ section: 'expenses' })
-            setFinancialInfo([values])
+
+            setFinancialInfo([incomeRequest])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -94,7 +106,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
     });
 
     const handleClick = () => {
-        navigateToSurvey('/survey')
+        navigateToWelcomeForm('/form')
     }
 
 

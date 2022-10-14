@@ -46,7 +46,11 @@ const ExpenseEntries = ({ expensesData, update }: Props) => {
                                     }}>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{expense.expense_name}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{expense.expense_type}</TableCell>
-                                    <TableCell sx={{ fontSize: '0.9rem' }}>{expense.amount}</TableCell>
+                                    <TableCell sx={{ fontSize: '0.9rem' }}>{expense.amount.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'SGD',
+                                        maximumFractionDigits: 0,
+                                    })}</TableCell>
                                     <TableCell sx={{ fontSize: '0.9rem' }}>{expense.expense_status}</TableCell>
                                     <TableCell align="right" >
                                         <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>

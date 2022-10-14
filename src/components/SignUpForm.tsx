@@ -1,22 +1,26 @@
 
 import { useNavigate } from 'react-router-dom';
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import urlcat from "urlcat";
 import axios from "axios";
 import { Button, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
+import UserDetailsContext from './contextStore/userdetails-context';
+import jwt_decode from 'jwt-decode';
+import { IUserDetails } from '../Interface';
+
 
 const SignUpForm: FC = () => {
 
     const [userEmail, setUserEmail] = useState(0);
     const [disable, setDisable] = useState(false)
 
-
-    const navigateToSurvey = useNavigate();
+    const navigateToWelcome = useNavigate();
     const SERVER = import.meta.env.VITE_SERVER;
 
+    const userContext = useContext(UserDetailsContext)
 
     const genderOptions = ["Male", "Female", "Prefer not to say"]
 
@@ -58,26 +62,22 @@ const SignUpForm: FC = () => {
         }),
         onSubmit: (values) => {
             console.log(values);
-            const createUser = urlcat(SERVER, "/users");
+            const createUser = urlcat(SERVER, "/users/");
 
-            // axios
-            //     .post(createUser, values)
-            //     .then((res) => {
-            //         const payload = parseJwt(res.data.token);
-            //         console.log(payload.userId);
-            //         navigateToOverview(`/client/${payload.userId}/dashboard`);
-            //     })
-            //     .catch((error) => console.log(error.response.data.error));
+
+            axios
+                .post(createUser, values)
+                .then((res) => {
+                    console.log(res.data.token);
+                    sessionStorage.setItem("token", res.data.token);
+                    const userDetails: IUserDetails = jwt_decode(res.data.token)
+                    userContext.setUserState(userDetails)
+                    navigateToWelcome(`/form`);
+                })
+                .catch((error) => console.log(error.response.data.error));
         },
     });
 
-    const handleClick = () => {
-        setDisable(true)
-        navigateToSurvey('/survey')
-        setTimeout(() => {
-            setDisable(false)
-        }, 3000)
-    }
 
     return (
         <Container maxWidth='md' sx={{ width: '80%' }}>
@@ -200,7 +200,7 @@ const SignUpForm: FC = () => {
 
 
                     <Grid item sx={{ textAlign: 'center' }}>
-                        <Button disabled={disable} onClick={handleClick} type="submit" sx={{
+                        <Button disabled={disable} type="submit" sx={{
                             background: '#2852A0',
                             color: '#FFFBF0',
                             letterSpacing: '0.2rem',

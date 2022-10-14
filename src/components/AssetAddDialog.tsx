@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
@@ -9,23 +9,26 @@ import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import { IAssetData } from '../Interface';
+import { differenceInCalendarYears, format } from 'date-fns';
+import { IAssetData2 } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
-
+import UserDetailsContext from "./contextStore/userdetails-context";
 
 
 interface Props {
-    assetDetails: IAssetData;
     update: () => void
 }
 
-const AssetEditDialog = ({ assetDetails, update }: Props) => {
+interface FormProps {
+    resetForm: () => IAssetData2
+}
+
+const AssetAddDialog = ({ update }: Props) => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
-
 
     const token: any = sessionStorage.getItem('token')
     const assetOptions = ['Property', 'Car', 'Savings', 'Other Assets & Investments']
@@ -34,6 +37,7 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
     const handleClickOpen = () => {
         setOpen(true);
     };
+
 
     const handleClose = () => {
         setOpen(false);
@@ -44,12 +48,11 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
     };
 
 
-
     const formik = useFormik({
         initialValues: {
-            asset_type: assetDetails.asset_type,
-            current_value: assetDetails.current_value,
-            asset_name: assetDetails.asset_name,
+            asset_type: '',
+            current_value: '',
+            asset_name: '',
 
         },
         validationSchema: Yup.object({
@@ -61,7 +64,7 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
             asset_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
 
         }),
-        onSubmit: (values: any) => {
+        onSubmit: (values: any, { resetForm }: any) => {
 
             const keys = {
                 asset_name: "",
@@ -74,7 +77,7 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
 
 
             const SERVER = import.meta.env.VITE_SERVER;
-            const url = urlcat(SERVER, `/asset/${assetDetails.id}`);
+            const url = urlcat(SERVER, `/asset/`);
 
             const header = {
                 headers: {
@@ -83,12 +86,14 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
                 }
             }
             axios
-                .put(url, assetRequest, header)
+                .post(url, assetRequest, header)
                 .then((res) => {
                     setResponse(res.data.msg)
                     setOpen(!open)
                     setNextOpen(!nextOpen)
                     update()
+                    resetForm()
+
 
                 })
                 .catch((error) => console.log(error.response.data.error));
@@ -102,14 +107,30 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
         },
     });
 
+
+
     return (
         <Box>
-            <CreateOutlinedIcon onClick={handleClickOpen} sx={{ color: '#2852A0', cursor: 'pointer' }} />
+            <Button onClick={handleClickOpen} sx={{
+                background: '#white',
+                color: '#2852A0',
+                letterSpacing: '0.2rem',
+                pl: '1rem',
+                pr: '1rem',
+                border: '0.1rem solid #2852A0',
+                borderRadius: '0.7rem',
+                '&:hover': {
+                    backgroundColor: '#254D71',
+                    color: "white"
+                },
+
+            }}>+ Add</Button>
 
             <Dialog onClose={handleClose} open={open} maxWidth='md' sx={{ width: '100%' }}>
 
+
                 <Grid item xs={12} sx={{ p: '4rem' }} >
-                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Edit {assetDetails.asset_name}</Typography>
+                    <Typography variant="h5" sx={{ mb: 5, textAlign: 'center' }}>Add Asset</Typography>
 
                     <form onSubmit={formik.handleSubmit}>
                         <Grid
@@ -240,4 +261,4 @@ const AssetEditDialog = ({ assetDetails, update }: Props) => {
     )
 }
 
-export default AssetEditDialog
+export default AssetAddDialog

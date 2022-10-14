@@ -1,16 +1,21 @@
 import { Button, Container, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import UserDetailsContext from '../components/contextStore/userdetails-context'
 
-const Survey = () => {
+const WelcomeForm = () => {
 
     const navigateToIncome = useNavigate()
+    const userContext = useContext(UserDetailsContext)
 
     const handleClick = () => {
-        navigateToIncome('/survey/new?section=income')
+        navigateToIncome('/form/new?section=income')
     }
 
+    console.log(userContext.retirement_age)
+
+    console.log('welcome',)
     return (
         <Container maxWidth='sm' sx={{
             mt: '3rem',
@@ -79,7 +84,7 @@ const Survey = () => {
                 </Grid>
 
                 <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                    <Link to="/overview"><Typography variant='body2' >Skip</Typography></Link>
+                    <Link to="/dashboard/overview"><Typography variant='body2' >Skip</Typography></Link>
                 </Grid>
 
             </Grid>
@@ -89,4 +94,4 @@ const Survey = () => {
     )
 }
 
-export default Survey
+export default WelcomeForm

@@ -14,21 +14,20 @@ import FormSet from './pages/FormSet';
 import Login from './pages/Login';
 import IncomeDashboard from './pages/IncomeDashboard';
 import SignUp from './pages/SignUp';
-import Survey from './pages/Survey';
 import ExpensesDashboard from './pages/ExpensesDashboard';
 import DebtsDashboard from './pages/DebtsDashboard';
 import AssetsDashboard from './pages/AssetsDashboard';
+import WelcomeForm from './pages/WelcomeForm';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<Navbar />}>
-          {/* <Route path='/sign-up' element={<SignUp />} /> */}
-          <Route path='/survey' element={<Survey />} />
-          <Route path='/survey/new' element={<FormSet />} />
+          <Route path='/sign-up' element={<SignUp />} />
+          <Route path='/form' element={<WelcomeForm />} />
+          <Route path='/form/new' element={<FormSet />} />
         </Route>
         <Route path='/' element={<MenuDrawer />}>
           <Route path='/dashboard/overview' element={<DashboardOverview />} />

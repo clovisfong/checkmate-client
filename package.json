@@ -9,11 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/charts": "^1.4.2",
+    "@ant-design/plots": "^1.2.2",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.8",
     "@mui/styled-engine-sc": "^5.10.6",
+    "antd": "^4.23.5",
     "axios": "^1.1.2",
     "date-fns": "^2.29.3",
     "formik": "^2.2.9",

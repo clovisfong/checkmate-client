@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import urlcat from 'urlcat';
 import { useFormik, Form, Field } from 'formik';
@@ -6,7 +6,9 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
-
+import UserDetailsContext from './contextStore/userdetails-context';
+import jwt_decode from 'jwt-decode';
+import { IUserDetails } from '../Interface';
 
 const LoginForm = () => {
 
@@ -16,6 +18,7 @@ const LoginForm = () => {
     const url = urlcat(SERVER, "/users/login");
     const navigate = useNavigate();
 
+    const userContext = useContext(UserDetailsContext)
 
 
     const formik = useFormik({
@@ -40,6 +43,8 @@ const LoginForm = () => {
                     , values, header)
                 .then((res) => {
                     sessionStorage.setItem("token", res.data.token);
+                    const userDetails: IUserDetails = jwt_decode(res.data.token)
+                    userContext.setUserState(userDetails)
                     navigate('/dashboard/overview');
                 })
                 .catch((error) => setError(error.response.data.msg));

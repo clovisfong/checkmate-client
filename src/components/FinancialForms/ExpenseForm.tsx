@@ -1,38 +1,33 @@
 import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { Box } from '@mui/system';
-
-
-
-
-// const token: any = sessionStorage.getItem('token')
-// const userDetails: IUserDetails = parseJwt(token)
-
-// const birthDate = new Date(userDetails.date_of_birth)
-// const currentDate = new Date // use current date
-// const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-// const yearsToExpectancy = userDetails.life_expectancy - currentAge
-
-const freqOptions = ['Monthly', 'Annually']
-const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-const statusOptions = ['Current', 'Future']
-const durationOptions: number[] = [0]
-
-for (let year = 1; year <= 100; year++) {
-    durationOptions.push(year)
-}
-
-
+import UserDetailsContext from '../contextStore/userdetails-context';
 
 
 
 const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
 
     const [disable, setDisable] = useState(false)
+
+    const userContext = useContext(UserDetailsContext)
+    const birthDate = new Date(userContext.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
+
+    const freqOptions = ['Monthly', 'Annually']
+    const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
+    const statusOptions = ['Current', 'Future', 'End']
+    const durationOptions: number[] = [0]
+
+    for (let year = 1; year <= 100; year++) {
+        durationOptions.push(year)
+    }
+
 
 
     const formik = useFormik({
@@ -67,9 +62,24 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
             if (values.expense_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
-            console.log(values);
+
+
+            const keys = {
+                expense_name: "",
+                expense_type: "",
+                expense_status: "",
+                amount: 0,
+                frequency: "",
+                duration_months: 0,
+                start_date: "",
+                inflation_rate: 0
+            }
+
+            const expenseRequest = Object.assign(keys, values)
+            console.log('expense:', expenseRequest)
+
             setSearchParams({ section: 'debts' })
-            setFinancialInfo([...financialInfo, values])
+            setFinancialInfo([financialInfo[0], expenseRequest])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)

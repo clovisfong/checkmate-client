@@ -3,9 +3,10 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import urlcat from 'urlcat';
+import axios from 'axios';
 
 
-const assetOptions = ['Property', 'Car', 'Savings', 'Other Assets & Investments']
 
 
 
@@ -13,6 +14,10 @@ const AssetForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =>
 
     const [disable, setDisable] = useState(false)
     const navigateToOverview = useNavigate()
+
+    const assetOptions = ['Property', 'Car', 'Savings', 'Other Assets & Investments']
+
+    const token: any = sessionStorage.getItem('token')
 
     const formik = useFormik({
         initialValues: {
@@ -32,30 +37,45 @@ const AssetForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =>
         }),
         onSubmit: (values: any) => {
 
+            const keys = {
+                asset_name: "",
+                asset_type: "",
+                current_value: 0
+            }
 
-            console.log(values);
+            const assetRequest = Object.assign(keys, values)
 
-            setFinancialInfo([...financialInfo, values])
+
+            setFinancialInfo([financialInfo[0], financialInfo[1], financialInfo[2], assetRequest])
+            const allFinancialInfo = [financialInfo[0], financialInfo[1], financialInfo[2], assetRequest]
+            console.log(allFinancialInfo)
+
+            // navigateToOverview('/dashboard/overview')
+
+
+            // const SERVER = import.meta.env.VITE_SERVER;
+            // const url = urlcat(SERVER, `/all/`);
+
+            // const header = {
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         "Authorization": `Bearer ${token}`
+            //     }
+            // }
+            // axios
+            //     .post(url, assetRequest, header)
+            //     .then((res) => {
+            //         console.log(res.data.msg)
+            //     })
+            //     .catch((error) => console.log(error.response.data.error));
+
+
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
             }, 3000)
-            navigateToOverview('/overview')
-            // const createUser = urlcat(SERVER, "/users");
-
-            // axios
-            //     .post(createUser, values)
-            //     .then((res) => {
-            //         sessionStorage.setItem("token", res.data.token);
-            //         const payload = parseJwt(res.data.token);
-            //         console.log(payload.userId);
-            //         navigateToOverview(`/client/${payload.userId}/dashboard`);
-            //     })
-            //     .catch((error) => console.log(error.response.data.error));
         },
     });
-
-    console.log('asset section', financialInfo)
 
     const handleClick = () => {
         setSearchParams({ section: 'debts' })
