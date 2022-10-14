@@ -87,8 +87,8 @@ const ExpenseEditDialog = ({ expenseDetails, update }: Props) => {
             frequency: Yup.string().required("Required"),
             expense_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date()
-                .min(new Date(), "Please put future date"),
+            start_date: Yup.date(),
+            // .min(new Date(), "Please put future date"),
             inflation_rate: Yup.number()
                 .typeError("You must specify a number")
         }),

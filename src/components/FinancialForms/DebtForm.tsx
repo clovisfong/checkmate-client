@@ -48,8 +48,8 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                 .required("Required"),
             debt_status: Yup.string().required("Required"),
             commitment_period_months: Yup.number().required("Required"),
-            start_date: Yup.date()
-                .min(new Date(), "Please put future date"),
+            start_date: Yup.date(),
+            // .min(new Date(), "Please put future date"),
             monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
                 .min(0),
