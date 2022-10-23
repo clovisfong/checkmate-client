@@ -48,7 +48,6 @@ const IncomeDashboard = () => {
         axios
             .get(url, header)
             .then((res) => {
-                console.log('income check', res.data)
                 setIncomeData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));

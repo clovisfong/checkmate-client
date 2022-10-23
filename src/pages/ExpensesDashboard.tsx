@@ -55,7 +55,6 @@ const ExpensesDashboard = () => {
             .get(url, header)
             .then((res) => {
                 setExpensesData(res.data)
-                console.log(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
 

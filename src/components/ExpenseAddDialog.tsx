@@ -1,19 +1,14 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { Box } from '@mui/system';
 import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IExpenseData2, IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
-import jwt_decode from 'jwt-decode';
 import UserDetailsContext from "./contextStore/userdetails-context";
 
 
@@ -23,9 +18,6 @@ interface Props {
     update: () => void
 }
 
-interface FormProps {
-    resetForm: () => IExpenseData2
-}
 
 
 const ExpenseAddDialog = ({ update }: Props) => {
@@ -45,7 +37,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
 
     const freqOptions = ['Monthly', 'Annually']
     const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const durationOptions: number[] = [0]
 
 
@@ -89,8 +81,14 @@ const ExpenseAddDialog = ({ update }: Props) => {
             frequency: Yup.string().required("Required"),
             expense_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date()
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.expense_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             inflation_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
@@ -98,6 +96,10 @@ const ExpenseAddDialog = ({ update }: Props) => {
 
             if (values.expense_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
+            }
+
+            if (values.inflation_rate === '') {
+                values.inflation_rate = 0
             }
 
             const keys = {
@@ -173,7 +175,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                         >
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.expense_type}
@@ -196,7 +198,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount*</Typography>
 
                                 <TextField
                                     required
@@ -216,7 +218,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                                 <TextField
                                     required
@@ -236,7 +238,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.frequency}
@@ -259,7 +261,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.expense_status}
@@ -283,7 +285,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.duration_months}
@@ -307,10 +309,10 @@ const ExpenseAddDialog = ({ update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.expense_status === 'Future' ? false : true}
+                                    disabled={formik.values.expense_status === 'Current' ? true : false}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -318,7 +320,7 @@ const ExpenseAddDialog = ({ update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.expense_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={formik.values.expense_status === 'Current' ? format(new Date(), "yyyy-MM-dd") : formik.values.start_date}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>

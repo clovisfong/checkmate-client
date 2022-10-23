@@ -1,16 +1,12 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { Box } from '@mui/system';
 import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IIncomeData, IIncomeData2, IUserDetails } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
 import UserDetailsContext from "./contextStore/userdetails-context";
@@ -20,10 +16,6 @@ import UserDetailsContext from "./contextStore/userdetails-context";
 
 interface Props {
     update: () => void
-}
-
-interface FormProps {
-    resetForm: () => IIncomeData2
 }
 
 const IncomeAddDialog = ({ update }: Props) => {

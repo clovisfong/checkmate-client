@@ -1,16 +1,14 @@
-import React, { FC, useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 import Typography from '@mui/material/Typography';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { Box } from '@mui/system';
 import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
-import { IIncomeData, IUserDetails } from '../Interface';
+import { IIncomeData } from '../Interface';
 import axios from 'axios';
 import urlcat from 'urlcat';
 import UserDetailsContext from "./contextStore/userdetails-context";
@@ -182,7 +180,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                         >
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.income_type}
@@ -205,7 +203,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount*</Typography>
 
                                 <TextField
                                     required
@@ -225,7 +223,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                                 <TextField
                                     required
@@ -245,7 +243,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.frequency}
@@ -268,7 +266,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.income_status}
@@ -292,7 +290,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.duration_months}
@@ -316,7 +314,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
                                     disabled={formik.values.income_status === 'Current' || formik.values.income_status === 'End' ? true : false}

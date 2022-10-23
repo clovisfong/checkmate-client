@@ -1,48 +1,45 @@
-import React, { useContext, useEffect } from 'react'
-import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
-import { IExpenseData, IExpenseData2, IExpenseProjection, IUserDetails } from '../../Interface'
+import { useContext } from 'react'
+import { differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
+import { IExpenseData, IExpenseProjection } from '../../Interface'
 import UserDetailsContext from '../contextStore/userdetails-context'
 
 
 
 const CalculateExpense = (expenseData: IExpenseData) => {
 
-    const expenseProjection: IExpenseProjection[] = []
 
+
+    ///// USER TIMELINE
     const userContext = useContext(UserDetailsContext)
-
-
-    // General details: Current age, retirement age, life-expectancy age
     const birthDate = new Date(userContext.date_of_birth)
-    const currentDate = new Date // use current date
-    const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userContext.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
 
+    ///// EXPENSE DETAILS
 
-    // Remaining months till year end
+    // Number of expense months in 1st year
     const expenseStartDate = new Date(expenseData.start_date)
-    const monthOfEntry = getMonth(expenseStartDate) // 10, october
-    const initialYearRemainingMonths = 12 - monthOfEntry // 3 months
+    const monthOfEntry = getMonth(expenseStartDate)
+    const initialYearRemainingMonths = 12 - monthOfEntry
 
-    // Initial age
-    const initialYearAge = differenceInCalendarYears(expenseStartDate, birthDate) //  24
+    // Age at 1st year
+    const initialYearAge = differenceInCalendarYears(expenseStartDate, birthDate)
 
-    // Duration upon Update
+    // Total expense duration in months
     const updatedDate = new Date(expenseData.updated_at)
     const updatedDuration = differenceInCalendarMonths(updatedDate, expenseStartDate)
-
-    // Select Duration based on Expense Status
     const duration = expenseData.expense_status === 'End' ? updatedDuration : expenseData.duration_months
-    console.log('duration', duration)
-    const futureExpenseMonths = duration - initialYearRemainingMonths //117
 
 
+    // Number of expense months after 1st year
+    const futureExpenseMonths = duration - initialYearRemainingMonths
 
-    const finalYear = Math.ceil(futureExpenseMonths / 12) // 10
 
+    ///// MONTHLY EXPENSE PROJECTIONS
+    const expenseProjection: IExpenseProjection[] = []
 
+    const finalYear = Math.ceil(futureExpenseMonths / 12)
+
+    // Calculate initial year expense
     const pushInitialYearValue = (period: number = 0) => {
         if (expenseData.frequency === 'Monthly') {
             expenseProjection.push({ "age": initialYearAge, "expense": period * expenseData.amount })
@@ -52,6 +49,7 @@ const CalculateExpense = (expenseData: IExpenseData) => {
         }
     }
 
+    // Calculate future years expense
     const pushFutureYearsValue = (numOfYear: number, numOfMonths: number) => {
         if (expenseData.frequency === 'Monthly') {
             expenseProjection.push({ "age": initialYearAge + numOfYear, "expense": Math.ceil(numOfMonths * expenseData.amount * Math.pow((1 + (expenseData.inflation_rate / 100)), numOfYear)) })
@@ -64,28 +62,29 @@ const CalculateExpense = (expenseData: IExpenseData) => {
 
 
     if (futureExpenseMonths > 0) {
-        // Initial Year Expense
-        pushInitialYearValue(initialYearRemainingMonths) // {age: 24, Income : 9000}
+        /// INITIAL YEAR EXPENSE
+        pushInitialYearValue(initialYearRemainingMonths)
 
-        // Find Number of Full Year Expense
+
         if (futureExpenseMonths >= 12) {
-            const fullYearExpenseYears = Math.floor(futureExpenseMonths / 12) //108
-            const fullYearExpenseMonths = fullYearExpenseYears * 12 // 9 years
 
-            // Following Full-Years Expense Projections
+            /// SUBSEQUENT FULL YEAR EXPENSE
+            const fullYearExpenseYears = Math.floor(futureExpenseMonths / 12)
             for (let year = 1; year <= fullYearExpenseYears; year++) {
                 pushFutureYearsValue(year, 12)
             }
 
-            // Final Year Expense Projections
+
             if (expenseData.frequency === 'Monthly') {
+                /// FINAL YEAR EXPENSE
+                const fullYearExpenseMonths = fullYearExpenseYears * 12
                 const finalYearExpenseMonths = duration - initialYearRemainingMonths - fullYearExpenseMonths
                 pushFutureYearsValue(finalYear, finalYearExpenseMonths)
             }
         }
 
         else if (futureExpenseMonths < 12) {
-            // Final Year Expense Projections
+            /// FINAL YEAR EXPENSE
             if (expenseData.frequency === 'Monthly') {
                 const finalYearExpenseMonths = duration - initialYearRemainingMonths
                 if (finalYearExpenseMonths > 0) {
@@ -94,10 +93,13 @@ const CalculateExpense = (expenseData: IExpenseData) => {
             }
         }
 
-    } else if (futureExpenseMonths <= 0) {
+    } else if (futureExpenseMonths <= 0 && duration > 0) {
+        /// INITIAL YEAR EXPENSE
         pushInitialYearValue(duration)
     }
 
+
+    console.log('expense projections', expenseProjection)
 
 
 

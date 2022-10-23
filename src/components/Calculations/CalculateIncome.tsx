@@ -1,6 +1,6 @@
-import React, { useContext, useEffect } from 'react'
-import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
-import { IIncomeData, IIncomeProjection, IUserDetails } from '../../Interface'
+import { useContext } from 'react'
+import { differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
+import { IIncomeData, IIncomeProjection } from '../../Interface'
 import UserDetailsContext from '../contextStore/userdetails-context'
 
 
@@ -12,7 +12,8 @@ const CalculateIncome = (incomeData: IIncomeData) => {
     const userContext = useContext(UserDetailsContext)
     const birthDate = new Date(userContext.date_of_birth)
 
-    ///// LOAN DETAILS
+
+    ///// INCOME DETAILS
 
     // Number of income months in 1st year
     const incomeStartDate = new Date(incomeData.start_date)
