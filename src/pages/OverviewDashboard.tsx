@@ -7,9 +7,10 @@ import CalculateExpense from '../components/Calculations/CalculateExpense'
 import CalculateIncome from '../components/Calculations/CalculateIncome'
 import UserDetailsContext from '../components/contextStore/userdetails-context'
 import IncomeProjections from '../components/IncomeProjections'
-import { IAssetData, IExpenseData, IIncomeData, ITotalExpenseProjection, ITotalIncomeProjection, ITotalSavingsProjection } from '../Interface'
+import { IAssetData, IDebtData, IExpenseData, IIncomeData, ITotalDebtProjection, ITotalExpenseProjection, ITotalIncomeProjection, ITotalSavingsProjection } from '../Interface'
 import CSavingsLineChart from '../components/CSavingsLineChart'
 import SavingsLineChart from '../components/SavingsLineChart'
+import CalculateDebt from '../components/Calculations/CalculateDebt'
 
 
 
@@ -46,6 +47,23 @@ const DashboardOverview = () => {
         updated_at: '',
         user_details_id: 0,
     }])
+
+    const [debtData, setDebtData] = useState<IDebtData[]>([{
+        commitment_period_months: 0,
+        created_at: '',
+        debt_name: '',
+        debt_status: '',
+        debt_type: '',
+        id: 0,
+        interest_rate: 0,
+        loan_amount: 0,
+        monthly_commitment: 0,
+        start_date: '',
+        updated_at: '',
+        user_details_id: 0
+    }])
+
+
     const [assetData, setAssetData] = useState<IAssetData[]>([{
         asset_name: '',
         asset_type: '',
@@ -73,7 +91,9 @@ const DashboardOverview = () => {
     const SERVER = import.meta.env.VITE_SERVER;
     const incomeUrl = urlcat(SERVER, "/income/");
     const expenseUrl = urlcat(SERVER, "/expense/");
+    const debtUrl = urlcat(SERVER, "/debt/");
     const assetUrl = urlcat(SERVER, "/asset/");
+
     const token = sessionStorage.getItem('token')
     const header = {
         headers: {
@@ -92,6 +112,13 @@ const DashboardOverview = () => {
             .get(expenseUrl, header)
             .then((res) => {
                 setExpensesData(res.data)
+                console.log(res.data)
+            })
+            .catch((error) => console.log(error.response.data.error));
+        axios
+            .get(debtUrl, header)
+            .then((res) => {
+                setDebtData(res.data)
                 console.log(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
@@ -121,18 +148,14 @@ const DashboardOverview = () => {
             incomeTimeline.find((entry) => entry.age === projection.age ? entry.totalIncome += projection.income : null)
         })
     })
-    const slicedIncomeData = incomeTimeline.slice(0, 20)
 
 
-    console.log('income', slicedIncomeData)
 
 
     // EXPENSE
 
     // Yearly projection for each expense
-
     const expenseProjections = expenseData.map(expense => CalculateExpense(expense))
-
 
 
     // Sum all expenses for each age
@@ -150,8 +173,39 @@ const DashboardOverview = () => {
         })
     })
 
-    const slicedExpenseData = expenseTimeline.slice(0, 20)
-    console.log('expense', slicedExpenseData)
+
+
+    // DEBT
+
+    // Yearly projection for each debt
+    const debtProjections = debtData.map(debt => CalculateDebt(debt))
+
+
+    // Sum all debts for each age
+    const debtTimeline: ITotalDebtProjection[] = []
+
+    for (let age = currentAge; age <= userContext.life_expectancy; age++) {
+        debtTimeline.push({ "age": age, "yearlyRepayment": 0, "principalRepayment": 0, "interestRepayment": 0, "outstandingPrincipal": 0 })
+    }
+
+    debtProjections.forEach((debt) => {
+        debt.forEach((projection) => {
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.yearlyRepayment += projection.yearlyRepayment : null)
+        })
+        debt.forEach((projection) => {
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.principalRepayment += projection.principalRepayment : null)
+        })
+        debt.forEach((projection) => {
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.interestRepayment += projection.interestRepayment : null)
+        })
+        debt.forEach((projection) => {
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingPrincipal += projection.outstandingPrincipal : null)
+        })
+
+    })
+
+
+
 
 
     // SAVINGS
@@ -168,6 +222,10 @@ const DashboardOverview = () => {
 
     savingsTimeline.forEach((year) => {
         expenseTimeline.find((expenseYear) => expenseYear.age === year.age ? year.totalSavings -= expenseYear.totalExpenses : null)
+    })
+
+    savingsTimeline.forEach((year) => {
+        debtTimeline.find((debtYear) => debtYear.age === year.age ? year.totalSavings -= debtYear.yearlyRepayment : null)
     })
 
 
@@ -187,10 +245,6 @@ const DashboardOverview = () => {
     for (let age = currentAge; age <= userContext.life_expectancy; age++) {
         cumulativeSavings.push({ "age": age, "totalSavings": 0 })
     }
-
-    // for (let count = 0; count <= userContext.life_expectancy- currentAge; count++) {
-    //     savingsTimeline.every(year => )
-    // }
 
 
     cumulativeSavings.forEach((savings) => {

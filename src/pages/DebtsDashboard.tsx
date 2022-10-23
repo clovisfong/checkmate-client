@@ -1,16 +1,11 @@
-import { Container, Grid, Typography } from '@mui/material'
+import { Container, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios';
 import urlcat from 'urlcat';
-import { IDebtData, IExpenseData, IUserDetails } from '../Interface';
-import ExpenseProjections from '../components/ExpenseProjections';
-import ExpenseEntries from '../components/FinancialEntries/ExpenseEntries';
+import { IDebtData } from '../Interface';
 import DebtProjections from '../components/DebtProjections';
-import jwt_decode from 'jwt-decode';
 import DebtEntries from '../components/FinancialEntries/DebtEntries';
-import UserDetailsContext from '../components/contextStore/userdetails-context';
-import { string } from 'yup';
 
 
 const DebtsDashboard = () => {
