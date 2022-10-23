@@ -4,7 +4,7 @@ import { IExpenseData, ITotalExpenseProjection, IUserDetails } from "../Interfac
 import CalculateExpense from "./Calculations/CalculateExpense"
 import UserDetailsContext from "./contextStore/userdetails-context"
 import { Box, Container, Grid, Typography } from '@mui/material'
-import { Line } from '@ant-design/plots';
+import ExpenseLineChart from "./ExpenseLineChart"
 
 interface Props {
     expenseData: IExpenseData[];
@@ -48,30 +48,6 @@ const ExpenseProjections = ({ expenseData }: Props) => {
     })
     console.log(expenseTimeline)
 
-    const data = expenseTimeline.slice(0, 20)
-
-
-    const config = {
-        data,
-        width: 800,
-        height: 400,
-        autoFit: false,
-        xField: 'age',
-        yField: 'totalExpenses',
-        point: {
-            size: 5,
-            shape: 'diamond',
-        },
-        label: {
-            style: {
-                fill: '#aaa',
-            },
-        },
-    };
-
-    let chart: any;
-
-
 
 
     // Current Year Annual Expense Details
@@ -93,8 +69,10 @@ const ExpenseProjections = ({ expenseData }: Props) => {
     return (
         <>
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <Line {...config} onReady={(chartInstance) => (chart = chartInstance)} />
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Expenses</Typography>
+                <ExpenseLineChart expenseProj={expenseTimeline} />
             </Box>
+
 
             <Grid container spacing={0}
                 sx={{

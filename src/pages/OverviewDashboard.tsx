@@ -8,8 +8,8 @@ import CalculateIncome from '../components/Calculations/CalculateIncome'
 import UserDetailsContext from '../components/contextStore/userdetails-context'
 import IncomeProjections from '../components/IncomeProjections'
 import { IAssetData, IExpenseData, IIncomeData, ITotalExpenseProjection, ITotalIncomeProjection, ITotalSavingsProjection } from '../Interface'
-import { Line } from '@ant-design/plots';
-import CSavingsGraph from '../components/CSavingsGraph'
+import CSavingsLineChart from '../components/CSavingsLineChart'
+import SavingsLineChart from '../components/SavingsLineChart'
 
 
 
@@ -162,7 +162,6 @@ const DashboardOverview = () => {
         savingsTimeline.push({ "age": age, "totalSavings": 0 })
     }
 
-
     savingsTimeline.forEach((year) => {
         incomeTimeline.find((incomeYear) => incomeYear.age === year.age ? year.totalSavings = incomeYear.totalIncome : null)
     })
@@ -170,30 +169,6 @@ const DashboardOverview = () => {
     savingsTimeline.forEach((year) => {
         expenseTimeline.find((expenseYear) => expenseYear.age === year.age ? year.totalSavings -= expenseYear.totalExpenses : null)
     })
-
-    const data = savingsTimeline.slice(0, 10)
-
-
-    // CHART
-    const config = {
-        data,
-        width: 800,
-        height: 400,
-        autoFit: false,
-        xField: 'age',
-        yField: 'totalSavings',
-        point: {
-            size: 5,
-            shape: 'diamond',
-        },
-        label: {
-            style: {
-                fill: '#aaa',
-            },
-        },
-    };
-
-    let chart: any;
 
 
 
@@ -224,7 +199,7 @@ const DashboardOverview = () => {
 
     cumulativeSavings.forEach(savings => savings.totalSavings += filteredSavings)
 
-    const slicedCSavings = cumulativeSavings.slice(0, 20)
+
 
 
     // FIGURES
@@ -242,19 +217,16 @@ const DashboardOverview = () => {
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '3rem', color: '#53565B', fontWeight: '700' }}>Home</Typography>
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Savings Each Year</Typography>
 
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <Line {...config} onReady={(chartInstance) => (chart = chartInstance)} />
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Savings</Typography>
+                <SavingsLineChart savingsProj={savingsTimeline} />
             </Box>
 
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Cumulative Savings Each Year</Typography>
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <CSavingsGraph data={slicedCSavings} />
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Cumulative Savings</Typography>
+                <CSavingsLineChart cSavingsProj={cumulativeSavings} />
             </Box>
-
-
-
 
 
 

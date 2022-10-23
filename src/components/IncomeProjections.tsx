@@ -4,8 +4,7 @@ import { useContext } from "react"
 import { IIncomeData, IIncomeProjection, ITotalIncomeProjection, IUserDetails } from "../Interface"
 import CalculateIncome from "./Calculations/CalculateIncome"
 import UserDetailsContext from "./contextStore/userdetails-context"
-import { Line } from '@ant-design/plots';
-
+import IncomeLineChart from "./IncomeLineChart"
 
 interface Props {
     incomeData: IIncomeData[];
@@ -34,7 +33,6 @@ const IncomeProjections = ({ incomeData }: Props) => {
     const totalIncomeProjections = incomeData.map(income => CalculateIncome(income))
 
 
-
     // Sum all income for each age
     const incomeTimeline: ITotalIncomeProjection[] = []
 
@@ -47,29 +45,6 @@ const IncomeProjections = ({ incomeData }: Props) => {
             incomeTimeline.find((entry) => entry.age === projection.age ? entry.totalIncome += projection.income : null)
         })
     })
-    const data = incomeTimeline.slice(0, 20)
-
-
-    const config = {
-        data,
-        width: 800,
-        height: 400,
-        autoFit: false,
-        xField: 'age',
-        yField: 'totalIncome',
-        point: {
-            size: 5,
-            shape: 'diamond',
-        },
-        label: {
-            style: {
-                fill: '#aaa',
-            },
-        },
-    };
-
-    let chart: any;
-
 
 
 
@@ -92,7 +67,8 @@ const IncomeProjections = ({ incomeData }: Props) => {
     return (
         <>
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <Line {...config} onReady={(chartInstance) => (chart = chartInstance)} />
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Income To Be Earned</Typography>
+                <IncomeLineChart incomeProj={incomeTimeline} />
             </Box>
 
             <Grid container spacing={0}

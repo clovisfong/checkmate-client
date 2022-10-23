@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react'
-import { format, parse, differenceInCalendarYears, getMonth, differenceInCalendarMonths, add } from 'date-fns'
+import { differenceInCalendarYears, getMonth, differenceInCalendarMonths } from 'date-fns'
 import { IDebtMonthlyProjection, IDebtData2, IDebtProjection, IDebtData, IUserDetails } from '../../Interface'
 import { FormControlUnstyledContext } from '@mui/base'
 import UserDetailsContext from '../contextStore/userdetails-context'
@@ -10,160 +10,254 @@ const CalculateDebt = (debtData: IDebtData) => {
 
 
 
-    // const userDetails = {
-    //     created_at: "Sat, 08 Oct 2022 15:14:00 GMT",
-    //     date_of_birth: "Mon, 20 Jul 1998 00:00:00 GMT",
-    //     email: "eee@hotmail.com",
-    //     gender: "Female",
-    //     id: 2,
-    //     legacy_allocation: 5000,
-    //     life_expectancy: 90,
-    //     name: "eee",
-    //     new_birthdate: "20-07-1998",
-    //     retirement_age: 66,
-    //     retirement_lifestyle: "Enhanced",
-    //     updated_at: "Sat, 08 Oct 2022 15:14:42 GMT"
-    // }
-
-
+    ///// USER TIMELINE
     const userContext = useContext(UserDetailsContext)
-
-
-    // General details: Current age, retirement age, life-expectancy age
     const birthDate = new Date(userContext.date_of_birth)
-    const currentDate = new Date // use current date
-    const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userContext.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
-    // Debt data
+
+
+    ///// LOAN DETAILS
+
+    // Monthly interest rate
     const monthlyInterestRate = debtData.interest_rate / 12 / 100 // 0.005
-    // const numberOfPayment = debtData.commitment_period_ * 12 // 36
 
-    // Calculate monthly installment
+    // Monthly installment
     const calculateMonthlyRepayment = () => {
         const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), debtData.commitment_period_months)
         const denominator = Math.pow((1 + monthlyInterestRate), debtData.commitment_period_months) - 1
         const calculatedMonthlyRepayment = debtData.loan_amount * numerator / denominator
         return calculatedMonthlyRepayment
     }
-
     const monthlyRepayment = debtData.monthly_commitment > 0 ? debtData.monthly_commitment : calculateMonthlyRepayment()
 
+    // Number of repayment months in 1st year
+    const debtStartDate = new Date(debtData.start_date) // 13 feb 2022
+    const todayDate = new Date() // 21 Oct 2022
+    const monthOfEntry = getMonth(debtStartDate) // feb aka 1
+    const initialYearDebtMonths = 12 - monthOfEntry // 11
 
-    const debtMonthlyProjection: IDebtMonthlyProjection[] = []
+    // Age at 1st year
+    const initialYearAge = differenceInCalendarYears(debtStartDate, birthDate) //  29
 
-    // Monthly debt projections
-    for (let period = 1; period <= debtData.commitment_period_months; period++) {
-        const monthlyInterest = monthlyInterestRate * debtData.loan_amount
-        const monthlyPrincipal = monthlyRepayment - monthlyInterest
-        debtData.loan_amount -= monthlyPrincipal
-        debtMonthlyProjection.push({ "period": period, "monthlyRepayment": monthlyRepayment, "interestRepayment": monthlyInterest, "principalRepayment": monthlyPrincipal, "outstandingPrincipal": debtData.loan_amount })
-    }
-
-    console.log(debtMonthlyProjection) // Array of 36 objects
-
-
-
-
-    // Number of months till year end
-    const debtStartDate = new Date(debtData.start_date)
-    const monthOfEntry = getMonth(debtStartDate) // 10, october
-    const initialYearRemainingMonths = 12 - monthOfEntry // 3 months
-
-    // Initial age at debt start date
-    const initialYearAge = differenceInCalendarYears(debtStartDate, birthDate) //  24
-
-    // Duration upon update
+    // Total debt duration in months
     const updatedDate = new Date(debtData.updated_at)
     const updatedDuration = differenceInCalendarMonths(updatedDate, debtStartDate)
-
-    // Select Duration based on Income Status
     const duration = debtData.debt_status === 'End' ? updatedDuration : debtData.commitment_period_months
-    const futureDebtMonths = duration - initialYearRemainingMonths //117
 
-    const finalYear = Math.ceil(futureDebtMonths / 12) // 10
-
-
+    // Number of repayment months after 1st year
+    const futureDebtMonths = duration - initialYearDebtMonths //109
 
 
 
-    const debtProjection: IDebtProjection[] = []
+    ///// MONTHLY DEBT PROJECTIONS
+    const debtMonthlyProjection: IDebtMonthlyProjection[] = []
+    let outstandingPrin = debtData.loan_amount
 
-    const initialYearDebtProjection = (initialYear: IDebtMonthlyProjection[]) => {
-        const initialYearDebtDetails: IDebtProjection = { "age": initialYearAge, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0 }
+    for (let period = 1; period <= debtData.commitment_period_months; period++) {
+        const monthlyInterest = monthlyInterestRate * outstandingPrin
+        const monthlyPrincipal = monthlyRepayment - monthlyInterest
+        outstandingPrin -= monthlyPrincipal
+        debtMonthlyProjection.push({ "period": period, "monthlyRepayment": monthlyRepayment, "interestRepayment": monthlyInterest, "principalRepayment": monthlyPrincipal, "outstandingPrincipal": outstandingPrin })
+    }
+
+
+
+    ///// PAID DEBT PROJECTIONS 
+    const numOfPaidMonths = differenceInCalendarMonths(todayDate, debtStartDate)
+    const debtPaidMonthly: IDebtMonthlyProjection[] = debtMonthlyProjection.filter((debt) => debt.period <= numOfPaidMonths)
+
+    // Number of paid months after 1st year
+    const remainingPaidMonths = numOfPaidMonths - initialYearDebtMonths
+
+
+
+
+    // Calculate 1st year debt
+    const initialYearDebtProjection = (initialYear: IDebtMonthlyProjection[], debtArr: IDebtProjection[]) => {
+        let remainingPrincipal = debtData.loan_amount
+        const initialYearDebtDetails: IDebtProjection = { "age": initialYearAge, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0, "outstandingPrincipal": remainingPrincipal }
         for (let i = 0; i < initialYear.length; i++) {
             initialYearDebtDetails.yearlyRepayment += Math.round(initialYear[i].monthlyRepayment)
             initialYearDebtDetails.interestRepayment += Math.round(initialYear[i].interestRepayment)
             initialYearDebtDetails.principalRepayment += Math.round(initialYear[i].principalRepayment)
         }
-        debtProjection.push(initialYearDebtDetails) //Array of initial year obj
+        initialYearDebtDetails.outstandingPrincipal = Math.round(initialYearDebtDetails.outstandingPrincipal - initialYearDebtDetails.principalRepayment)
+        debtArr.push(initialYearDebtDetails)
     }
 
+
+    ///// FULL DEBT PROJECTIONS
+    const debtProjection: IDebtProjection[] = []
+
+
     if (futureDebtMonths > 0) {
-        // Initial Year Debt
 
-        // Array of first 3 months (object)
-        const initialYearDebt = debtMonthlyProjection.filter((debt) => debt.period <= initialYearRemainingMonths)
-
-        // Push initial year debt
-        initialYearDebtProjection(initialYearDebt)
+        /// INITIAL YEAR DEBT
+        const initialYearDebt = debtMonthlyProjection.filter((debt) => debt.period <= initialYearDebtMonths)
+        initialYearDebtProjection(initialYearDebt, debtProjection)
 
 
-        // Following Year Debt
 
-        const futureYearsDebtProjection = (numOfMonths: number, numOfFullYearMonths: number = 0) => {
-            const finalYearDebtDetails: IDebtProjection = { "age": initialYearAge + finalYear, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0 }
+        // Calculate final year debt
+        const finalYearDebtProjection = (numOfMonths: number, numOfFullYearMonths: number = 0) => {
+
+            const finalYear = Math.ceil(futureDebtMonths / 12) // 10
+            const remainingPrincipalInFinalYear = debtMonthlyProjection[duration - numOfMonths - 1].outstandingPrincipal
+            const finalYearDebtDetails: IDebtProjection = { "age": initialYearAge + finalYear, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0, "outstandingPrincipal": remainingPrincipalInFinalYear }
+
             for (let month = 0; month < numOfMonths; month++) {
-                finalYearDebtDetails.yearlyRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + numOfFullYearMonths + month].monthlyRepayment)
-                finalYearDebtDetails.interestRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + numOfFullYearMonths + month].interestRepayment)
-                finalYearDebtDetails.principalRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + numOfFullYearMonths + month].principalRepayment)
+                finalYearDebtDetails.yearlyRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + numOfFullYearMonths + month].monthlyRepayment)
+                finalYearDebtDetails.interestRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + numOfFullYearMonths + month].interestRepayment)
+                finalYearDebtDetails.principalRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + numOfFullYearMonths + month].principalRepayment)
             }
+            finalYearDebtDetails.outstandingPrincipal = Math.round(finalYearDebtDetails?.outstandingPrincipal - finalYearDebtDetails?.principalRepayment)
+
             return debtProjection.push(finalYearDebtDetails)
         }
 
 
         if (futureDebtMonths >= 12) {
-            // Find Number of Full Year Debt
-            const fullYearDebtYears = Math.floor(futureDebtMonths / 12) //2 years
-            const fullYearDebtMonths = fullYearDebtYears * 12 // 24 months
 
-            // Push every full year debt projections
+
+            /// SUBSEQUENT FULL YEAR DEBTS
             let addMonths = 0
+            let cumulativePrincipalRepayment = 0
+            const fullYearDebtYears = Math.floor(futureDebtMonths / 12) //2 years
+            const remainingPrincipalAfterInitialYear = debtMonthlyProjection[initialYearDebtMonths - 1].outstandingPrincipal
+
             for (let year = 1; year <= fullYearDebtYears; year++) {
-                const futureYearsDebtDetails: IDebtProjection = { "age": initialYearAge, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0 }
+                const futureYearsDebtDetails: IDebtProjection = { "age": initialYearAge, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0, "outstandingPrincipal": 0 }
                 futureYearsDebtDetails.age = initialYearAge + year
 
+
                 for (let month = 0; month < 12; month++) {
-                    futureYearsDebtDetails.yearlyRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + month + addMonths].monthlyRepayment)
-                    futureYearsDebtDetails.interestRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + month + addMonths].interestRepayment)
-                    futureYearsDebtDetails.principalRepayment += Math.round(debtMonthlyProjection[initialYearRemainingMonths + month + addMonths].principalRepayment)
+                    futureYearsDebtDetails.yearlyRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + month + addMonths].monthlyRepayment)
+                    futureYearsDebtDetails.interestRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + month + addMonths].interestRepayment)
+                    futureYearsDebtDetails.principalRepayment += Math.round(debtMonthlyProjection[initialYearDebtMonths + month + addMonths].principalRepayment)
                 }
+                cumulativePrincipalRepayment += futureYearsDebtDetails.principalRepayment
+                futureYearsDebtDetails.outstandingPrincipal = Math.round(remainingPrincipalAfterInitialYear - cumulativePrincipalRepayment)
                 addMonths += 12
 
                 debtProjection.push(futureYearsDebtDetails)
             }
 
 
-            // Push final year debt projections
-            const finalYearDebtMonths = duration - initialYearRemainingMonths - fullYearDebtMonths //9
+
+            /// FINAL YEAR DEBT
+            const fullYearDebtMonths = fullYearDebtYears * 12
+            const finalYearDebtMonths = duration - initialYearDebtMonths - fullYearDebtMonths
+
             if (finalYearDebtMonths > 0) {
-                futureYearsDebtProjection(finalYearDebtMonths, fullYearDebtMonths)
+                finalYearDebtProjection(finalYearDebtMonths, fullYearDebtMonths)
             }
+
+
+        } else if (futureDebtMonths < 12) {
+            /// FINAL YEAR DEBT
+            const finalYearDebtMonths = duration - initialYearDebtMonths
+            finalYearDebtProjection(finalYearDebtMonths)
         }
 
-        else if (futureDebtMonths < 12) {
-            // Push final year debt projections
-            const finalYearDebtMonths = duration - initialYearRemainingMonths
-            futureYearsDebtProjection(finalYearDebtMonths)
-        }
 
     } else if (futureDebtMonths <= 0) {
-        initialYearDebtProjection(debtMonthlyProjection)
+        /// INITIAL YEAR DEBT
+        initialYearDebtProjection(debtMonthlyProjection, debtProjection)
 
     }
 
-    console.log(debtProjection)
+
+
+    ///// PAID DEBTS
+    const debtPaidTimeline: IDebtProjection[] = []
+
+    if (todayDate > debtStartDate) {
+
+        if (numOfPaidMonths >= initialYearDebtMonths) {
+
+            /// INITIAL YEAR PAID DEBT
+            const initialYearPaidDebt = debtPaidMonthly.filter((debt) => debt.period <= initialYearDebtMonths)
+            initialYearDebtProjection(initialYearPaidDebt, debtPaidTimeline)
+
+
+
+            // Calculate final year paid debt
+            const finalPaidYearDebtProjection = (numOfMonths: number, numOfFullYearMonths: number = 0) => {
+
+                const finalPaidYear = Math.ceil(remainingPaidMonths / 12)
+                const remainingPrincipalInFinalYear = debtPaidMonthly[numOfPaidMonths - numOfMonths - 1].outstandingPrincipal
+                const finalYearDebtDetails: IDebtProjection = { "age": initialYearAge + finalPaidYear, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0, "outstandingPrincipal": remainingPrincipalInFinalYear }
+
+                for (let month = 0; month < numOfMonths; month++) {
+                    finalYearDebtDetails.yearlyRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + numOfFullYearMonths + month]?.monthlyRepayment)
+                    finalYearDebtDetails.interestRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + numOfFullYearMonths + month]?.interestRepayment)
+                    finalYearDebtDetails.principalRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + numOfFullYearMonths + month]?.principalRepayment)
+                }
+                finalYearDebtDetails.outstandingPrincipal = Math.round(finalYearDebtDetails?.outstandingPrincipal - finalYearDebtDetails?.principalRepayment)
+
+                return debtPaidTimeline.push(finalYearDebtDetails)
+            }
+
+
+            if (remainingPaidMonths >= 12) {
+
+
+                /// SUBSEQUENT FULL YEAR PAID DEBTS
+                let addMonths = 0
+                let cumulativePrincipalRepayment = 0
+                const fullYearPaidDebtYears = Math.floor(remainingPaidMonths / 12)
+                const remainingPrincipalAfterInitialYear = debtPaidMonthly[initialYearDebtMonths - 1].outstandingPrincipal
+
+                for (let year = 1; year <= fullYearPaidDebtYears; year++) {
+                    const YearlyDebtDetails: IDebtProjection = { "age": initialYearAge, "yearlyRepayment": 0, "interestRepayment": 0, "principalRepayment": 0, "outstandingPrincipal": 0 }
+                    YearlyDebtDetails.age = initialYearAge + year
+
+                    for (let month = 0; month < 12; month++) {
+                        YearlyDebtDetails.yearlyRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + month + addMonths].monthlyRepayment)
+                        YearlyDebtDetails.interestRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + month + addMonths].interestRepayment)
+                        YearlyDebtDetails.principalRepayment += Math.round(debtPaidMonthly[initialYearDebtMonths + month + addMonths].principalRepayment)
+                    }
+                    cumulativePrincipalRepayment += YearlyDebtDetails.principalRepayment
+                    YearlyDebtDetails.outstandingPrincipal = Math.round(remainingPrincipalAfterInitialYear - cumulativePrincipalRepayment)
+                    addMonths += 12
+
+                    debtPaidTimeline.push(YearlyDebtDetails)
+                }
+
+                /// FINAL YEAR PAID DEBT
+                const fullYearPaidDebtMonths = fullYearPaidDebtYears * 12
+                const finalYearPaidDebtMonths = numOfPaidMonths - initialYearDebtMonths - fullYearPaidDebtMonths
+
+                if (finalYearPaidDebtMonths > 0) {
+                    finalPaidYearDebtProjection(finalYearPaidDebtMonths, fullYearPaidDebtMonths)
+                }
+
+
+            } else if (remainingPaidMonths < 12) {
+                /// FINAL YEAR PAID DEBT
+                const finalYearPaidDebtMonths = numOfPaidMonths - initialYearDebtMonths
+                finalPaidYearDebtProjection(finalYearPaidDebtMonths)
+            }
+
+
+        } else if (numOfPaidMonths < initialYearDebtMonths) {
+            /// INITIAL YEAR PAID DEBT
+            initialYearDebtProjection(debtPaidMonthly, debtPaidTimeline)
+        }
+
+        /// REMOVE PAID DEBT FROM DEBT PROJECTIONS
+        debtPaidTimeline.forEach(paidYear => {
+            debtProjection.find(entry => entry.age === paidYear.age ? entry.yearlyRepayment -= paidYear.yearlyRepayment : null)
+            debtProjection.find(entry => entry.age === paidYear.age ? entry.interestRepayment -= paidYear.interestRepayment : null)
+            debtProjection.find(entry => entry.age === paidYear.age ? entry.principalRepayment -= paidYear.principalRepayment : null)
+        })
+    }
+
+    console.log('debt paid', debtPaidTimeline)
+    console.log('debt projection', debtProjection)
+
+    debtProjection.forEach((entry) => entry.outstandingPrincipal < 0 ? entry.outstandingPrincipal = 0 : null)
+
 
     return (
         debtProjection

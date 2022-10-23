@@ -96,9 +96,9 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
         }),
         onSubmit: (values: any) => {
 
-            if (values.debt_status === 'Current') {
-                values.start_date = format(new Date(), "yyyy-MM-dd")
-            }
+            // if (values.debt_status === 'Current') {
+            //     values.start_date = format(new Date(), "yyyy-MM-dd")
+            // }
 
             if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
                 values.monthly_commitment = 0
@@ -307,7 +307,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                                 <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.debt_status === 'Future' ? false : true}
+                                    // disabled={formik.values.debt_status === 'Future' ? false : true}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -315,7 +315,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.debt_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={formik.values.start_date}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>
