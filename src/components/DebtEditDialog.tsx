@@ -63,6 +63,16 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
         setNextOpen(false);
     };
 
+
+    const convertDate = (str: string) => {
+        var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+        return [date.getFullYear(), mnth, day].join("-");
+    }
+
+
+
     const formik = useFormik({
         initialValues: {
             debt_type: debtDetails.debt_type,
@@ -70,8 +80,8 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
             debt_name: debtDetails.debt_name,
             interest_rate: debtDetails.interest_rate,
             debt_status: debtDetails.debt_status,
-            commitment_period_months: debtDetails.commitment_period_months,
-            start_date: debtDetails.start_date,
+            commitment_period_months: debtDetails.commitment_period_months / 12,
+            start_date: convertDate(debtDetails.start_date),
             monthly_commitment: debtDetails.monthly_commitment,
 
         },
@@ -87,8 +97,21 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                 .required("Required"),
             debt_status: Yup.string().required("Required"),
             commitment_period_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date().required("Required")
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                })
+                .test("date-current", "Date must be today or earlier", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Current' && date > currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
                 .min(0),
@@ -96,17 +119,18 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
         }),
         onSubmit: (values: any) => {
 
-            // if (values.debt_status === 'Current') {
-            //     values.start_date = format(new Date(), "yyyy-MM-dd")
-            // }
 
-            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
-                values.monthly_commitment = 0
+            if (values.debt_status === 'End') {
+                values.start_date = convertDate(debtDetails.start_date)
+            }
+
+
+            if (values.monthly_commitment === '') {
                 const monthlyInterestRate = values.interest_rate / 12 / 100
-                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
-                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12)) - 1
                 const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
-                values.monthly_commitment = calculatedMonthlyRepayment
+                values.monthly_commitment = calculatedMonthlyRepayment.toFixed(2)
             }
 
             const keys = {
@@ -119,6 +143,8 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                 start_date: "",
                 monthly_commitment: 0
             }
+
+            console.log(values)
 
             const debtRequest = Object.assign(keys, values)
 
@@ -307,7 +333,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                                 <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    // disabled={formik.values.debt_status === 'Future' ? false : true}
+                                    disabled={formik.values.debt_status === 'End' ? true : false}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -315,7 +341,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.start_date}
+                                    value={formik.values.debt_status === 'End' ? convertDate(debtDetails.start_date) : formik.values.start_date}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>

@@ -68,7 +68,7 @@ const DebtsDashboard = () => {
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Debts</Typography>
-            <DebtProjections />
+            <DebtProjections debtData={debtData} />
 
             <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
 

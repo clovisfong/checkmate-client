@@ -152,10 +152,10 @@ export interface IDebtData2 {
 
 export interface ITotalDebtProjection {
     age: number;
-    totalDebtRepayment: number;
+    yearlyRepayment: number
+    interestRepayment: number;
+    principalRepayment: number;
     outstandingPrincipal: number;
-    outstandingInterest: number
-    outstandingDebt: number;
 }
 
 export interface IDebtProjection {

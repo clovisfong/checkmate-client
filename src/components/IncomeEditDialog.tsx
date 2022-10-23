@@ -61,6 +61,12 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
     };
 
 
+    const convertDate = (str: string) => {
+        var date = new Date(str),
+            mnth = ("0" + (date.getMonth() + 1)).slice(-2),
+            day = ("0" + date.getDate()).slice(-2);
+        return [date.getFullYear(), mnth, day].join("-");
+    }
 
 
     const formik = useFormik({
@@ -71,8 +77,8 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
             income_status: incomeDetails.income_status,
             amount: incomeDetails.amount,
             frequency: incomeDetails.frequency,
-            duration_months: incomeDetails.duration_months,
-            start_date: incomeDetails.start_date,
+            duration_months: incomeDetails.duration_months / 12,
+            start_date: convertDate(incomeDetails.start_date),
             growth_rate: incomeDetails.growth_rate,
 
         },
@@ -86,8 +92,14 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
             frequency: Yup.string().required("Required"),
             income_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date()
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.income_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             growth_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
@@ -95,6 +107,14 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
 
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
+            }
+
+            if (values.income_status === 'End') {
+                values.start_date = convertDate(incomeDetails.start_date)
+            }
+
+            if (values.growth_rate === '') {
+                values.growth_rate = 0
             }
 
 
@@ -111,10 +131,9 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
 
             const incomeRequest = Object.assign(keys, values)
 
-
             const SERVER = import.meta.env.VITE_SERVER;
             const url = urlcat(SERVER, `/income/${incomeDetails.id}`);
-            console.log(url)
+
             const header = {
                 headers: {
                     "Content-Type": "application/json",
@@ -139,8 +158,6 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
 
         },
     });
-
-    console.log(response)
 
 
     return (
@@ -302,7 +319,7 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                                 <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.income_status === 'Future' ? false : true}
+                                    disabled={formik.values.income_status === 'Current' || formik.values.income_status === 'End' ? true : false}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -310,7 +327,11 @@ const IncomeEditDialog = ({ incomeDetails, update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.income_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={
+                                        formik.values.income_status === 'Current' ? format(new Date(), "yyyy-MM-dd") :
+                                            formik.values.income_status === 'End' ? convertDate(incomeDetails.start_date) :
+                                                formik.values.start_date
+                                    }
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>

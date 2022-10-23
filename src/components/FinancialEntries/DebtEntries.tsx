@@ -35,7 +35,6 @@ const DebtEntries = ({ debtData, update }: Props) => {
             {debtData.map((debt: IDebtData) =>
               <React.Fragment key={debt.id}>
 
-                {/* <Box sx={{ mt: '1rem' }}></Box> */}
                 <TableRow
                   sx={{
                     backgroundColor: '#F2F2F2',
@@ -49,7 +48,11 @@ const DebtEntries = ({ debtData, update }: Props) => {
                     maximumFractionDigits: 0,
                   })}</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.interest_rate}%</TableCell>
-                  <TableCell sx={{ fontSize: '0.9rem' }}>${debt.monthly_commitment}</TableCell>
+                  <TableCell sx={{ fontSize: '0.9rem' }}>{Number(debt.monthly_commitment).toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'SGD',
+                    maximumFractionDigits: 0,
+                  })}</TableCell>
                   <TableCell sx={{ fontSize: '0.9rem' }}>{debt.commitment_period_months / 12} years</TableCell>
                   <TableCell align="right" >
                     <Box sx={{ display: 'flex', gap: '1rem', justifyContent: 'end' }}>

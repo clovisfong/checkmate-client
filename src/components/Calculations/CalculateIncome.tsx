@@ -7,44 +7,40 @@ import UserDetailsContext from '../contextStore/userdetails-context'
 
 const CalculateIncome = (incomeData: IIncomeData) => {
 
-    const incomeProjection: IIncomeProjection[] = []
 
+    ///// USER TIMELINE
     const userContext = useContext(UserDetailsContext)
-
-
-
-    // General details: Current age, retirement age, life-expectancy age
     const birthDate = new Date(userContext.date_of_birth)
-    const currentDate = new Date // use current date
-    const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
-    const yearsToRetirement = userContext.retirement_age - currentAge //42
-    const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
 
-    console.log('check', userContext.retirement_age)
+    ///// LOAN DETAILS
 
-
-    // Remaining months till year end
+    // Number of income months in 1st year
     const incomeStartDate = new Date(incomeData.start_date)
-    const monthOfEntry = getMonth(incomeStartDate) // 10, october
-    const initialYearRemainingMonths = 12 - monthOfEntry // 3 months
+    const monthOfEntry = getMonth(incomeStartDate)
+    const initialYearRemainingMonths = 12 - monthOfEntry
 
-    // Initial age
-    const initialYearAge = differenceInCalendarYears(incomeStartDate, birthDate) //  24
+    // Age at 1st year
+    const initialYearAge = differenceInCalendarYears(incomeStartDate, birthDate)
 
-    // Duration upon Update
+    // Total income duration in months
     const updatedDate = new Date(incomeData.updated_at)
     const updatedDuration = differenceInCalendarMonths(updatedDate, incomeStartDate)
-
-    // Select Duration based on Income Status
     const duration = incomeData.income_status === 'End' ? updatedDuration : incomeData.duration_months
-    console.log('duration', duration)
-    const futureIncomeMonths = duration - initialYearRemainingMonths //117
 
 
 
-    const finalYear = Math.ceil(futureIncomeMonths / 12) // 10
+    // Number of income months after 1st year
+    const futureIncomeMonths = duration - initialYearRemainingMonths
 
 
+    ///// MONTHLY INCOME PROJECTIONS
+    const incomeProjection: IIncomeProjection[] = []
+
+    const finalYear = Math.ceil(futureIncomeMonths / 12)
+
+
+
+    // Calculate initial year income
     const storeInitialYearValue = (period: number) => {
         if (incomeData.frequency === 'Monthly') {
             incomeProjection.push({ "age": initialYearAge, "income": period * incomeData.amount })
@@ -54,6 +50,7 @@ const CalculateIncome = (incomeData: IIncomeData) => {
         }
     }
 
+    // Calculate future years income
     const storeFutureYearsValue = (numOfYear: number, numOfMonths: number) => {
         if (incomeData.frequency === 'Monthly') {
             incomeProjection.push({ "age": initialYearAge + numOfYear, "income": Math.ceil(numOfMonths * incomeData.amount * Math.pow((1 + (incomeData.growth_rate / 100)), numOfYear)) })
@@ -65,43 +62,45 @@ const CalculateIncome = (incomeData: IIncomeData) => {
 
 
     if (futureIncomeMonths > 0) {
-        // Initial Year Income
-        storeInitialYearValue(initialYearRemainingMonths) // {age: 24, Income : 9000}
+        /// INITIAL YEAR INCOME
+        storeInitialYearValue(initialYearRemainingMonths)
 
-        // Find Number of Full Year Income
+
         if (futureIncomeMonths >= 12) {
-            // const fullYearIncomeMonths = futureIncomeMonths - (12 - initialYearRemainingMonths) //108
-            const fullYearIncomeYears = Math.floor(futureIncomeMonths / 12) //108
-            const fullYearIncomeMonths = fullYearIncomeYears * 12 // 9 years
 
-            // Following Full-Years Income Projections
+            /// SUBSEQUENT FULL YEAR INCOME
+            const fullYearIncomeYears = Math.floor(futureIncomeMonths / 12)
             for (let year = 1; year <= fullYearIncomeYears; year++) {
                 storeFutureYearsValue(year, 12)
             }
 
-            // Final Year Income Projections
+
             if (incomeData.frequency === 'Monthly') {
+                /// FINAL YEAR INCOME
+                const fullYearIncomeMonths = fullYearIncomeYears * 12
                 const finalYearIncomeMonths = duration - initialYearRemainingMonths - fullYearIncomeMonths
+
                 if (finalYearIncomeMonths > 0) {
                     storeFutureYearsValue(finalYear, finalYearIncomeMonths)
                 }
-
             }
         }
 
         else if (futureIncomeMonths < 12) {
-            // Final Year Income Projections
+            /// FINAL YEAR INCOME
             if (incomeData.frequency === 'Monthly') {
                 const FinalYearIncomeMonths = duration - initialYearRemainingMonths
                 storeFutureYearsValue(finalYear, FinalYearIncomeMonths)
             }
         }
 
-    } else if (futureIncomeMonths <= 0) {
+    } else if (futureIncomeMonths <= 0 && duration > 0) {
+        /// INITIAL YEAR INCOME
+
         storeInitialYearValue(duration)
     }
 
-
+    console.log('income projections', incomeProjection)
 
     return (
         incomeProjection

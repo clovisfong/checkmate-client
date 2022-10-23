@@ -48,7 +48,7 @@ const DebtOutstandingLineChart = ({ debtProj }: Props) => {
             label: 'Annual Debt Outstanding (SGD)',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: debtProj.map(data => data.outstandingDebt),
+            data: debtProj.map(data => data.outstandingPrincipal),
         }]
     };
 

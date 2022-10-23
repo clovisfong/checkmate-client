@@ -37,7 +37,6 @@ const IncomeEntries = ({ incomeData, update }: Props) => {
                         {incomeData.map((income: IIncomeData) =>
                             <React.Fragment key={income.id}>
 
-                                {/* <Box sx={{ mt: '1rem' }}></Box> */}
                                 <TableRow
                                     sx={{
                                         backgroundColor: '#F2F2F2',

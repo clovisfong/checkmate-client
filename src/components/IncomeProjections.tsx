@@ -33,6 +33,7 @@ const IncomeProjections = ({ incomeData }: Props) => {
     const totalIncomeProjections = incomeData.map(income => CalculateIncome(income))
 
 
+
     // Sum all income for each age
     const incomeTimeline: ITotalIncomeProjection[] = []
 

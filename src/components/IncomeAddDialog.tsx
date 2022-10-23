@@ -42,7 +42,7 @@ const IncomeAddDialog = ({ update }: Props) => {
 
     const freqOptions = ['Monthly', 'Annually']
     const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const durationOptions: number[] = [0]
 
     for (let year = 1; year <= yearsToExpectancy; year++) {
@@ -88,8 +88,14 @@ const IncomeAddDialog = ({ update }: Props) => {
             frequency: Yup.string().required("Required"),
             income_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date()
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.income_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             growth_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
@@ -97,6 +103,10 @@ const IncomeAddDialog = ({ update }: Props) => {
 
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
+            }
+
+            if (values.growth_rate === '') {
+                values.growth_rate = 0
             }
 
 
@@ -112,7 +122,6 @@ const IncomeAddDialog = ({ update }: Props) => {
             }
 
             const incomeRequest = Object.assign(keys, values)
-
 
             const SERVER = import.meta.env.VITE_SERVER;
             const url = urlcat(SERVER, `/income/`);
@@ -143,7 +152,6 @@ const IncomeAddDialog = ({ update }: Props) => {
         },
     });
 
-    console.log(response)
 
 
     return (
@@ -180,7 +188,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                         >
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.income_type}
@@ -203,7 +211,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount*</Typography>
 
                                 <TextField
                                     required
@@ -223,7 +231,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                                 <TextField
                                     required
@@ -243,7 +251,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.frequency}
@@ -266,7 +274,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.income_status}
@@ -290,7 +298,7 @@ const IncomeAddDialog = ({ update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)*</Typography>
                                 <FormControl sx={{ width: "100%" }}>
                                     <Select
                                         value={formik.values.duration_months}
@@ -314,10 +322,10 @@ const IncomeAddDialog = ({ update }: Props) => {
 
 
                             <Grid item xs={12} sm={6}>
-                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                                <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.income_status === 'Future' ? false : true}
+                                    disabled={formik.values.income_status === 'Current' ? true : false}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -325,7 +333,7 @@ const IncomeAddDialog = ({ update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.income_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={formik.values.income_status === 'Current' ? format(new Date(), "yyyy-MM-dd") : formik.values.start_date}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>

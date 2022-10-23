@@ -48,7 +48,7 @@ const DebtRepaymentLineChart = ({ debtProj }: Props) => {
             label: 'Annual Debt Repayment (SGD)',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: debtProj.map(data => data.totalDebtRepayment),
+            data: debtProj.map(data => data.yearlyRepayment),
         }]
     };
 

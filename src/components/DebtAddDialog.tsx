@@ -7,7 +7,7 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { Box } from '@mui/system';
 import { FormControl, Grid, MenuItem, Select, TextField } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useFormik } from 'formik';
+import { useFormik, yupToFormErrors } from 'formik';
 import * as Yup from "yup";
 import { differenceInCalendarYears, format } from 'date-fns';
 import { IDebtData2 } from '../Interface';
@@ -15,6 +15,7 @@ import axios from 'axios';
 import urlcat from 'urlcat';
 
 import UserDetailsContext from "./contextStore/userdetails-context";
+import { number } from "yup/lib/locale";
 
 interface Props {
     update: () => void
@@ -41,7 +42,7 @@ const DebtAddDialog = ({ update }: Props) => {
     const yearsToExpectancy = userContext.life_expectancy - currentAge
 
     const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const commitmentPeriodOptions: number[] = [0]
 
     const yearLength = yearsToExpectancy <= 35 ? yearsToExpectancy : 35
@@ -88,27 +89,35 @@ const DebtAddDialog = ({ update }: Props) => {
                 .required("Required"),
             debt_status: Yup.string().required("Required"),
             commitment_period_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date().required("Required")
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                })
+                .test("date-current", "Date must be today or earlier", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Current' && date > currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
-                .min(0),
+                .min(0, "Must be a positive number"),
 
         }),
         onSubmit: (values: any, { resetForm }: any) => {
 
-            if (values.debt_status === 'Current') {
-                values.start_date = format(new Date(), "yyyy-MM-dd")
-            }
 
-
-            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
-                values.monthly_commitment = 0
+            if (values.monthly_commitment === '') {
                 const monthlyInterestRate = values.interest_rate / 12 / 100
-                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
-                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12)) - 1
                 const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
-                values.monthly_commitment = calculatedMonthlyRepayment
+                values.monthly_commitment = calculatedMonthlyRepayment.toFixed(2)
             }
 
             const keys = {
@@ -124,6 +133,9 @@ const DebtAddDialog = ({ update }: Props) => {
 
 
             const debtRequest = Object.assign(keys, values)
+
+
+
 
             const SERVER = import.meta.env.VITE_SERVER;
             const url = urlcat(SERVER, `/debt/`);
@@ -327,7 +339,6 @@ const DebtAddDialog = ({ update }: Props) => {
                                 <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                                 <TextField
                                     required
-                                    disabled={formik.values.debt_status === 'Future' ? false : true}
                                     id="start_date"
                                     autoComplete="off"
                                     name="start_date"
@@ -335,7 +346,7 @@ const DebtAddDialog = ({ update }: Props) => {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     sx={{ width: "100%" }}
-                                    value={formik.values.debt_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                    value={formik.values.start_date}
                                 />
                                 {formik.touched.start_date && formik.errors.start_date ? (
                                     <div>{formik.errors.start_date}</div>

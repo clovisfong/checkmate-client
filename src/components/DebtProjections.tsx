@@ -7,48 +7,14 @@ import { Box, Container, Grid, Typography } from '@mui/material'
 import urlcat from "urlcat"
 import axios from "axios"
 import DebtRepaymentLineChart from "./DebtRepaymentLineChart"
-import testfunc from "./testfunc"
 import DebtOutstandingLineChart from "./DebtOutstandingLineChart"
 
+interface Props {
+    debtData: IDebtData[];
+}
 
 
-const DebtProjections = () => {
-
-    const [debtData, setDebtData] = useState<IDebtData[]>([
-        // commitment_period_months: 0,
-        // created_at: '',
-        // debt_name: '',
-        // debt_status: '',
-        // debt_type: '',
-        // id: 0,
-        // interest_rate: 0,
-        // loan_amount: 0,
-        // monthly_commitment: 0,
-        // start_date: '',
-        // updated_at: '',
-        // user_details_id: 0
-    ])
-
-    // Fetch Debt Details
-    const SERVER = import.meta.env.VITE_SERVER;
-    const url = urlcat(SERVER, "/debt/");
-    const token = sessionStorage.getItem('token')
-    const header = {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-    }
-    useEffect(() => {
-        axios
-            .get(url, header)
-            .then((res) => {
-                console.log('debt check', res.data)
-                setDebtData(res.data)
-            })
-            .catch((error) => console.log(error.response.data.error));
-
-    }, [])
-
+const DebtProjections = ({ debtData }: Props) => {
 
 
     // Get Year
@@ -72,45 +38,70 @@ const DebtProjections = () => {
     const debtTimeline: ITotalDebtProjection[] = []
 
     for (let age = currentAge; age <= userContext.life_expectancy; age++) {
-        debtTimeline.push({ "age": age, "totalDebtRepayment": 0, "outstandingPrincipal": 0, "outstandingInterest": 0, "outstandingDebt": 0 })
+        debtTimeline.push({ "age": age, "yearlyRepayment": 0, "principalRepayment": 0, "interestRepayment": 0, "outstandingPrincipal": 0 })
     }
 
     debtProjections.forEach((debt) => {
         debt.forEach((projection) => {
-            debtTimeline.find((entry) => entry.age === projection.age ? entry.totalDebtRepayment += projection.yearlyRepayment : null)
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.yearlyRepayment += projection.yearlyRepayment : null)
         })
         debt.forEach((projection) => {
-            debtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingPrincipal += projection.principalRepayment : null)
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.principalRepayment += projection.principalRepayment : null)
         })
         debt.forEach((projection) => {
-            debtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingInterest += projection.interestRepayment : null)
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.interestRepayment += projection.interestRepayment : null)
         })
         debt.forEach((projection) => {
-            debtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingDebt += projection.outstandingPrincipal : null)
+            debtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingPrincipal += projection.outstandingPrincipal : null)
         })
 
     })
 
 
 
-    // Total Loan Amount
+    // Total Current Loan Amount
     const totalLoanAmount = debtData.filter(debt => debt.debt_status === 'Current').reduce((prev, curr) => prev + curr.loan_amount, 0)
 
 
-    // Total Debt Outstanding
-    let totalDebtOutstanding = 0
-    const currentYearDebtDetails = debtTimeline.find((year) => year.age === currentAge)
+    // Current Debt Projections
+
+    const currentDebtProjections = debtData.filter(debt => debt.debt_status === 'Current').map(debt => CalculateDebt(debt))
+    const currentDebtTimeline: ITotalDebtProjection[] = []
+
+    for (let age = currentAge; age <= userContext.life_expectancy; age++) {
+        currentDebtTimeline.push({ "age": age, "yearlyRepayment": 0, "principalRepayment": 0, "interestRepayment": 0, "outstandingPrincipal": 0 })
+    }
+
+    currentDebtProjections.forEach((debt) => {
+        debt.forEach((projection) => {
+            currentDebtTimeline.find((entry) => entry.age === projection.age ? entry.yearlyRepayment += projection.yearlyRepayment : null)
+        })
+        debt.forEach((projection) => {
+            currentDebtTimeline.find((entry) => entry.age === projection.age ? entry.principalRepayment += projection.principalRepayment : null)
+        })
+        debt.forEach((projection) => {
+            currentDebtTimeline.find((entry) => entry.age === projection.age ? entry.interestRepayment += projection.interestRepayment : null)
+        })
+        debt.forEach((projection) => {
+            currentDebtTimeline.find((entry) => entry.age === projection.age ? entry.outstandingPrincipal += projection.outstandingPrincipal : null)
+        })
+
+    })
+
+    // Total current debt oustanding
+    let totalCurrentDebtOutstanding = 0
+    const currentYearDebtDetails = currentDebtTimeline.find((year) => year.age === currentAge)
     if (currentYearDebtDetails) {
-        totalDebtOutstanding = currentYearDebtDetails.outstandingDebt + currentYearDebtDetails.outstandingPrincipal
+        totalCurrentDebtOutstanding = currentYearDebtDetails.outstandingPrincipal + currentYearDebtDetails.principalRepayment
     }
 
     // Total outstanding interest
-    const totalInterestOutstanding = debtTimeline.reduce((prev, curr) => prev + curr.outstandingInterest, 0)
+    const totalInterestOutstanding = currentDebtTimeline.reduce((prev, curr) => prev + curr.interestRepayment, 0)
 
 
     // Debt free age
     let debtFreeAge = 0
-    const debtFreeDetails = debtTimeline.find(entry => entry.totalDebtRepayment === 0)
+    const debtFreeDetails = currentDebtTimeline.find(entry => entry.yearlyRepayment === 0)
     if (debtFreeDetails) {
         debtFreeAge = debtFreeDetails.age
     }
@@ -184,7 +175,7 @@ const DebtProjections = () => {
                     }}>
                     <Typography variant="h5" sx={{}}>Total Debt Outstanding</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{totalDebtOutstanding.toLocaleString('en-US', {
+                    <Typography variant="h3" sx={{ mb: 3 }}>{totalCurrentDebtOutstanding.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
