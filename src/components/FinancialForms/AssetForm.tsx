@@ -45,29 +45,46 @@ const AssetForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =>
 
             const assetRequest = Object.assign(keys, values)
 
+            let submitInfo = financialInfo
+            if (financialInfo[3] === undefined) {
+                setFinancialInfo([...financialInfo, assetRequest])
+                submitInfo = [...submitInfo, assetRequest]
+            } else {
+                const financialArr = financialInfo.map((info: any, i: number) => {
+                    if (i === 3) {
+                        return info = assetRequest
+                    } else {
+                        return info
+                    }
+                })
+                setFinancialInfo(financialArr)
+                submitInfo = financialArr
+            }
 
-            setFinancialInfo([financialInfo[0], financialInfo[1], financialInfo[2], assetRequest])
-            const allFinancialInfo = [financialInfo[0], financialInfo[1], financialInfo[2], assetRequest]
-            console.log(allFinancialInfo)
 
-            // navigateToOverview('/dashboard/overview')
+            const SERVER = import.meta.env.VITE_SERVER;
+            const url = urlcat(SERVER, `/all/`);
+
+            const header = {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            }
 
 
-            // const SERVER = import.meta.env.VITE_SERVER;
-            // const url = urlcat(SERVER, `/all/`);
+            axios
+                .post(url, submitInfo, header)
+                .then((res) => {
+                    console.log(res.data.msg)
+                    navigateToOverview('/dashboard/overview')
+                })
+                .catch((error) => console.log(error.response.data.error));
 
-            // const header = {
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //         "Authorization": `Bearer ${token}`
-            //     }
-            // }
-            // axios
-            //     .post(url, assetRequest, header)
-            //     .then((res) => {
-            //         console.log(res.data.msg)
-            //     })
-            //     .catch((error) => console.log(error.response.data.error));
+
+
+
+
 
 
             setDisable(true)
@@ -81,6 +98,7 @@ const AssetForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =>
         setSearchParams({ section: 'debts' })
     }
 
+    console.log('asset side', financialInfo)
 
     return (
         <Container maxWidth='sm' sx={{ width: '100%' }}>

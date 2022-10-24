@@ -1,10 +1,11 @@
 import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
 import { useFormik } from 'formik';
 import * as Yup from "yup";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import { IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
 import { Box } from '@mui/system';
+import UserDetailsContext from '../contextStore/userdetails-context';
 
 
 
@@ -13,11 +14,23 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
 
     const [disable, setDisable] = useState(false)
 
+    const userContext = useContext(UserDetailsContext)
+    const token: any = sessionStorage.getItem('token')
+
+    const birthDate = new Date(userContext.date_of_birth)
+    const currentDate = new Date // use current date
+    const currentAge = differenceInCalendarYears(currentDate, birthDate)
+    const yearsToExpectancy = userContext.life_expectancy - currentAge
+
+
     const debtOptions = ['Home', 'Personal', 'Car', 'Credit Card', 'Education', 'Others']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const commitmentPeriodOptions: number[] = [0]
 
-    for (let year = 1; year <= 35; year++) {
+    const yearLength = yearsToExpectancy <= 35 ? yearsToExpectancy : 35
+
+
+    for (let year = 1; year <= yearLength; year++) {
         commitmentPeriodOptions.push(year)
     }
 
@@ -48,8 +61,21 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                 .required("Required"),
             debt_status: Yup.string().required("Required"),
             commitment_period_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date().required("Required")
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                })
+                .test("date-current", "Date must be today or earlier", (date: any, context): boolean => {
+                    if (context.parent.debt_status === 'Current' && date > currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             monthly_commitment: Yup.number()
                 .typeError("You must specify a number")
                 .min(0),
@@ -57,17 +83,13 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
         }),
         onSubmit: (values: any) => {
 
-            if (values.debt_status === 'Current') {
-                values.start_date = format(new Date(), "yyyy-MM-dd")
-            }
 
-            if (values.monthly_commitment === '' || values.monthly_commitment === 0) {
-                values.monthly_commitment = 0
+            if (values.monthly_commitment === '') {
                 const monthlyInterestRate = values.interest_rate / 12 / 100
-                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12))
-                const denominator = Math.pow((1 + monthlyInterestRate), (values.monthly_commitment * 12)) - 1
+                const numerator = monthlyInterestRate * Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12))
+                const denominator = Math.pow((1 + monthlyInterestRate), (values.commitment_period_months * 12)) - 1
                 const calculatedMonthlyRepayment = values.loan_amount * numerator / denominator
-                values.monthly_commitment = calculatedMonthlyRepayment
+                values.monthly_commitment = calculatedMonthlyRepayment.toFixed(2)
             }
 
             const keys = {
@@ -82,10 +104,22 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
             }
 
             const debtRequest = Object.assign(keys, values)
-            console.log('debt', debtRequest)
+
+
+            if (financialInfo[2] === undefined) {
+                setFinancialInfo([...financialInfo, debtRequest])
+            } else {
+                const financialArr = financialInfo.map((info: any, i: number) => {
+                    if (i === 2) {
+                        return info = debtRequest
+                    } else {
+                        return info
+                    }
+                })
+                setFinancialInfo(financialArr)
+            }
 
             setSearchParams({ section: 'assets' })
-            setFinancialInfo([financialInfo[0], financialInfo[1], debtRequest])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -94,11 +128,13 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
         },
     });
 
-    console.log('debt section', financialInfo)
+
 
     const handleClick = () => {
         setSearchParams({ section: 'expenses' })
     }
+
+    console.log('debt side', financialInfo)
 
 
     return (
@@ -249,7 +285,6 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                             <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                             <TextField
                                 required
-                                disabled={formik.values.debt_status === 'Future' ? false : true}
                                 id="start_date"
                                 autoComplete="off"
                                 name="start_date"
@@ -257,7 +292,7 @@ const DebtForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => 
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.debt_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                value={formik.values.start_date}
                             />
                             {formik.touched.start_date && formik.errors.start_date ? (
                                 <div>{formik.errors.start_date}</div>

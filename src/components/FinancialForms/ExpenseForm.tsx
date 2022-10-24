@@ -2,9 +2,7 @@ import { Button, Container, FormControl, Grid, MenuItem, Select, TextField, Typo
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 import React, { FC, useContext, useEffect, useState } from "react";
-import { IUserDetails } from '../../Interface';
 import { differenceInCalendarYears, format } from 'date-fns';
-import { Box } from '@mui/system';
 import UserDetailsContext from '../contextStore/userdetails-context';
 
 
@@ -21,10 +19,10 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
 
     const freqOptions = ['Monthly', 'Annually']
     const expenseOptions = ['Personal', 'Insurance', 'Travel', 'Big Purchase', 'Marriage', 'Others']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const durationOptions: number[] = [0]
 
-    for (let year = 1; year <= 100; year++) {
+    for (let year = 1; year <= yearsToExpectancy; year++) {
         durationOptions.push(year)
     }
 
@@ -52,8 +50,14 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
             frequency: Yup.string().required("Required"),
             expense_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date()
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.expense_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             inflation_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
@@ -63,6 +67,9 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                 values.start_date = format(new Date(), "yyyy-MM-dd")
             }
 
+            if (values.inflation_rate === '') {
+                values.inflation_rate = 0
+            }
 
             const keys = {
                 expense_name: "",
@@ -76,10 +83,24 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
             }
 
             const expenseRequest = Object.assign(keys, values)
-            console.log('expense:', expenseRequest)
+
+
+
+            if (financialInfo[1] === undefined) {
+                setFinancialInfo([...financialInfo, expenseRequest])
+            } else {
+                const financialArr = financialInfo.map((info: any, i: number) => {
+                    if (i === 1) {
+                        return info = expenseRequest
+                    } else {
+                        return info
+                    }
+                })
+                setFinancialInfo(financialArr)
+            }
+
 
             setSearchParams({ section: 'debts' })
-            setFinancialInfo([financialInfo[0], expenseRequest])
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -87,12 +108,13 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
         },
     });
 
-    console.log(financialInfo)
 
     const handleClick = () => {
         setSearchParams({ section: 'income' })
     }
 
+
+    console.log('expense side', financialInfo)
 
     return (
         <Container maxWidth='md' sx={{ width: '100%' }}>
@@ -109,7 +131,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                     >
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.expense_type}
@@ -132,7 +154,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount*</Typography>
 
                             <TextField
                                 required
@@ -152,7 +174,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                             <TextField
                                 required
@@ -172,7 +194,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.frequency}
@@ -195,7 +217,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.expense_status}
@@ -219,7 +241,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.duration_months}
@@ -243,10 +265,10 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                             <TextField
                                 required
-                                disabled={formik.values.expense_status === 'Future' ? false : true}
+                                disabled={formik.values.expense_status === 'Current' ? true : false}
                                 id="start_date"
                                 autoComplete="off"
                                 name="start_date"
@@ -254,7 +276,7 @@ const ExpenseForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) 
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.expense_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                value={formik.values.expense_status === 'Current' ? format(new Date(), "yyyy-MM-dd") : formik.values.start_date}
                             />
                             {formik.touched.start_date && formik.errors.start_date ? (
                                 <div>{formik.errors.start_date}</div>

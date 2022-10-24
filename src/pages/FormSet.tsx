@@ -16,6 +16,7 @@ const FormSet = () => {
     const userContext = useContext(UserDetailsContext)
 
 
+
     const financeSection = searchParams.get("section")
 
     const buttonColor = { color: '#2852A0', width: '30px', height: '30px', backgroundColor: 'white', p: '10px', borderRadius: '50%', textAlign: 'center', border: '3px solid #2852A0' }

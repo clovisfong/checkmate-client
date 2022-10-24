@@ -7,25 +7,34 @@ import { differenceInCalendarYears, format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import UserDetailsContext from '../contextStore/userdetails-context';
 
+// interface Props {
+//     setSearchParams: () => void,
+//     setFinancialInfo: (data: IIncomeFill[]) => void,
+//     financialInfo: IIncomeFill
 
+// }
 
 const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) => {
 
     const [disable, setDisable] = useState(false)
-    const [incomeDetails, setIncomeDetails] = useState(
-        {
-            income_type: "",
-            amount: "",
-            income_name: "",
-            frequency: "",
-            income_status: "",
-            duration_months: "",
-            start_date: "",
-            growth_rate: ""
-        }
-    )
+    // const [incomeDetails, setIncomeDetails] = useState(
+    //     {
+    //         income_type: "",
+    //         amount: "",
+    //         income_name: "",
+    //         frequency: "",
+    //         income_status: "",
+    //         duration_months: "",
+    //         start_date: "",
+    //         growth_rate: ""
+    //     }
+    // )
 
     const userContext = useContext(UserDetailsContext)
+    const token: any = sessionStorage.getItem('token')
+
+
+
     const birthDate = new Date(userContext.date_of_birth)
     const currentDate = new Date // use current date
     const currentAge = differenceInCalendarYears(currentDate, birthDate)
@@ -34,11 +43,11 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
     const freqOptions = ['Monthly', 'Annually']
     const incomeOptions = ['Salary', 'Investment', 'Property', 'Business', 'Bonus', 'Other Sources']
-    const statusOptions = ['Current', 'Future', 'End']
+    const statusOptions = ['Current', 'Future']
     const durationOptions: number[] = [0]
 
 
-    for (let year = 1; year <= 100; year++) {
+    for (let year = 1; year <= yearsToExpectancy; year++) {
         durationOptions.push(year)
     }
 
@@ -49,15 +58,14 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
     const formik = useFormik({
         initialValues: {
-            income_type: incomeDetails.income_type,
-            amount: incomeDetails.amount,
-            income_name: incomeDetails.income_name,
-            frequency: incomeDetails.frequency,
-            income_status: incomeDetails.income_status,
-            duration_months: incomeDetails.duration_months,
-            start_date: incomeDetails.start_date,
-            growth_rate: incomeDetails.growth_rate,
-
+            income_name: '',
+            income_type: '',
+            income_status: '',
+            amount: '',
+            frequency: '',
+            duration_months: '',
+            start_date: '',
+            growth_rate: ""
         },
         validationSchema: Yup.object({
             income_type: Yup.string().required("Required"),
@@ -69,8 +77,14 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
             frequency: Yup.string().required("Required"),
             income_status: Yup.string().required("Required"),
             duration_months: Yup.number().required("Required"),
-            start_date: Yup.date(),
-            // .min(new Date(), "Please put future date"),
+            start_date: Yup.date()
+                .test("date-future", "Date must be in future", (date: any, context): boolean => {
+                    if (context.parent.income_status === 'Future' && date <= currentDate) {
+                        return false
+                    } else {
+                        return true
+                    }
+                }),
             growth_rate: Yup.number()
                 .typeError("You must specify a number")
         }),
@@ -78,6 +92,10 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
             if (values.income_status === 'Current') {
                 values.start_date = format(new Date(), "yyyy-MM-dd")
+            }
+
+            if (values.growth_rate === '') {
+                values.growth_rate = 0
             }
 
             const keys = {
@@ -94,9 +112,22 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
             const incomeRequest = Object.assign(keys, values)
             console.log("income:", incomeRequest);
 
-            setSearchParams({ section: 'expenses' })
 
-            setFinancialInfo([incomeRequest])
+
+            if (financialInfo[0] === undefined) {
+                setFinancialInfo([incomeRequest])
+            } else {
+                const financialArr = financialInfo.map((info: any, i: number) => {
+                    if (i === 0) {
+                        return info = incomeRequest
+                    } else {
+                        return info
+                    }
+                })
+                setFinancialInfo(financialArr)
+            }
+
+            setSearchParams({ section: 'expenses' })
             setDisable(true)
             setTimeout(() => {
                 setDisable(false)
@@ -109,6 +140,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
         navigateToWelcomeForm('/form')
     }
 
+    console.log('income side', financialInfo)
 
 
 
@@ -127,7 +159,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                     >
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Type*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.income_type}
@@ -150,7 +182,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Amount*</Typography>
 
                             <TextField
                                 required
@@ -170,7 +202,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Name*</Typography>
 
                             <TextField
                                 required
@@ -190,7 +222,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Frequency*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.frequency}
@@ -213,7 +245,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Status*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.income_status}
@@ -237,7 +269,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Duration (in years)*</Typography>
                             <FormControl sx={{ width: "100%" }}>
                                 <Select
                                     value={formik.values.duration_months}
@@ -261,10 +293,10 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
 
 
                         <Grid item xs={12} sm={6}>
-                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date</Typography>
+                            <Typography variant='body2' sx={{ mb: '0.5rem', color: '#53565B' }}>Start Date*</Typography>
                             <TextField
                                 required
-                                disabled={formik.values.income_status === 'Future' ? false : true}
+                                disabled={formik.values.income_status === 'Current' ? true : false}
                                 id="start_date"
                                 autoComplete="off"
                                 name="start_date"
@@ -272,7 +304,7 @@ const IncomeForm = ({ setSearchParams, setFinancialInfo, financialInfo }: any) =
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
-                                value={formik.values.income_status === 'Future' ? formik.values.start_date : format(new Date(), "yyyy-MM-dd")}
+                                value={formik.values.income_status === 'Current' ? format(new Date(), "yyyy-MM-dd") : formik.values.start_date}
                             />
                             {formik.touched.start_date && formik.errors.start_date ? (
                                 <div>{formik.errors.start_date}</div>

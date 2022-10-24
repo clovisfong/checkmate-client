@@ -13,9 +13,8 @@ const WelcomeForm = () => {
         navigateToIncome('/form/new?section=income')
     }
 
-    console.log(userContext.retirement_age)
 
-    console.log('welcome',)
+
     return (
         <Container maxWidth='sm' sx={{
             mt: '3rem',

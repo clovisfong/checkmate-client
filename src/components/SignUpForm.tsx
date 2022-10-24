@@ -15,12 +15,14 @@ import { IUserDetails } from '../Interface';
 const SignUpForm: FC = () => {
 
     const [userEmail, setUserEmail] = useState(0);
+    const [error, setError] = useState<String>("");
     const [disable, setDisable] = useState(false)
 
     const navigateToWelcome = useNavigate();
     const SERVER = import.meta.env.VITE_SERVER;
 
     const userContext = useContext(UserDetailsContext)
+
 
     const genderOptions = ["Male", "Female", "Prefer not to say"]
 
@@ -61,20 +63,24 @@ const SignUpForm: FC = () => {
                 .required("Required"),
         }),
         onSubmit: (values) => {
-            console.log(values);
             const createUser = urlcat(SERVER, "/users/");
 
-
+            const header = {
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
             axios
-                .post(createUser, values)
+                .post(createUser, values, header)
                 .then((res) => {
                     console.log(res.data.token);
                     sessionStorage.setItem("token", res.data.token);
                     const userDetails: IUserDetails = jwt_decode(res.data.token)
+                    console.log(userDetails)
                     userContext.setUserState(userDetails)
                     navigateToWelcome(`/form`);
                 })
-                .catch((error) => console.log(error.response.data.error));
+                .catch((error) => setError(error.response.data.error));
         },
     });
 
@@ -216,6 +222,8 @@ const SignUpForm: FC = () => {
 
                         }}> Create Account
                         </Button>
+                        <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>
+
                     </Grid>
 
                 </form>

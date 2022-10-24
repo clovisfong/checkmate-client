@@ -134,7 +134,7 @@ const DebtAddDialog = ({ update }: Props) => {
 
             const debtRequest = Object.assign(keys, values)
 
-
+            console.log('check', debtRequest)
 
 
             const SERVER = import.meta.env.VITE_SERVER;
