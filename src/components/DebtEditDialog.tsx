@@ -90,7 +90,7 @@ const DebtEditDialog = ({ debtDetails, update }: Props) => {
             loan_amount: Yup.number()
                 .typeError("You must specify a number")
                 .required("Required")
-                .min(0),
+                .min(0, 'Amount must be a positive number'),
             debt_name: Yup.string().required("Required").min(4, 'Too Short!').max(30, 'Too Long!'),
             interest_rate: Yup.number()
                 .typeError("You must specify a number")

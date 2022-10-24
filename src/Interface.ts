@@ -7,7 +7,21 @@ export interface IUserDetails {
     life_expectancy: number;
     name: string;
     retirement_age: number;
-    retirement_lifestyle: string
+    retirement_lifestyle: string;
+}
+
+export interface IUserDetails2 {
+    date_of_birth: string;
+    email: string;
+    gender: string;
+    id: number;
+    legacy_allocation: number;
+    life_expectancy: number;
+    name: string;
+    retirement_age: number;
+    retirement_lifestyle: string;
+    updated_at: string;
+    created_at: string;
 }
 
 export interface IUserContext extends IUserDetails {

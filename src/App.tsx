@@ -18,6 +18,7 @@ import ExpensesDashboard from './pages/ExpensesDashboard';
 import DebtsDashboard from './pages/DebtsDashboard';
 import AssetsDashboard from './pages/AssetsDashboard';
 import WelcomeForm from './pages/WelcomeForm';
+import Profile from './pages/Profile';
 
 function App() {
 
@@ -35,6 +36,8 @@ function App() {
           <Route path='/dashboard/expenses' element={<ExpensesDashboard />} />
           <Route path='/dashboard/debts' element={<DebtsDashboard />} />
           <Route path='/dashboard/assets' element={<AssetsDashboard />} />
+          <Route path='/profile' element={<Profile />} />
+
         </Route>
         <Route path='/login' element={<Login />} />
 
