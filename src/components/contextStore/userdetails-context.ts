@@ -13,7 +13,8 @@ const UserDetailsContext = React.createContext<IUserContext>({
     retirement_age: 0,
     retirement_lifestyle: ''
     ,
-    setUserState: () => { }
+    setUserState: () => { },
+    fetchUpdate: () => { }
 });
 
 export default UserDetailsContext;

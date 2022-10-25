@@ -4,6 +4,7 @@ import UserDetailsContext from "./userdetails-context";
 import jwt_decode from 'jwt-decode';
 
 const UserDetailsProvider = ({ children }: any) => {
+    const [refresh, setRefresh] = useState(false)
     const [userInfo, setUserInfo] = useState<IUserDetails>({
         date_of_birth: '',
         email: '',
@@ -20,13 +21,17 @@ const UserDetailsProvider = ({ children }: any) => {
         setUserInfo(data);
     };
 
+    const update = () => {
+        setRefresh(!refresh)
+    }
+
     useEffect(() => {
 
         const token: any = sessionStorage.getItem('token')
         if (token === null) return
         const userDetails: IUserDetails = jwt_decode(token)
         setUserInfo(userDetails)
-    }, [])
+    }, [refresh])
 
 
     const userDetailsContext: IUserContext = {
@@ -40,6 +45,7 @@ const UserDetailsProvider = ({ children }: any) => {
         retirement_age: userInfo.retirement_age,
         retirement_lifestyle: userInfo.retirement_lifestyle,
         setUserState: storeInfo,
+        fetchUpdate: update
     };
 
     // console.log("token received in context: ", tokenContext.token);

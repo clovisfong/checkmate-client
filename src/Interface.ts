@@ -26,6 +26,7 @@ export interface IUserDetails2 {
 
 export interface IUserContext extends IUserDetails {
     setUserState: (data: IUserDetails) => void;
+    fetchUpdate: () => void;
 }
 
 

@@ -121,8 +121,8 @@ const ProfileForm = ({ userDetails, update }: Props) => {
                     setError("Account updated successfully!")
                     sessionStorage.setItem("token", res.data.token);
                     const userInfo: IUserDetails = jwt_decode(res.data.token)
-                    console.log(userInfo)
                     userContext.setUserState(userDetails)
+                    userContext.fetchUpdate()
                     update()
 
                 })
