@@ -130,10 +130,6 @@ export interface ITotalExpenseProjection {
 }
 
 
-export interface IFinancialContext {
-    setIncomeState: (data: ITotalIncomeProjection[]) => void;
-    setExpenseState: (data: ITotalExpenseProjection[]) => void;
-}
 
 export interface IDebtData {
     commitment_period_months: number;
