@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react"
 import { IDebtData, ITotalDebtProjection, IUserDetails } from "../Interface"
 import CalculateDebt from "./Calculations/CalculateDebt"
 import UserDetailsContext from "./contextStore/userdetails-context"
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import urlcat from "urlcat"
 import axios from "axios"
 import DebtRepaymentLineChart from "./DebtRepaymentLineChart"
@@ -113,7 +113,7 @@ const DebtProjections = ({ debtData }: Props) => {
     return (
         <>
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Debt Outstanding At Year End</Typography>
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Calendar-Year End Outstanding Debt</Typography>
                 <DebtOutstandingLineChart debtProj={debtTimeline} />
             </Box>
 
@@ -122,7 +122,8 @@ const DebtProjections = ({ debtData }: Props) => {
                 <DebtRepaymentLineChart debtProj={debtTimeline} />
             </Box>
 
-
+            <Typography variant='h5' sx={{ mt: '2rem', mb: '0.5rem', color: '#53565B' }}>Debt Details</Typography>
+            <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
 
 
             <Grid container spacing={0}

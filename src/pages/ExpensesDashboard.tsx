@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Grid, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios';
@@ -71,9 +71,10 @@ const ExpensesDashboard = () => {
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Expenses</Typography>
             <ExpenseProjections expenseData={expensesData} />
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
+            <Typography variant='h5' sx={{ mt: '5rem', mb: '0.5rem', color: '#53565B' }}>Types of Expenses</Typography>
 
             <ExpenseEntries expensesData={expensesData} update={update} />
+            <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )
 }

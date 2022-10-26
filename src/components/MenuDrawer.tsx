@@ -24,6 +24,7 @@ import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlin
 import CreditCardOutlinedIcon from '@mui/icons-material/CreditCardOutlined';
 import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
 import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
+import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import { Button } from '@mui/material';
 
 const drawerWidth = 240;
@@ -142,7 +143,7 @@ export default function MenuDrawer() {
                 <DrawerHeader sx={{ display: 'flex', mt: '1rem', justifyContent: 'center' }}>
                     {open ?
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <Box sx={{ mr: '1.5rem' }}>
+                            <Box sx={{ mt: '0.2rem', mr: '1.5rem' }}>
                                 <img
                                     src="https://i.imgur.com/z1F6OfZ.png"
                                     alt='CheckMate'
@@ -204,27 +205,33 @@ export default function MenuDrawer() {
                         <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Assets</Typography>
                     </Box>
                     </Link>
-                    <Box onClick={handleProfile} sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <Button sx={{
-                            display: 'block',
-                            background: '#2852A0',
-                            color: '#FFFBF0',
-                            letterSpacing: '0.2rem',
-                            mt: '5rem',
-                            mr: '1.5rem',
-                            pl: '1rem',
-                            pr: '1rem',
-                            mb: '0.5rem',
-                            border: '0.1rem solid #2852A0',
-                            borderRadius: '0.7rem',
-                            '&:hover': {
-                                backgroundColor: '#254D71',
-                            },
+                    {open ?
+                        <Box onClick={handleProfile} sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button sx={{
+                                display: 'block',
+                                background: '#2852A0',
+                                color: '#FFFBF0',
+                                letterSpacing: '0.2rem',
+                                mt: '5rem',
+                                mr: '1.5rem',
+                                pl: '1rem',
+                                pr: '1rem',
+                                mb: '0.5rem',
+                                border: '0.1rem solid #2852A0',
+                                borderRadius: '0.7rem',
+                                '&:hover': {
+                                    backgroundColor: '#254D71',
+                                },
 
-                        }}> Edit Profile
-                        </Button>
-                    </Box>
-
+                            }}> Edit Profile
+                            </Button>
+                        </Box>
+                        :
+                        <Link to="/profile" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '4rem' }}>
+                            <Person2OutlinedIcon sx={{ color: '#53565B' }} />
+                        </Box>
+                        </Link>
+                    }
                     {/* {['Dashboard', 'Income', 'Expenses', 'Debts', 'Assets'].map((text, index) => (
                         <ListItem key={text} disablePadding sx={{ display: 'block' }}>
                             <ListItemButton

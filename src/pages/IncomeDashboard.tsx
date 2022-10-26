@@ -66,7 +66,7 @@ const IncomeDashboard = () => {
 
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Income</Typography>
             <IncomeProjections incomeData={incomeData} />
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
+            <Typography variant='h5' sx={{ mt: '5rem', mb: '0.5rem', color: '#53565B' }}>Types of Income</Typography>
 
             <IncomeEntries incomeData={incomeData} update={update} />
             <Box sx={{ mt: '10rem' }}></Box>

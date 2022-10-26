@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
 import React, { useContext, useEffect, useState } from 'react'
 import IncomeEntries from '../components/FinancialEntries/IncomeEntries'
@@ -10,6 +10,7 @@ import IncomeProjections from '../components/IncomeProjections';
 import jwt_decode from 'jwt-decode';
 import AssetEntries from '../components/FinancialEntries/AssetEntries';
 import UserDetailsContext from '../components/contextStore/userdetails-context';
+import AssetPieChart from '../components/AssetPieChart';
 
 const AssetsDashboard = () => {
 
@@ -57,9 +58,13 @@ const AssetsDashboard = () => {
     }, [refresh])
 
 
+    // Total asset current value
     const totalAssetValue = assetData.reduce((prev, curr) => prev + curr.current_value, 0)
 
     const sortAssetbyValue = assetData.sort((a, b) => b.current_value - a.current_value)
+
+    // Total savings
+    const totalSavings = assetData.filter(asset => asset.asset_type === 'Savings').reduce((prev, cur) => prev + cur.current_value, 0)
 
 
     const update = () => {
@@ -69,6 +74,11 @@ const AssetsDashboard = () => {
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Assets</Typography>
+            <Box sx={{ textAlign: 'center', mb: '2rem', mt: '3rem' }}>
+                <Typography variant="h5" sx={{ textAlign: 'left' }}>Asset Details</Typography>
+                <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
+
+            </Box>
             <Grid container spacing={0}
                 sx={{
                     display: 'grid',
@@ -78,48 +88,69 @@ const AssetsDashboard = () => {
                     mb: 7
                 }}
             >
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Asset Current Value</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
-                    <Typography variant="h3" sx={{ mb: 3 }}>{totalAssetValue.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'SGD',
-                        maximumFractionDigits: 0,
-                    })}</Typography>
-                </Grid>
-                <Grid
-                    item xs={12}
-                    sx={{
-                        backgroundColor: '#E4EFFF',
-                        p: '1rem',
-                        pl: '2rem',
-                        pr: '2rem',
-                        borderRadius: '0.75rem'
-                    }}>
-                    <Typography variant="h5" sx={{}}>Top 3 Assets</Typography>
-                    <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
-                    {sortAssetbyValue.slice(0, 3).map((asset) =>
-                        <Typography key={asset.id} variant="h4" sx={{ mb: 2 }}> {asset.asset_name}:  {asset.current_value.toLocaleString('en-US', {
+
+
+                <Grid container sx={{ gap: '1rem' }}>
+                    <Grid
+                        item xs={12}
+                        sx={{
+                            backgroundColor: '#E4EFFF',
+                            p: '1rem',
+                            pl: '2rem',
+                            pr: '2rem',
+                            borderRadius: '0.75rem'
+                        }}>
+                        <Typography variant="h5" sx={{}}>Total Asset Value</Typography>
+                        <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
+                        <Typography variant="h3" sx={{ mb: 3 }}>{totalAssetValue.toLocaleString('en-US', {
                             style: 'currency',
                             currency: 'SGD',
                             maximumFractionDigits: 0,
-                        })}</Typography>)}
+                        })}</Typography>
+                    </Grid>
+
+
+                    <Grid
+                        item xs={12}
+                        sx={{
+                            backgroundColor: '#E4EFFF',
+                            p: '1rem',
+                            pl: '2rem',
+                            pr: '2rem',
+                            borderRadius: '0.75rem'
+                        }}>
+                        <Typography variant="h5" sx={{}}>Total Initial Savings</Typography>
+                        <Typography variant="body1" sx={{ mb: 3 }}>As of Now</Typography>
+                        <Typography variant="h3" sx={{ mb: 3 }}>{totalSavings.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'SGD',
+                            maximumFractionDigits: 0,
+                        })}</Typography>
+                    </Grid>
+                </Grid>
+                <Grid
+                    item xs={12}
+                    sx={{
+                        backgroundColor: '#E4EFFF',
+                        p: '1rem',
+                        pl: '2rem',
+                        pr: '2rem',
+                        borderRadius: '0.75rem'
+                    }}>
+                    <Typography variant="h5" sx={{ textAlign: 'center', mb: 3 }}>Assets Breakdown</Typography>
+
+                    <AssetPieChart assetData={assetData} />
 
                 </Grid>
 
 
+
+
             </Grid>
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Asset Entries</Typography>
+            <Typography variant='h5' sx={{ mb: '0.5rem', color: '#53565B' }}>Types of Assets</Typography>
 
             <AssetEntries assetData={assetData} update={update} />
+            <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )
 }

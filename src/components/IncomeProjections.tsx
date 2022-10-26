@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from "date-fns"
 import { useContext } from "react"
 import { IIncomeData, IIncomeProjection, ITotalIncomeProjection, IUserDetails } from "../Interface"
@@ -71,6 +71,10 @@ const IncomeProjections = ({ incomeData }: Props) => {
                 <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Income To Be Earned</Typography>
                 <IncomeLineChart incomeProj={incomeTimeline} />
             </Box>
+
+            <Typography variant='h5' sx={{ mt: '2rem', mb: '0.5rem', color: '#53565B' }}>Income Details</Typography>
+            <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
+
 
             <Grid container spacing={0}
                 sx={{

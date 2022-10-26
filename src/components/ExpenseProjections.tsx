@@ -3,7 +3,7 @@ import { useContext } from "react"
 import { IExpenseData, ITotalExpenseProjection, IUserDetails } from "../Interface"
 import CalculateExpense from "./Calculations/CalculateExpense"
 import UserDetailsContext from "./contextStore/userdetails-context"
-import { Box, Container, Grid, Typography } from '@mui/material'
+import { Box, Container, Divider, Grid, Typography } from '@mui/material'
 import ExpenseLineChart from "./ExpenseLineChart"
 
 interface Props {
@@ -25,6 +25,8 @@ const ExpenseProjections = ({ expenseData }: Props) => {
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
     const yearsToRetirement = userContext.retirement_age - currentAge //42
     const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
+    const retirementSpendingRate = userContext.retirement_lifestyle
+    const retirementAge = userContext.retirement_age
 
 
     // Yearly projection for each expense
@@ -47,6 +49,16 @@ const ExpenseProjections = ({ expenseData }: Props) => {
         })
     })
     console.log(expenseTimeline)
+
+    // Adjust expense based on retirement lifestyle
+    expenseTimeline.forEach(entry => {
+        if (entry.age <= retirementAge) null
+        else {
+            retirementSpendingRate === 'Simple' ? entry.totalExpenses *= 0.8 :
+                retirementSpendingRate === 'Enhanced' ? entry.totalExpenses *= 1.5 :
+                    null
+        }
+    })
 
 
 
@@ -73,6 +85,8 @@ const ExpenseProjections = ({ expenseData }: Props) => {
                 <ExpenseLineChart expenseProj={expenseTimeline} />
             </Box>
 
+            <Typography variant='h5' sx={{ mt: '2rem', mb: '0.5rem', color: '#53565B' }}>Expenses Details</Typography>
+            <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
 
             <Grid container spacing={0}
                 sx={{

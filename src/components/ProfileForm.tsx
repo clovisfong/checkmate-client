@@ -5,7 +5,7 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import urlcat from "urlcat";
 import axios from "axios";
-import { Button, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Button, Divider, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import UserDetailsContext from './contextStore/userdetails-context';
 import jwt_decode from 'jwt-decode';
@@ -132,8 +132,11 @@ const ProfileForm = ({ userDetails, update }: Props) => {
 
 
     return (
-        <Container maxWidth='md' sx={{ width: '80%' }}>
-            <Grid item xs={12}>
+        <Container maxWidth='md' sx={{ width: '80%', mb: '7rem' }}>
+            <Typography variant='h5' sx={{ mt: '2rem', mb: '0.5rem', color: '#53565B' }}>User Details</Typography>
+            <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
+
+            <Grid item xs={12} >
                 <form onSubmit={formik.handleSubmit}>
                     <Grid
                         container
@@ -357,7 +360,7 @@ const ProfileForm = ({ userDetails, update }: Props) => {
                                 backgroundColor: '#254D71',
                             },
 
-                        }}> Submit Details
+                        }}> Change Details
                         </Button>
                         <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>
 

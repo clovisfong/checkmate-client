@@ -1,4 +1,4 @@
-import { Container, Box, Grid, Typography } from '@mui/material'
+import { Container, Box, Grid, Typography, Divider } from '@mui/material'
 import axios from 'axios'
 import { differenceInCalendarYears, getYear } from 'date-fns'
 import React, { useContext, useEffect, useState } from 'react'
@@ -85,6 +85,8 @@ const DashboardOverview = () => {
     const currentAge = differenceInCalendarYears(currentDate, birthDate) // 24
     const yearsToRetirement = userContext.retirement_age - currentAge //42
     const yearsToLifeExpectancy = userContext.life_expectancy - currentAge //66
+    const retirementSpendingRate = userContext.retirement_lifestyle
+    const retirementAge = userContext.retirement_age
 
 
     // FETCH
@@ -173,6 +175,16 @@ const DashboardOverview = () => {
         })
     })
 
+    // Adjust expense based on retirement lifestyle
+    expenseTimeline.forEach(entry => {
+        if (entry.age <= retirementAge) null
+        else {
+            retirementSpendingRate === 'Simple' ? entry.totalExpenses *= 0.8 :
+                retirementSpendingRate === 'Enhanced' ? entry.totalExpenses *= 1.5 :
+                    null
+        }
+    })
+
 
 
     // DEBT
@@ -256,6 +268,7 @@ const DashboardOverview = () => {
 
 
 
+
     // FIGURES
     // This year savings
     const yearEndSavings = cumulativeSavings.find(savings => savings.age === currentAge)
@@ -265,26 +278,35 @@ const DashboardOverview = () => {
     const totalSavingsByRetirement = cumulativeSavings.find(savings => savings.age === userContext.retirement_age)
 
 
+    // Total Savings by Expectancy year
+    const totalSavingsByExpectancy = cumulativeSavings.find(savings => savings.age === userContext.life_expectancy)
 
 
+    // Monthly retirement budget
+    let monthlyRetirementBudget = 0
+    if (totalSavingsByRetirement) {
+        const retirementSavingsAfterEstate = totalSavingsByRetirement?.totalSavings - userContext.legacy_allocation
+        monthlyRetirementBudget = retirementSavingsAfterEstate / ((userContext.life_expectancy - userContext.retirement_age) * 12)
+    }
 
     return (
         <Container maxWidth='lg'>
             <Typography variant='h3' sx={{ mb: '3rem', color: '#53565B', fontWeight: '700' }}>Home</Typography>
 
             <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
-                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Savings</Typography>
-                <SavingsLineChart savingsProj={savingsTimeline} />
-            </Box>
-
-            <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
                 <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Cumulative Savings</Typography>
                 <CSavingsLineChart cSavingsProj={cumulativeSavings} />
             </Box>
 
+            <Box sx={{ textAlign: 'center', mb: '5rem', mt: '3rem' }}>
+                <Typography variant="h5" sx={{ textAlign: 'left', mb: '2rem' }}>Annual Savings</Typography>
+                <SavingsLineChart savingsProj={savingsTimeline} />
+            </Box>
 
 
-            <Typography variant='h4' sx={{ mb: '3rem', color: '#53565B' }}>Savings Estimates</Typography>
+
+            <Typography variant='h5' sx={{ mb: '0.5rem', color: '#53565B' }}>Savings Details</Typography>
+            <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
             <Grid container spacing={0}
                 sx={{
                     display: 'grid',
@@ -303,7 +325,7 @@ const DashboardOverview = () => {
                         pr: '2rem',
                         borderRadius: '0.75rem'
                     }}>
-                    <Typography variant="h5" sx={{}}>Cumulative Savings By Year End Savings</Typography>
+                    <Typography variant="h5" sx={{}}>Cumulative Savings By Year End</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year}</Typography>
                     <Typography variant="h3" sx={{ mb: 3 }}>{yearEndSavings?.totalSavings.toLocaleString('en-US', {
                         style: 'currency',
@@ -323,6 +345,46 @@ const DashboardOverview = () => {
                     <Typography variant="h5" sx={{}}>Cumulative Savings By Retirement</Typography>
                     <Typography variant="body1" sx={{ mb: 3 }}>As at {year + yearsToRetirement} (Age: {userContext.retirement_age})</Typography>
                     <Typography variant="h3" sx={{ mb: 3 }}>{totalSavingsByRetirement?.totalSavings.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'SGD',
+                        maximumFractionDigits: 0,
+                    })}</Typography>
+                </Grid>
+
+                <Grid
+                    item xs={12}
+                    sx={{
+                        backgroundColor: '#EDEEF1',
+                        p: '1rem',
+                        pl: '2rem',
+                        pr: '2rem',
+                        borderRadius: '0.75rem'
+                    }}>
+                    <Typography variant="h5" sx={{}}>Estate Savings For Loved Ones</Typography>
+                    <Typography variant="body1" sx={{ mb: 3 }}>Based on '{userContext.retirement_lifestyle}' lifestyle for retirement (Age: {userContext.life_expectancy})</Typography>
+                    <Typography variant="h3" sx={{ mb: 3 }}>{totalSavingsByExpectancy?.totalSavings.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'SGD',
+                        maximumFractionDigits: 0,
+                    })}</Typography>
+                </Grid>
+
+                <Grid
+                    item xs={12}
+                    sx={{
+                        backgroundColor: '#EDEEF1',
+                        p: '1rem',
+                        pl: '2rem',
+                        pr: '2rem',
+                        borderRadius: '0.75rem'
+                    }}>
+                    <Typography variant="h5" sx={{}}>Monthly Retirement Budget</Typography>
+                    <Typography variant="body1" sx={{ mb: 3 }}>Based on {userContext.legacy_allocation.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'SGD',
+                        maximumFractionDigits: 0,
+                    })} estate savings</Typography>
+                    <Typography variant="h3" sx={{ mb: 3 }}>{monthlyRetirementBudget.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'SGD',
                         maximumFractionDigits: 0,
@@ -352,7 +414,7 @@ const DashboardOverview = () => {
                 </Grid> */}
             </Grid>
 
-
+            <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )
 }

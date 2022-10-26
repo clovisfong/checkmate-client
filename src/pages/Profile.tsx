@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
@@ -60,6 +60,7 @@ const Profile = () => {
             <Typography variant='h3' sx={{ mb: '3rem', color: '#53565B', fontWeight: '700' }}>Profile</Typography>
             <ProfileForm userDetails={userDetails} update={update} />
             <PasswordForm userDetails={userDetails} update={update} />
+            <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )
 }

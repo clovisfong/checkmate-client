@@ -1,4 +1,4 @@
-import { Container, Typography } from '@mui/material'
+import { Box, Container, Typography } from '@mui/material'
 import { differenceInCalendarYears, getYear } from 'date-fns'
 import React, { useContext, useEffect, useState } from 'react'
 import axios from 'axios';
@@ -65,9 +65,10 @@ const DebtsDashboard = () => {
             <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Debts</Typography>
             <DebtProjections debtData={debtData} />
 
-            <Typography variant='h4' sx={{ mb: '0.5rem', color: '#53565B' }}>Overview for Year {year}</Typography>
+            <Typography variant='h5' sx={{ mt: '5rem', mb: '0.5rem', color: '#53565B' }}>Types of Debts</Typography>
 
             <DebtEntries debtData={debtData} update={update} />
+            <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )
 }
