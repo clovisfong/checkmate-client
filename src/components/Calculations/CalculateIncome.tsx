@@ -101,7 +101,7 @@ const CalculateIncome = (incomeData: IIncomeData) => {
         storeInitialYearValue(duration)
     }
 
-    console.log('income projections', incomeProjection)
+    // console.log('income projections', incomeProjection)
 
     return (
         incomeProjection

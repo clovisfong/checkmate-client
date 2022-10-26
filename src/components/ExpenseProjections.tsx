@@ -48,7 +48,7 @@ const ExpenseProjections = ({ expenseData }: Props) => {
             expenseTimeline.find((entry) => entry.age === projection.age ? entry.totalExpenses += projection.expense : null)
         })
     })
-    console.log(expenseTimeline)
+
 
     // Adjust expense based on retirement lifestyle
     expenseTimeline.forEach(entry => {

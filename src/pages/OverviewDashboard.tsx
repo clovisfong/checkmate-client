@@ -106,7 +106,6 @@ const DashboardOverview = () => {
         axios
             .get(incomeUrl, header)
             .then((res) => {
-                console.log('income check', res.data)
                 setIncomeData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
@@ -114,20 +113,17 @@ const DashboardOverview = () => {
             .get(expenseUrl, header)
             .then((res) => {
                 setExpensesData(res.data)
-                console.log(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
         axios
             .get(debtUrl, header)
             .then((res) => {
                 setDebtData(res.data)
-                console.log(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
         axios
             .get(assetUrl, header)
             .then((res) => {
-                console.log(res.data)
                 setAssetData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));
@@ -247,7 +243,7 @@ const DashboardOverview = () => {
         .filter(asset => asset.asset_type === 'Savings')
         .reduce((a, b) => a + b.current_value, 0)
 
-    console.log('asset', filteredSavings)
+
 
 
 

@@ -50,7 +50,6 @@ const AssetsDashboard = () => {
         axios
             .get(url, header)
             .then((res) => {
-                console.log(res.data)
                 setAssetData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));

@@ -253,8 +253,8 @@ const CalculateDebt = (debtData: IDebtData) => {
         })
     }
 
-    console.log('debt paid', debtPaidTimeline)
-    console.log('debt projection', debtProjection)
+    // console.log('debt paid', debtPaidTimeline)
+    // console.log('debt projection', debtProjection)
 
     debtProjection.forEach((entry) => entry.outstandingPrincipal < 0 ? entry.outstandingPrincipal = 0 : null)
 

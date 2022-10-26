@@ -44,7 +44,6 @@ const DebtsDashboard = () => {
         axios
             .get(url, header)
             .then((res) => {
-                console.log('debt check', res.data)
                 setDebtData(res.data)
             })
             .catch((error) => console.log(error.response.data.error));

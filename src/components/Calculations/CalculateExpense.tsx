@@ -99,7 +99,7 @@ const CalculateExpense = (expenseData: IExpenseData) => {
     }
 
 
-    console.log('expense projections', expenseProjection)
+    // console.log('expense projections', expenseProjection)
 
 
 
