@@ -82,7 +82,7 @@ const PasswordForm = ({ userDetails, update }: Props) => {
 
 
     return (
-        <Container maxWidth='md' sx={{ width: '80%' }}>
+        <Container maxWidth='md' sx={{ width: '80%', mb: '7rem' }}>
 
             <Typography variant='h5' sx={{ mt: '2rem', mb: '0.5rem', color: '#53565B' }}>Change Password</Typography>
             <Divider sx={{ mt: '1rem', mb: '2rem' }}></Divider>
@@ -106,6 +106,7 @@ const PasswordForm = ({ userDetails, update }: Props) => {
                                 id="old_password"
                                 autoComplete="off"
                                 name="old_password"
+                                type="password"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
@@ -124,6 +125,7 @@ const PasswordForm = ({ userDetails, update }: Props) => {
                                 id="new_password"
                                 autoComplete="off"
                                 name="new_password"
+                                type="password"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
@@ -142,6 +144,7 @@ const PasswordForm = ({ userDetails, update }: Props) => {
                                 required
                                 id="confirm_password"
                                 autoComplete="off"
+                                type="password"
                                 name="confirm_password"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}

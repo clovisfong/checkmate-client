@@ -1,9 +1,16 @@
 import { Box, Grid, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import LoginForm from '../components/LoginForm'
 
 const Login = () => {
+
+    const navigateHome = useNavigate()
+
+    const handlePage = () => {
+        navigateHome('/')
+    }
 
     return (
         <Container maxWidth='sm' sx={{
@@ -20,10 +27,11 @@ const Login = () => {
                     <img
                         src="https://i.imgur.com/z1F6OfZ.png"
                         alt='CheckMate'
+                        onClick={handlePage}
                         style={{
                             maxWidth: '10px',
                             minWidth: '60%',
-
+                            cursor: 'pointer'
                         }} />
                 </Grid>
 

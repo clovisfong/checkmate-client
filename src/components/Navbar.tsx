@@ -4,10 +4,10 @@ import { Outlet, useNavigate } from 'react-router-dom'
 
 const Navbar = () => {
 
-    const navigateLogin = useNavigate()
+    const navigateHome = useNavigate()
 
     const handlePage = () => {
-        navigateLogin('/login')
+        navigateHome('/')
     }
 
     return (

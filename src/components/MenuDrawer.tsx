@@ -122,8 +122,8 @@ export default function MenuDrawer() {
 
     return (
         <Box sx={{ display: 'flex', }}>
-            <CssBaseline />
-            {/* <AppBar position="fixed" open={open}>
+            {/* <CssBaseline />
+            <AppBar position="fixed" open={open}>
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -139,18 +139,20 @@ export default function MenuDrawer() {
                     </IconButton>
                 </Toolbar>
             </AppBar> */}
-            <Drawer variant="permanent" open={open} PaperProps={{ sx: { backgroundColor: '#EDEEF1', border: 'none' } }}>
+            <Drawer variant="permanent" open={open} PaperProps={{ sx: { backgroundColor: '#EDEEF1', border: 'none', } }}>
                 <DrawerHeader sx={{ display: 'flex', mt: '1rem', justifyContent: 'center' }}>
                     {open ?
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <Box sx={{ mt: '0.2rem', mr: '1.5rem' }}>
-                                <img
-                                    src="https://i.imgur.com/z1F6OfZ.png"
-                                    alt='CheckMate'
-                                    style={{
-                                        maxWidth: '120px',
+                                <Link to="/dashboard/overview" style={{ textDecoration: 'none' }}>
+                                    <img
+                                        src="https://i.imgur.com/z1F6OfZ.png"
+                                        alt='CheckMate'
+                                        style={{
+                                            maxWidth: '120px',
 
-                                    }} />
+                                        }} />
+                                </Link>
                             </Box>
                             <IconButton onClick={handleDrawerClose} sx={{}}>
                                 <ChevronLeftIcon />
@@ -162,50 +164,48 @@ export default function MenuDrawer() {
                             color="inherit"
                             aria-label="open drawer"
                             onClick={handleDrawerOpen}
-                        //  sx={{
-                        //      marginRight: 5,
-                        //      ...(open && { display: 'none' }),
-                        //  }}
+
                         >
                             <MenuIcon />
                         </IconButton>
                     }
 
                 </DrawerHeader>
+                {open ?
+                    <List sx={{ textAlign: 'center' }}>
 
-                <List sx={{ textAlign: 'center' }}>
-                    <Link to="/dashboard/overview" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '1.5rem' }}>
-                        <HouseOutlinedIcon sx={{ color: '#53565B' }} />
+                        <Link to="/dashboard/overview" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '1.5rem' }}>
+                            <HouseOutlinedIcon sx={{ color: '#53565B' }} />
 
-                        <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Dashboard</Typography>
+                            <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Dashboard</Typography>
 
-                    </Box>
-                    </Link>
-                    <Link to="/dashboard/income" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
-                        <MonetizationOnOutlinedIcon sx={{ color: '#53565B' }} />
+                        </Box>
+                        </Link>
+                        <Link to="/dashboard/income" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
+                            <MonetizationOnOutlinedIcon sx={{ color: '#53565B' }} />
 
-                        <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Income</Typography>
-                    </Box>
-                    </Link>
-                    <Link to="/dashboard/expenses" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
-                        <PriceChangeOutlinedIcon sx={{ color: '#53565B' }} />
+                            <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Income</Typography>
+                        </Box>
+                        </Link>
+                        <Link to="/dashboard/expenses" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
+                            <PriceChangeOutlinedIcon sx={{ color: '#53565B' }} />
 
-                        <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Expenses</Typography>
-                    </Box>
-                    </Link>
-                    <Link to="/dashboard/debts" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
-                        <CreditCardOutlinedIcon sx={{ color: '#53565B' }} />
+                            <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Expenses</Typography>
+                        </Box>
+                        </Link>
+                        <Link to="/dashboard/debts" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
+                            <CreditCardOutlinedIcon sx={{ color: '#53565B' }} />
 
-                        <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Debts</Typography>
-                    </Box>
-                    </Link>
-                    <Link to="/dashboard/assets" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
-                        <AccountBalanceWalletOutlinedIcon sx={{ color: '#53565B' }} />
+                            <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Debts</Typography>
+                        </Box>
+                        </Link>
+                        <Link to="/dashboard/assets" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem' }}>
+                            <AccountBalanceWalletOutlinedIcon sx={{ color: '#53565B' }} />
 
-                        <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Assets</Typography>
-                    </Box>
-                    </Link>
-                    {open ?
+                            <Typography variant='body1' sx={{ ml: '1.5rem', color: '#53565B' }}>Assets</Typography>
+                        </Box>
+                        </Link>
+
                         <Box onClick={handleProfile} sx={{ display: 'flex', justifyContent: 'center' }}>
                             <Button sx={{
                                 display: 'block',
@@ -226,36 +226,51 @@ export default function MenuDrawer() {
                             }}> Edit Profile
                             </Button>
                         </Box>
-                        :
-                        <Link to="/profile" style={{ textDecoration: 'none' }}><Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '4rem' }}>
-                            <Person2OutlinedIcon sx={{ color: '#53565B' }} />
-                        </Box>
-                        </Link>
-                    }
-                    {/* {['Dashboard', 'Income', 'Expenses', 'Debts', 'Assets'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
 
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))} */}
-                </List>
+                    </List>
+                    :
+                    <List sx={{ textAlign: 'center' }}>
+
+                        <Link to="/dashboard/overview" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', mt: '1.5rem', justifyContent: 'center' }}>
+                                <HouseOutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+                        </Link>
+
+                        <Link to="/dashboard/income" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', mt: '1rem', justifyContent: 'center' }}>
+                                <MonetizationOnOutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+                        </Link>
+
+                        <Link to="/dashboard/expenses" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', mt: '1rem', justifyContent: 'center' }}>
+                                <PriceChangeOutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+                        </Link>
+
+                        <Link to="/dashboard/debts" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', mt: '1rem', justifyContent: 'center' }}>
+                                <CreditCardOutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+                        </Link>
+
+                        <Link to="/dashboard/assets" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '1rem', justifyContent: 'center' }}>
+                                <AccountBalanceWalletOutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+                        </Link>
+
+
+                        <Link to="/profile" style={{ textDecoration: 'none' }}>
+                            <Box sx={{ display: 'flex', pl: '1.5rem', pr: '1.5rem', pt: '1rem', pb: '1rem', mt: '4rem', justifyContent: 'center' }}>
+                                <Person2OutlinedIcon sx={{ color: '#53565B' }} />
+                            </Box>
+
+                        </Link>
+                    </List>
+                }
+
 
 
             </Drawer>

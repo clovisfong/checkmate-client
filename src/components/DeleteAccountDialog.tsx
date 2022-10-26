@@ -1,27 +1,25 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useContext, useEffect, useState } from "react";
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import { Box, Typography } from '@mui/material';
 import urlcat from 'urlcat';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import UserDetailsContext from "./contextStore/userdetails-context";
 
-interface Props {
-    financialEntry: string;
-    financialId: number;
-    update: () => void;
-    type: string
-}
 
-const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
+const DeleteAccountDialog = () => {
     const [open, setOpen] = useState(false);
     const [nextOpen, setNextOpen] = useState(false);
     const [disable, setDisable] = useState(false)
     const [response, setResponse] = useState('')
+
+    const navigateToHome = useNavigate()
+    const userContext = useContext(UserDetailsContext)
 
 
     const handleClickOpen = () => {
@@ -39,21 +37,20 @@ const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
     const handleDelete = () => {
         const token: any = sessionStorage.getItem("token");
         const SERVER = import.meta.env.VITE_SERVER;
-        const deleteUrl = urlcat(SERVER, `/${type}/${financialId}`);
+        const url = urlcat(SERVER, `/users/${userContext.id}`);
         const header = {
             headers: {
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
         };
 
         axios
-            .delete(deleteUrl, header)
+            .delete(url, header)
             .then((res) => {
-
-                setResponse(res.data.msg);
-                setOpen(!open);
-                setNextOpen(!nextOpen)
-                update()
+                console.log(res.data)
+                sessionStorage.clear();
+                navigateToHome('/login')
             })
             .catch((error) => console.log(error.response.data));
 
@@ -66,7 +63,22 @@ const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
 
     return (
         <Box>
-            <RemoveCircleOutlineOutlinedIcon onClick={handleClickOpen} sx={{ color: '#2852A0', cursor: 'pointer' }} />
+            <Button onClick={handleClickOpen} sx={{
+                background: '#9B111E',
+                color: '#FFFBF0',
+                letterSpacing: '0.2rem',
+                mt: '1rem',
+                mb: '1rem',
+                pl: '2rem',
+                pr: '2rem',
+                border: '0.1rem solid #9B111E',
+                flexGrow: { xs: 1, sm: 0 },
+                borderRadius: '0.7rem',
+                '&:hover': {
+                    backgroundColor: '#800000',
+                },
+            }}> Delete Account
+            </Button>
 
 
             <Dialog
@@ -78,13 +90,13 @@ const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
             >
                 <Box sx={{ p: '1rem' }}>
                     <DialogTitle id="alert-dialog-title">
-                        You're about to delete {financialEntry}
+                        You're about to delete your Account
                     </DialogTitle>
 
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Do you really want to delete {financialEntry} entry?
-                            This process cannot be undone.
+                            Are you sure you want to delete your account?
+                            All your information will be removed and this process cannot be undone.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -137,4 +149,4 @@ const DeleteDialog = ({ financialEntry, financialId, update, type }: Props) => {
 }
 
 
-export default DeleteDialog
+export default DeleteAccountDialog

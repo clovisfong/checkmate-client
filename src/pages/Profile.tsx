@@ -3,6 +3,7 @@ import { Container } from '@mui/system'
 import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import urlcat from 'urlcat'
+import AccountSettings from '../components/AccountSettings'
 import UserDetailsContext from '../components/contextStore/userdetails-context'
 import PasswordForm from '../components/PasswordForm'
 import ProfileForm from '../components/ProfileForm'
@@ -60,6 +61,7 @@ const Profile = () => {
             <Typography variant='h3' sx={{ mb: '3rem', color: '#53565B', fontWeight: '700' }}>Profile</Typography>
             <ProfileForm userDetails={userDetails} update={update} />
             <PasswordForm userDetails={userDetails} update={update} />
+            <AccountSettings />
             <Box sx={{ mt: '10rem' }}></Box>
         </Container>
     )

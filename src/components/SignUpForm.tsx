@@ -193,6 +193,7 @@ const SignUpForm: FC = () => {
                                 id="password"
                                 autoComplete="off"
                                 name="password"
+                                type="password"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 sx={{ width: "100%" }}
