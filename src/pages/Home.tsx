@@ -41,43 +41,119 @@ const Home = () => {
                 </Container>
 
 
+                <Container sx={{ border: '3px solid #2852A0', borderRadius: '1rem', mt: '5rem', mb: '3rem', pt: '5rem', pb: '5rem', pr: '3rem', pl: '3rem' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Typography variant='h5' sx={{ color: '#53565B', fontWeight: '600', textAlign: 'center', width: { xs: '100%', sm: '80%', md: '50%' }, lineHeight: 1.7 }}>Checkmate is a financial planning app that helps users project their future finances so that they can better plan and manage their savings over the long term. </Typography>
+                    </Box>
+                </Container>
 
-                <Container sx={{ border: '3px solid #2852A0', borderRadius: '1rem', mt: '5rem', mb: '5rem', pt: '5rem', pb: '5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-                    <Typography variant='h4' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>All it takes is 5 minutes</Typography>
+                <Container sx={{ pt: '3rem', pb: '3rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+                    <Typography variant='h4' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700' }}>Kickstart in just 5 minutes</Typography>
                     <Box sx={{ display: 'flex', justifyContent: 'center', width: { xs: '100%', sm: '60%', md: '40%' } }}>
-                        <Typography variant='body1' sx={{ mb: '2rem', color: '#53565B', textAlign: 'center' }}> Planning for finances can be a tedious and boring process. Checkmate makes it simple to use and easy to understand. </Typography>
+                        <Typography variant='body1' sx={{ color: '#53565B', textAlign: 'center' }}> Planning for finances can be a tedious and boring process. Checkmate makes it simple to use and easy to understand. </Typography>
                     </Box>
                 </Container>
 
 
 
-                <Grid container sx={{ background: '#E0E2E7', mt: '5rem', mb: '5rem' }}>
+                <Grid container sx={{ background: '#FBF6E9', mb: '5rem', display: 'flex', alignItems: 'center', p: { xs: '2rem', sm: '3rem', md: '4rem' } }}>
 
-                    <Grid item xs={12} md={6} sx={{ background: '#FBF6E9', p: '5rem' }} >
-                        <Typography variant='h3' sx={{ mb: '2rem', color: '#53565B', fontWeight: '700', }}>Get Insights in 3 Simple Steps</Typography>
+                    <Grid item xs={12} sm={6} sx={{ pr: { xs: '0rem', sm: '3rem' }, mb: { xs: '2rem', sm: 0 }, display: 'flex', flexDirection: 'column', gap: '2rem' }} >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <Typography variant='h4' sx={{ color: 'white', width: '25px', height: '25px', backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', textAlign: 'center', border: '3px solid #2852A0' }}>1</Typography>
-                            <Typography variant='h6' sx={{ color: '#53565B' }}>Sign up with email</Typography>
+                            <Typography variant='h4' sx={{ color: 'white', width: { xs: '10px', md: '20px' }, height: { xs: '10px', md: '20px' }, backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', border: '3px solid #2852A0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</Typography>
+                            <Typography variant='h3' sx={{ color: '#53565B', fontWeight: '700', }}>Fill the financial forms</Typography>
                         </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', mt: '1rem' }}>
-                            <Typography variant='h4' sx={{ color: 'white', width: '25px', height: '25px', backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', textAlign: 'center', border: '3px solid #2852A0' }}>2</Typography>
-                            <Typography variant='h6' sx={{ color: '#53565B' }}>Fill in basic financial details</Typography>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem', mt: '1rem' }}>
-                            <Typography variant='h4' sx={{ color: 'white', width: '25px', height: '25px', backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', textAlign: 'center', border: '3px solid #2852A0' }}>3</Typography>
-                            <Typography variant='h6' sx={{ color: '#53565B' }}>Enjoy the financial insights</Typography>
+                        <Box>
+                            <Typography variant='body1' sx={{ color: '#53565B' }}>Financial forms consist of income, expense, debt and asset. You only require to fill in one entry for each form at the start. </Typography>
                         </Box>
                     </Grid>
 
 
-                    <Grid item xs={12} md={6} >
+                    <Grid item xs={12} sm={6} >
+                        <Box >
+                            <img
+                                src="https://imgur.com/52YXsLa.jpg"
+                                alt='Financial Forms'
+                                style={{
+                                    maxWidth: '100%',
+                                    border: '3px solid #2852A0',
 
+
+                                }}
+                            />
+                        </Box>
                     </Grid>
 
                 </Grid>
+
+
+                <Grid container sx={{ background: '#FBF6E9', mb: '5rem', display: 'flex', alignItems: 'center', p: { xs: '2rem', sm: '3rem', md: '4rem' } }}>
+
+                    <Grid item xs={12} sm={6} sx={{ pr: { xs: '0rem', sm: '3rem' }, mb: { xs: '2rem', sm: 0 }, display: 'flex', flexDirection: 'column', gap: '2rem' }} >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <Typography variant='h4' sx={{ color: 'white', width: { xs: '10px', md: '20px' }, height: { xs: '10px', md: '20px' }, backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', border: '3px solid #2852A0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</Typography>
+                            <Typography variant='h3' sx={{ color: '#53565B', fontWeight: '700', }}>Enjoy the financial projections</Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant='body1' sx={{ color: '#53565B' }}>The projections offer many great insights. It allows you to include both current and future finances, and also adjust for inflation and growth rate.</Typography>
+                        </Box>
+                    </Grid>
+
+
+                    <Grid item xs={12} sm={6} >
+                        <Box >
+                            <img
+                                src="https://imgur.com/RvzzdYN.jpg"
+                                alt='Financial Projections'
+                                style={{
+                                    maxWidth: '100%',
+                                    border: '3px solid #2852A0',
+
+
+                                }}
+                            />
+                        </Box>
+                    </Grid>
+
+                </Grid>
+
+
+                <Grid container sx={{ background: '#FBF6E9', mb: '5rem', display: 'flex', alignItems: 'center', p: { xs: '2rem', sm: '3rem', md: '4rem' } }}>
+
+                    <Grid item xs={12} sm={6} sx={{ pr: { xs: '0rem', sm: '3rem' }, mb: { xs: '2rem', sm: 0 }, display: 'flex', flexDirection: 'column', gap: '2rem' }} >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <Typography variant='h4' sx={{ color: 'white', width: { xs: '10px', md: '20px' }, height: { xs: '10px', md: '20px' }, backgroundColor: '#2852A0', p: '10px', borderRadius: '50%', border: '3px solid #2852A0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</Typography>
+                            <Typography variant='h3' sx={{ color: '#53565B', fontWeight: '700', }}>Plan and manage finances</Typography>
+                        </Box>
+                        <Box>
+                            <Typography variant='body1' sx={{ color: '#53565B' }}>The financials update real time whenever there are changes. You can also track individual entry and make adjustments to improve accuracy. </Typography>
+                        </Box>
+                    </Grid>
+
+
+                    <Grid item xs={12} sm={6} >
+                        <Box >
+                            <img
+                                src="https://imgur.com/BRAumuQ.jpg"
+                                alt='Plan Finances'
+                                style={{
+                                    maxWidth: '100%',
+                                    border: '3px solid #2852A0',
+
+
+                                }}
+                            />
+                        </Box>
+                    </Grid>
+
+                </Grid>
+
+
+
+
+
 
 
 

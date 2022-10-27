@@ -28,7 +28,7 @@ const WelcomeForm = () => {
                 </Grid>
 
                 <Grid item xs={12} sx={{ textAlign: 'center', mb: '3rem', display: 'flex', justifyContent: 'center' }}>
-                    <Typography variant='body1' sx={{ width: '70%' }}>YAYYYY! You have successfully create an account! Next, we will need some figures to project your financials!</Typography>
+                    <Typography variant='body1' sx={{ width: '70%' }}>YAY! You have successfully created an account! Next, we will need some figures to project your financials!</Typography>
                 </Grid>
 
 
