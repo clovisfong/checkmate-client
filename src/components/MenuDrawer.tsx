@@ -26,6 +26,8 @@ import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalance
 import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
 import { Button } from '@mui/material';
+import ResponsiveMenuDrawer from './ResponsiveMenuDrawer';
+
 
 const drawerWidth = 240;
 
@@ -121,7 +123,7 @@ export default function MenuDrawer() {
 
 
     return (
-        <Box sx={{ display: 'flex', }}>
+        <Box sx={{ display: { sm: 'flex' }, }}>
             {/* <CssBaseline />
             <AppBar position="fixed" open={open}>
                 <Toolbar>
@@ -139,7 +141,7 @@ export default function MenuDrawer() {
                     </IconButton>
                 </Toolbar>
             </AppBar> */}
-            <Drawer variant="permanent" open={open} PaperProps={{ sx: { backgroundColor: '#EDEEF1', border: 'none', } }}>
+            <Drawer variant="permanent" open={open} PaperProps={{ sx: { backgroundColor: '#EDEEF1', border: 'none', display: { xs: 'none', sm: 'block' } } }}>
                 <DrawerHeader sx={{ display: 'flex', mt: '1rem', justifyContent: 'center' }}>
                     {open ?
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -274,6 +276,10 @@ export default function MenuDrawer() {
 
 
             </Drawer>
+
+            <ResponsiveMenuDrawer />
+
+
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
 

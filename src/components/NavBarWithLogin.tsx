@@ -28,7 +28,7 @@ const NavBarWithLogin = () => {
             <Container maxWidth='lg' sx={{
                 mt: '3rem',
                 display: 'flex',
-                justifyContent: { xs: 'center', md: 'space-between' },
+                justifyContent: { xs: 'center', sm: 'space-between' },
                 alignItems: 'center'
             }}>
                 <img
@@ -39,7 +39,7 @@ const NavBarWithLogin = () => {
                         maxWidth: '12rem',
                         cursor: 'pointer'
                     }} />
-                <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                     <Button onClick={handleClick} sx={{
                         color: '#53565B',
                         letterSpacing: '0.2rem',
