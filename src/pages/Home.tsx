@@ -1,14 +1,25 @@
 import { Button, Container, Grid, Typography } from '@mui/material'
 import { Box } from '@mui/system'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CalculateOutlinedIcon from '@mui/icons-material/CalculateOutlined';
 import SavingsOutlinedIcon from '@mui/icons-material/SavingsOutlined';
 import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
+import axios from 'axios';
+import urlcat from 'urlcat';
 
 const Home = () => {
 
     const navigateToLogin = useNavigate()
+    const SERVER = import.meta.env.VITE_SERVER;
+    const homeurl = urlcat(SERVER, '/')
+
+
+    useEffect(() => {
+        axios.get(homeurl)
+            .then((res) => console.log(res.data))
+
+    }, [])
 
     const handleClick = () => {
         navigateToLogin('/login')
