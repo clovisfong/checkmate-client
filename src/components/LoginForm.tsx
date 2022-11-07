@@ -9,10 +9,18 @@ import { Container } from '@mui/system';
 import UserDetailsContext from './contextStore/userdetails-context';
 import jwt_decode from 'jwt-decode';
 import { IUserDetails } from '../Interface';
+import CircularProgress from '@mui/material/CircularProgress';
+import AssetsDashboard from '../pages/AssetsDashboard';
+
 
 const LoginForm = () => {
 
     const [error, setError] = useState<String>("");
+    const [loading, setLoading] = useState(false)
+    const [user, setUser] = useState({
+        email: "",
+        password: ""
+    })
 
     const SERVER = import.meta.env.VITE_SERVER;
     const url = urlcat(SERVER, "/users/login");
@@ -20,17 +28,24 @@ const LoginForm = () => {
 
     const userContext = useContext(UserDetailsContext)
 
+    const handleGenerate = () => {
+        setUser({ email: 'visitor@hotmail.com', password: 'Password@123' })
+    }
+
 
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            email: "",
-            password: "",
+            email: user.email,
+            password: user.password,
         },
         validationSchema: Yup.object({
             email: Yup.string().required("Required"),
             password: Yup.string().required("Required"),
         }),
         onSubmit: (values) => {
+
+            setLoading(true)
 
             const header = {
                 headers: {
@@ -45,11 +60,16 @@ const LoginForm = () => {
                     sessionStorage.setItem("token", res.data.token);
                     const userDetails: IUserDetails = jwt_decode(res.data.token)
                     userContext.setUserState(userDetails)
+                    setLoading(false)
                     navigate('/dashboard/overview');
                 })
-                .catch((error) => setError(error.response.data.msg));
+                .catch((error) => {
+                    setError(error.response.data.msg)
+                    setLoading(false)
+                });
         },
     });
+
 
 
 
@@ -124,18 +144,34 @@ const LoginForm = () => {
                             }
                         }}> Let's Go!
                         </Button>
-                        <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>
-
+                        <Box>
+                            {loading ? null : <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>}
+                        </Box>
+                        {loading ? <CircularProgress size={'1.5rem'} sx={{ color: '#2852A0' }} /> : null}
                     </Grid>
 
                 </form>
 
-                <Grid item xs={12} sx={{ mt: '3rem', textAlign: 'center' }}>
+                <Grid item xs={12} sx={{ mt: '1.5rem', textAlign: 'center' }}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: "0.5rem" }}>
                         <Typography variant='body2'>Don't have an account? </Typography>
                         <Link to="/sign-up">
                             <Typography variant='body2'>Sign up!</Typography>
                         </Link>
+                    </Box>
+                </Grid>
+                <Grid item xs={12} sx={{ mt: '3rem', textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: "0.5rem" }}>
+                        <Typography variant='body1' onClick={handleGenerate}
+                            sx={{
+                                textDecoration: 'underline',
+                                '&:hover': {
+                                    color: '#2852A0',
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline'
+
+                                }
+                            }}>Generate Trial Account </Typography>
                     </Box>
                 </Grid>
             </Grid>

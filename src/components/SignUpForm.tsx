@@ -5,11 +5,12 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 import urlcat from "urlcat";
 import axios from "axios";
-import { Button, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import UserDetailsContext from './contextStore/userdetails-context';
 import jwt_decode from 'jwt-decode';
 import { IUserDetails } from '../Interface';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const SignUpForm: FC = () => {
@@ -17,6 +18,7 @@ const SignUpForm: FC = () => {
     const [userEmail, setUserEmail] = useState(0);
     const [error, setError] = useState<String>("");
     const [disable, setDisable] = useState(false)
+    const [loading, setLoading] = useState(false)
 
     const navigateToWelcome = useNavigate();
     const SERVER = import.meta.env.VITE_SERVER;
@@ -63,6 +65,8 @@ const SignUpForm: FC = () => {
                 .required("Required"),
         }),
         onSubmit: (values) => {
+
+            setLoading(true)
             const createUser = urlcat(SERVER, "/users/");
 
             const header = {
@@ -78,9 +82,13 @@ const SignUpForm: FC = () => {
                     const userDetails: IUserDetails = jwt_decode(res.data.token)
                     console.log(userDetails)
                     userContext.setUserState(userDetails)
+                    setLoading(false)
                     navigateToWelcome(`/form`);
                 })
-                .catch((error) => setError(error.response.data.error));
+                .catch((error) => {
+                    setError(error.response.data.error)
+                    setLoading(false)
+                });
         },
     });
 
@@ -223,8 +231,10 @@ const SignUpForm: FC = () => {
 
                         }}> Create Account
                         </Button>
-                        <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>
-
+                        <Box>
+                            {loading ? null : <Typography variant='body2' sx={{ color: 'red' }}>{error} </Typography>}
+                        </Box>
+                        {loading ? <CircularProgress size={'1.5rem'} sx={{ color: '#2852A0' }} /> : null}
                     </Grid>
 
                 </form>
